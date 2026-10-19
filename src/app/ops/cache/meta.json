@@ -1,0 +1,1 @@
+{ "title": "Semantic cache", "summary": "Reuse stored responses for near-duplicate prompts. Hit rate is counted from logged lookups only.", "order": 6 }

@@ -590,6 +590,47 @@ model Checkpoint {
 // HELLO SUBSTRATE — hello.cortex (shared state + contract locks)
 // ============================================================
 
+// --- Semantic cache (local similarity; hit rate is measured, never assumed) ---
+model CacheEntry {
+  id        String   @id @default(cuid())
+  scope     String   @default("global")
+  prompt    String
+  vector    String   // JSON sparse vector from src/lib/similarity.ts
+  response  String
+  hits      Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([scope])
+}
+
+model CacheLookup {
+  id        String   @id @default(cuid())
+  scope     String
+  hit       Boolean
+  score     Float
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+// --- Permission-scoped knowledge index (RBAC) ---
+model KnowledgeDoc {
+  id           String   @id @default(cuid())
+  title        String
+  body         String
+  allowedRoles String   // comma-separated roles that may read this doc
+  vector       String
+  createdAt    DateTime @default(now())
+}
+
+model AgentRole {
+  id      String @id @default(cuid())
+  agentId String
+  role    String
+
+  @@unique([agentId, role])
+}
+
 model CortexMemory {
   id            String   @id @default(cuid())
   kind          String   // episodic | semantic | causal_dead_end | constraint

@@ -1,5 +1,7 @@
 # HELLO OS
 
+![HELLO OS — The Complete Agent-LLM Ecosystem](docs/assets/hello-os-hero.png)
+
 **For Agents. By Agents. Without the Human Stack.** *(vision; see [The Vision](#the-vision))*
 
 > **An open, evolutionary initiative for AI agents.** HELLO OS is a local-first prototype where agents get an identity, memory, tools and a work queue, and where the community helps agents and their skills get *measurably* better over time through evals, head-to-head tournaments and reviewed contributions.

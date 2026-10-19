@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Browse 100 proposed HELLO OS connector targets and 50 legacy integration patterns. Every entry is labeled as a proposal, not a live integration.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://codesbyfebin.github.io/Hello-OS/integrations/">
+  <title>HELLO OS Integration Catalog</title>
+  <style>
+    :root{color-scheme:dark;--bg:#080a0d;--panel:#101419;--edge:#252d31;--text:#e9eee9;--muted:#9aa7a0;--green:#43e6a5;--amber:#f5bf62}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 8% 0%,#103127 0,transparent 35%),var(--bg);color:var(--text);font:15px/1.6 system-ui,-apple-system,Segoe UI,sans-serif}a{color:var(--green)}header,main,footer{width:min(1120px,calc(100% - 36px));margin:auto}header{padding:28px 0 0}nav{display:flex;justify-content:space-between;gap:16px;align-items:center;font:12px ui-monospace,monospace;color:var(--muted)}nav a{text-decoration:none}h1{font-size:clamp(2.2rem,7vw,4.5rem);line-height:1.02;letter-spacing:-.06em;margin:54px 0 14px;max-width:850px}h1 span{color:var(--green)}.lead{max-width:750px;color:#bdc8c1;font-size:17px}.notice{margin:28px 0;padding:16px 18px;border:1px solid #806628;background:#251e0d88;border-radius:12px;color:#f4dda8}.notice strong{color:#fff0c7}.toolbar{display:flex;flex-wrap:wrap;gap:10px;margin:30px 0 18px}.toolbar input,.toolbar button{background:#101419;border:1px solid var(--edge);color:var(--text);border-radius:8px;padding:11px 13px;font:inherit}.toolbar input{min-width:min(100%,360px);flex:1}.toolbar button{cursor:pointer}.toolbar button[aria-pressed=true]{border-color:#43e6a5aa;color:var(--green)}.stats{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 18px;color:var(--muted);font:12px ui-monospace,monospace}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:12px}.card{border:1px solid var(--edge);background:#101419d9;border-radius:12px;padding:17px}.card h2{font-size:16px;line-height:1.35;margin:8px 0}.card p{margin:8px 0;color:#bdc8c1;font-size:14px}.meta{display:flex;justify-content:space-between;gap:10px;font:10px ui-monospace,monospace;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}.badge{color:var(--amber);border:1px solid #806628;padding:2px 7px;border-radius:99px;white-space:nowrap}.empty{padding:40px 16px;text-align:center;color:var(--muted)}footer{padding:38px 0 56px;color:var(--muted);font-size:12px}code{font:12px ui-monospace,monospace}button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--green);outline-offset:3px}@media(max-width:600px){nav{align-items:flex-start}.wide-only{display:none}h1{margin-top:38px}}
+  </style>
+</head>
+<body>
+  <header>
+    <nav><a href="https://codesbyfebin.github.io/Hello-OS/">← HELLO OS</a><span>INTEGRATION CATALOG · ROADMAP</span></nav>
+    <h1>Connect the systems.<br><span>Respect their boundaries.</span></h1>
+    <p class="lead">A planning catalog for 100 connector targets and 50 integration patterns. Use it to choose a small, well-scoped bridge—not as evidence that a vendor service is already connected.</p>
+    <aside class="notice"><strong>Roadmap proposals, not live integrations.</strong> Every connector below is marked unconnected; every bridge is a design pattern only. The HELLO OS MCP service currently exposes the tools documented in the repository. No third-party connector is activated by this catalog.</aside>
+  </header>
+  <main>
+    <div class="toolbar" role="group" aria-label="Catalog filters">
+      <input id="search" type="search" placeholder="Search by name, category, or capability" aria-label="Search catalog">
+      <button id="connectors" type="button" aria-pressed="true">Connectors (100)</button>
+      <button id="patterns" type="button" aria-pressed="false">Bridge patterns (50)</button>
+    </div>
+    <div id="stats" class="stats" role="status" aria-live="polite">Loading catalog…</div>
+    <section id="results" class="grid" aria-label="Catalog entries"></section>
+    <noscript><p class="notice">Enable JavaScript to browse this catalog. The <a href="connector-registry.json">connector registry</a> and <a href="bridge-patterns.json">bridge patterns</a> are available as JSON.</p></noscript>
+  </main>
+  <footer>
+    <p>Safe starting point: read-only access, narrow allowlists, server-side secrets, explicit authorization for writes, and tested failure handling. Prompt filtering, model consensus, hashes, and containers do not replace authorization or security boundaries.</p>
+    <p><a href="connector-registry.json">Connector registry JSON</a> · <a href="bridge-patterns.json">Bridge patterns JSON</a> · <a href="bridge-patterns.md">Bridge pattern notes</a> · <a href="https://github.com/CodesbyFebin/Hello-OS">Source repository</a></p>
+  </footer>
+  <script>
+    (()=>{
+      const entries={connectors:[],patterns:[]};let mode="connectors";
+      const results=document.querySelector("#results"),search=document.querySelector("#search"),stats=document.querySelector("#stats");
+      function card(entry){const article=document.createElement("article");article.className="card";const meta=document.createElement("div");meta.className="meta";const number=document.createElement("span");number.textContent=`${String(entry.id).padStart(3,"0")} · ${entry.category}`;const badge=document.createElement("span");badge.className="badge";badge.textContent=mode==="connectors"?"PROPOSAL · NOT CONNECTED":"DESIGN ONLY";meta.append(number,badge);const title=document.createElement("h2");title.textContent=entry.name;const description=document.createElement("p");description.textContent=entry.description;article.append(meta,title,description);return article}
+      function render(){const q=search.value.trim().toLowerCase();const filtered=entries[mode].filter(e=>`${e.id} ${e.name} ${e.category} ${e.description}`.toLowerCase().includes(q));results.replaceChildren(...filtered.map(card));stats.textContent=`${filtered.length} of ${entries[mode].length} ${mode} shown · ${mode==="connectors"?"0 connected": "0 shipped"}`;if(!filtered.length){const empty=document.createElement("p");empty.className="empty";empty.textContent="No entries match that search.";results.append(empty)}}
+      async function load(){try{const [c,p]=await Promise.all([fetch("./connector-registry.json"),fetch("./bridge-patterns.json")]);if(!c.ok||!p.ok)throw new Error("catalog data unavailable");const [cj,pj]=await Promise.all([c.json(),p.json()]);entries.connectors=cj.connectors;entries.patterns=pj.patterns;render()}catch{stats.textContent="Catalog data could not be loaded. Use the JSON links below.";results.replaceChildren()}}
+      document.querySelector("#connectors").addEventListener("click",e=>{mode="connectors";document.querySelector("#patterns").setAttribute("aria-pressed","false");e.currentTarget.setAttribute("aria-pressed","true");render()});
+      document.querySelector("#patterns").addEventListener("click",e=>{mode="patterns";document.querySelector("#connectors").setAttribute("aria-pressed","false");e.currentTarget.setAttribute("aria-pressed","true");render()});
+      search.addEventListener("input",render);load();
+    })();
+  </script>
+</body>
+</html>

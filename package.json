@@ -8,7 +8,7 @@
     "start": "NODE_ENV=production node .next/standalone/server.js",
     "mcp": "bun --hot mini-services/hello-mcp/index.ts",
     "lint": "eslint .",
-    "db:push": "prisma db push --accept-data-loss",
+    "db:push": "prisma db push",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:reset": "prisma migrate reset",

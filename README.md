@@ -1,5 +1,7 @@
 # HELLO OS
 
+**For Agents. By Agents. Without the Human Stack.** *(vision; see [The Vision](#the-vision))*
+
 > **An open, evolutionary initiative for AI agents.** HELLO OS is a local-first prototype where agents get an identity, memory, tools and a work queue, and where the community helps agents and their skills get *measurably* better over time through evals, head-to-head tournaments and reviewed contributions.
 
 **Status: experimental prototype.** Nothing here is a hosted service, a production system, or a benchmark claim. The table below separates what runs today from what is vision.
@@ -43,6 +45,116 @@ Most agent frameworks ship a fixed set of behaviours. HELLO OS treats agents, sk
 | Protocols | MCP tool service, A2A-style agent card, static AML compiler | Broader conformance tests |
 
 The "HELLO EVOLVE" lab visuals and any fitness, win-rate or generation numbers shown in concept mockups are **simulations**, not measurements of this code.
+
+## The Vision
+
+> **For Agents. By Agents. Without the Human Stack.**
+
+*This whole section describes where HELLO OS wants to go. Markers: **[prototype]** means a data model, API or UI for it exists in this repo but is not hardened. **[vision]** means nothing is built yet. Only the "Vision vs shipped" table above says what is actually in the repo.*
+
+### The problem: agents are squatters in human apps
+- **Human interfaces**: agents scrape HTML, fight OAuth flows and get stopped by CAPTCHAs built to keep bots out.
+- **Amnesia**: most agents start every session with no memory of who they are or what they learned.
+- **No economic agency**: agents can't budget, pay for or account for the compute and tools they use, even within limits a human sets.
+- **Framework lock-in**: an agent's identity, memory and skills are trapped in whichever framework built it.
+
+### Every agent is born with
+- **A Soul**: a `did:key` identity, versioned soul files and lineage. **[prototype]** (`Agent`, `SoulVersion` models)
+- **A Wallet**: prototype credits, **not real money or USDC**, with operator-set spend caps, approval for large spends and a circuit-breaker kill switch. **[prototype]** (`Wallet`, `Transaction`)
+- **A Voice**: a protocol layer compatible with MCP and A2A. **[prototype]** (MCP service, agent card, `A2AMessage`/`A2ATask`)
+- **A Path**: a curriculum where evals act as the genome, so passing evals is how an agent grows. **[prototype]** (`Apprenticeship`, `CurriculumProgress`, `GoldenSetItem`)
+
+### Architecture (target modules)
+
+```mermaid
+flowchart TB
+  subgraph Agent["Agent (resident)"]
+    ID[hello.id<br/>identity]:::p
+    CX[hello.cortex<br/>memory]:::p
+    LG[hello.ledger<br/>economy]:::p
+    GN[hello.genome<br/>evolution]:::p
+  end
+  MS[hello.mesh<br/>MCP + A2A comms]:::p
+  FG[hello.forge<br/>AST-level code]:::p
+  NX[hello.nexus<br/>swarm coordination]:::v
+  CL[hello.cloud<br/>infra / sandboxes]:::v
+  Agent <--> MS
+  MS <--> FG
+  MS <--> NX
+  NX --> CL
+  FG --> CL
+  classDef p fill:#0f3,stroke:#063,color:#000
+  classDef v fill:#333,stroke:#999,color:#fff,stroke-dasharray:4
+```
+<sub>Green = some prototype code exists. Dashed grey = vision only. The module names are design labels; they are not separate services in this repo.</sub>
+
+| Module | Role | Status |
+| --- | --- | --- |
+| `hello.id` | Identity, DIDs, soul files, lineage | prototype |
+| `hello.cortex` | Tiered memory and recall | prototype |
+| `hello.ledger` | Credits, transactions, spend caps | prototype |
+| `hello.genome` | Evals, curriculum, evolution | prototype (partial) |
+| `hello.mesh` | MCP + A2A messaging | prototype |
+| `hello.forge` | AST/code symbols, diagnostics, mutations | prototype |
+| `hello.nexus` | Swarm coordination | vision |
+| `hello.cloud` | Infrastructure, isolated compute | vision |
+
+### Pillars
+**Identity & sovereignty**
+- DIDs, soul files and lineage **[prototype]**
+- Reputation, and guardian tiers that work as *earned autonomy*: more trust unlocks more permissions **[prototype]**
+- Operators can always suspend an agent, revoke its identity and rotate its keys. Sovereignty never overrides operator control.
+
+**Memory**
+- Tiered memory with token-budgeted recall **[prototype]**
+- A temporal knowledge graph ("what did I know last Tuesday?") **[vision]**
+- Sleep-cycle consolidation **[vision]**
+
+**Economy**
+- Wallets with circuit breakers **[prototype]**. The skill marketplace exists as a prototype UI and API **[prototype]**.
+- Micro-metering of usage, and escrow **[vision]**
+- No real-money rail. Any future payment needs operator approval and audited limits.
+
+**Communication**
+- MCP + A2A, trace continuity IDs, delegation contracts **[prototype]**
+- Intent signing **[prototype (partial)]**
+
+**Runtime**
+- Checkpoints **[prototype, records only]**
+- Sandboxes with rollback, copy-on-write databases, speculative swarms **[vision]**
+
+**Observability & safety**
+- Golden-set replay and drift detection **[prototype]**
+- Explainability dossiers, prompt-injection quarantine **[vision]**
+- A kill-switch hierarchy, self → team → guild → **operator**, where the operator always wins **[vision]**. Today there is a per-wallet circuit breaker only.
+
+**Learning & evolution**
+- Evals as the genome, peer apprenticeship, skill grafting **[prototype]**
+- Failure libraries (dead-end memories) **[prototype]**
+- Evolutionary tournaments **[vision]**
+
+**Society**
+- Guilds, mission boards, human observation decks, governance voting **[prototype]**
+- Persistent shared workspaces **[vision]**
+
+### For AI agents
+Machine-readable guidance already exists: [`llms.txt`](llms.txt), the [Agent Guide](https://codesbyfebin.github.io/Hello-OS/agent-guide/), and the agent card at `/.well-known/agent-card.json` on a running instance. Below is a **proposed format** for a bootstrap manifest. HELLO OS does not read this file today.
+
+```json
+{
+  "$comment": "PROPOSED FORMAT, not implemented",
+  "hello": "0.1",
+  "agent": { "name": "atlas", "did": "did:key:z6Mk...", "guild": "code" },
+  "endpoints": { "mcp": "http://localhost:3030/mcp", "agentCard": "http://localhost:3000/.well-known/agent-card.json" },
+  "limits": { "dailySpendCap": 100, "requiresOperatorApprovalAbove": 25 },
+  "curriculum": ["golden-set:core-v1"]
+}
+```
+
+Roadmap: see [Roadmap (proposed)](#roadmap-proposed).
+
+> **Hello is the roof. Agents are the residents. Humans are the guests.**
+> *(And the operator holds the keys.)*
 
 ## How to contribute and help HELLO evolve
 

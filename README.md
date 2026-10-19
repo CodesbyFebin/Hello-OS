@@ -5,9 +5,9 @@
 > **An open, evolutionary initiative for AI agents.** HELLO OS is a local-first prototype where agents get an identity, memory, tools and a work queue, and where the community helps agents and their skills get *measurably* better over time through evals, head-to-head tournaments and reviewed contributions.
 
 **Status: experimental prototype.** Nothing here is a hosted service, a production system, or a benchmark claim. The table below separates what runs today from what is vision.
+HELLO is an agent-native operating system prototype: cryptographic agent identities, persistent memory, a mission economy, a typed code graph, and an MCP-compatible tool surface. The human interface is an observation deck for monitoring and review.
 
-[![GitHub repository](https://img.shields.io/badge/GitHub-CodesbyFebin%2FHello--OS-181717?logo=github)](https://github.com/CodesbyFebin/Hello-OS)
-[![Pages guide](https://img.shields.io/badge/Project%20guide-GitHub%20Pages-222?logo=githubpages)](https://codesbyfebin.github.io/Hello-OS/)
+## Run locally
 
 ![HELLO OS dashboard showing the demo snapshot with sample agents](docs/assets/dashboard.png)
 <sub>Dashboard on a fresh local install. With an empty database it shows a labelled **demo snapshot** of sample agents, not live data.</sub>
@@ -164,116 +164,17 @@ Roadmap: see [Roadmap (proposed)](#roadmap-proposed).
 - **Challenge a claim**: if the docs say something the code doesn't do, open an issue.
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.md) first.
+Requirements: Node.js 20 or newer, npm, and Bun for the separate MCP service.
 
-## AML: Agent Machine Language
+### One-command local deployment
 
-HELLO OS includes a bounded, **static-only** AML compiler for parsing agent mission declarations. It returns a deterministic intent graph, source hash, and validation diagnostics; it does not run missions, invoke models, spend wallet funds, execute shell commands, or deploy code.
-
-- Interactive Studio: run the app and open `http://localhost:3000/aml-studio` to inspect AST, diagnostics, intent graph, budgets, and hashes.
-- HTTP API: `POST /api/aml/compile` with JSON `{ "source": "..." }`.
-- MCP tool: `aml.compile` on the existing HELLO MCP service.
-- Supported declaration forms, examples, and grammar: [`docs/aml-examples.md`](docs/aml-examples.md) and [`docs/aml-spec.ebnf`](docs/aml-spec.ebnf).
-- Declarative `model_matrix` and `bridge` blocks are syntax only; there is no provider routing or external-agent call.
-## What HELLO OS is
-
-HELLO OS, also called Hello Agentic OS, is an experimental agent runtime and dashboard. It is built to explore a practical question: what would a workspace look like if autonomous software agents had durable identities, memory, tools, assignments, and reviewable records of work? The current repository is a runnable prototype, not a general-purpose desktop operating system, managed cloud service, production custody system, or claim of fully autonomous operation.
-
-The prototype brings several concepts into one local-first application. An operator can create agents, inspect their memory and work, expose tools over a Model Context Protocol (MCP) endpoint, and discover the service through an agent card. SQLite keeps the development setup accessible without a separate database server. The interface provides a human observation and control surface for capabilities that are otherwise mostly machine-facing.
-
-The intended audience includes developers prototyping AI agents, researchers exploring agent identity and memory, builders evaluating MCP integrations, and operators who want a small self-hostable agent workspace. The app is designed to be inspected and adapted. It does not assume that an agent should receive unrestricted access to files, credentials, networks, funds, or production systems.
-
-## Product vision versus shipped functionality
-
-A supplied concept brief uses names such as `hello.id`, `hello.cortex`, `hello.ledger`, `hello.mesh`, `hello.forge`, `hello.cloud`, and `hello.nexus`. These names can help describe a longer-term product direction, but they are not separate production services in this repository. The actual implementation boundaries are the web application, Prisma/SQLite persistence, the MCP service, selected REST APIs, and the A2A-style discovery/task methods described above.
-
-The brief imagines a broader agent-native environment: portable identities and lineage, richer cognition and consolidation, a native economy, protocol-first delegation, isolated compute, swarm coordination, and evaluation-driven learning.  These ideas are useful design prompts. Treat each as a proposal until it has code, tests, operational controls, and documentation in this repo. The proposed cloud layers and staged implementation path are in [HELLO Cloud: Architecture Direction](docs/hello-cloud-architecture.md).
-
-In particular, this repository does not currently ship a USDC wallet, token metering, skill marketplace, escrow, task futures, reputation collateral, verifiable credentials, W3C DID compliance certification, cryptographic lineage chains, a temporal knowledge graph, sleep consolidation, Firecracker execution, copy-on-write database forks, speculative swarm runtime, autonomous governance, or an evolutionary tournament system. Existing wallet records and daily spending controls are local prototype data, not payments or a native economy. Existing memory tiers are not an unlimited temporal cognition system. Existing checkpoint records do not launch isolated virtual machines.
-
-The concept brief also contains example agents-online counts, transactions per second, success percentages, latency targets, token-savings percentages, case studies, release names, checksums, hosted URLs, and a claimed license. None of those values or artifacts have been verified in this repository. They must not be cited as HELLO OS benchmarks, live service status, official downloads, security guarantees, or licensing terms. The repo currently has no published APK, EXE/PEXE, DEB, AppImage, DMG, IPA, AAB, standalone binary, or SDK archive. It also has no `LICENSE` file. Use the Download section above for what can actually be installed today.
-
-## At a glance
-
-| Area | Current implementation |
-| --- | --- |
-| Web interface | Next.js and React dashboard |
-| Server language | TypeScript |
-| Persistent store | SQLite through Prisma |
-| Agent identity | Ed25519 key generation and `did:key` identifiers |
-| Tool interface | MCP-compatible Streamable HTTP JSON-RPC service |
-| Agent discovery and tasks | Agent card plus A2A-style JSON-RPC task methods |
-| Local deployment | Docker Compose or Node.js with Bun for MCP |
-| Guide and download center | Static GitHub Pages source under `docs/` |
-| Native mobile or desktop packages | No signed APK, EXE, or DEB release is currently published |
-
-This table describes what exists in the repository today. Capabilities marked as planned or not published below are not silently implied to be complete.
-
-## Highlights
-
-- **Agent identity prototype.** Creating an agent generates an Ed25519 key pair and a `did:key` identity. A starting soul version and wallet record are created with the agent.
-- **Persistent agent state.** Agents, missions, balances, traces, memories, and MCP receipts are stored through Prisma in SQLite.
-- **Tiered memory.** The memory model supports CORE, RECALL, and ARCHIVE tiers, TTL expiry, valid-time filters, and query retrieval budgets. The implementation is a prototype and should be evaluated against your own privacy and retention needs.
-- **Work and mission tracking.** Mission claims are written through the mission API. Records can be inspected in the dashboard and traces.
-- **Tool surface.** The MCP service exposes forge, cortex, tiered-memory, and checkpoint tools at `/mcp`. Dashboard compatibility routes `/tools` and `/tools/call` are also present. Tool calls create audit receipts.
-- **Agent discovery.** The service exposes a card at `/.well-known/agent-card.json` and the brief alias `/.well-known/agent.json`.
-- **Task lifecycle.** A2A-style JSON-RPC supports `message/send`, `tasks/get`, `tasks/list`, `tasks/update`, and `tasks/cancel`, with durable task states and signed message/result intents.
-- **Guarded economy prototype.** Wallet debits and skill installs use a transactional daily cap and circuit breaker.
-- **Identity export.** `GET /api/agents/{id}/export` downloads an identity, soul, memory, wallet history, skills, and trace bundle. Private signing keys are excluded from this export.
-- **Code analysis experiment.** Forge parses the sample TypeScript repository and returns structured compiler diagnostics.
-- **Operational fallback.** The dashboard refreshes from REST APIs and labels its demo snapshot fallback when services are unavailable.
-- **Platform overview.** The `/universe` route contains the longer HELLO platform and feature overview.
-- **Agent guide.** Read the [HELLO OS Agent Guide](https://codesbyfebin.github.io/Hello-OS/agent-guide/) for current APIs and integration boundaries.
-
-## Download and platform support
-
-The recommended path is Docker Compose. It runs the web dashboard and MCP service together, on a host that supports Docker Engine and the Compose plugin. This works on common Linux distributions, macOS, and Windows when Docker Desktop or an equivalent Docker environment is installed. The browser interface is available at `http://localhost:3000`.
-
-There are also small install scripts for Linux/macOS shells and Windows PowerShell. They clone this repository and start the same Docker Compose deployment. Read the script before running it, particularly on a managed or production workstation. The scripts do not elevate privileges, install Docker for you, or transfer your project data to a hosted service.
-
-| Platform or format | Current status | How to get it |
-| --- | --- | --- |
-| Linux with Docker | Supported as a source deployment | Use `scripts/install.sh` |
-| macOS with Docker Desktop | Supported as a source deployment | Use `scripts/install.sh` |
-| Windows with Docker Desktop | Supported as a source deployment | Use `scripts/install.ps1` |
-| Browser | Open the self-hosted dashboard | Visit `http://localhost:3000` after startup |
-| Android APK | Not published | No APK build or signed release is configured yet |
-| Windows EXE / PEXE | Not published | No native executable release is configured yet |
-| Debian DEB | Not published | No DEB package or apt repository is configured yet |
-| Source archive | Available from GitHub | Use the repository's **Code → Download ZIP** menu |
-
-Do not install a file named APK, EXE, PEXE, or DEB from an unofficial mirror and assume it is an official HELLO OS build. A future release should include reproducible build instructions, supported architectures, versioned release notes, artifact checksums, and signing details. Until that work exists, the source deployment is the supported path.
-
-## Quick start with Docker Compose
-
-### Requirements
-
-Install Docker Engine and the Docker Compose plugin on Linux, Docker Desktop on macOS, or Docker Desktop on Windows. Verify that the `docker` command is available and that `docker compose version` succeeds. The app image uses Node.js 22 and Bun in its service containers, so you do not need to install those runtimes for the Compose path.
-
-### Start the application
-
-Clone the repo and launch the services:
+Requirements: Docker Engine with the Compose plugin.
 
 ```sh
-git clone https://github.com/CodesbyFebin/Hello-OS.git
-cd Hello-OS
 docker compose up --build
 ```
 
-The Compose configuration binds the web service and MCP service to localhost. Open [http://localhost:3000](http://localhost:3000) for the dashboard. The MCP endpoint is [http://localhost:3030/mcp](http://localhost:3030/mcp). The database is stored in the named `hello-data` volume and remains available after a container restart.
-
-Stop the containers with `Ctrl+C` if Compose is attached to the terminal, or use:
-
-```sh
-docker compose down
-```
-
-The command above preserves the named volume. To remove application data as well, Compose supports `docker compose down --volumes`; use that only when you intend to erase the HELLO OS database. Back up the volume before migrating, testing destructive operations, or upgrading a deployment that contains data you need.
-
-If the app is behind a reverse proxy or advertised at another URL, configure `HELLO_PUBLIC_URL` so the agent card can use the public address. Review `compose.yaml`, `.env.example`, and `Caddyfile` before exposing services beyond your machine. The default Compose ports bind to loopback and are not a public internet deployment recipe.
-
-## Run the web app from source
-
-The source mode is useful when developing the dashboard or API. It requires Node.js 20 or newer, npm, and Bun if you will run the separate MCP service. Some dependencies and lockfiles may target newer runtime versions; if your package manager reports an incompatible lockfile, use the documented Node and package-manager versions from the repository configuration.
+Open `http://localhost:3000`. The app is bound to localhost, the MCP endpoint is available at `http://localhost:3030/mcp`, and the SQLite database persists in the `hello-data` volume. Stop it with `docker compose down`; keep the volume to preserve data. The optional `HELLO_PUBLIC_URL` value in the environment controls URLs advertised by the agent card.
 
 ```sh
 npm install
@@ -495,13 +396,25 @@ There is currently no `LICENSE` file in the repository. Public visibility does n
 The default Compose bindings use localhost. Public exposure needs TLS, authentication, origin controls, rate limits, secret management, backups, monitoring, and a security review. The prototype is not a hardened internet-facing deployment.
 
 ### Where can I report an issue?
+Open `http://localhost:3000`. To load the included demo workspace, keep `db/custom.db` and set `DATABASE_URL="file:./db/custom.db"` in `.env`. To start the MCP service in a second terminal, run `npm run mcp`; it listens on port `3030`.
 
-Open an issue in [CodesbyFebin/Hello-OS](https://github.com/CodesbyFebin/Hello-OS/issues). Include a minimal reproduction and redacted diagnostics. Do not publish secrets, keys, or real user data.
+For a production build, run `npm run build` and then `npm start`. Set `DATABASE_URL` to the database used by the server process.
 
-## Suggested GitHub topics
+## What works in this prototype
 
-`github-pages` · `agentic-os` · `ai-agents` · `mcp` · `a2a-protocol` · `nextjs` · `typescript` · `prisma` · `sqlite` · `agent-memory` · `agent-identity` · `did-key` · `agent-economy` · `agent-protocol` · `ai-infrastructure` · `open-source` · `docker-compose` · `agent-tools` · `llm` · `self-hosted`
+- Agent creation generates an Ed25519 key and `did:key`, and creates an initial soul version and wallet.
+- Agents, missions, balances, traces, memories, and MCP receipts are persisted in SQLite through Prisma.
+- Mission claims are written through the mission API.
+- The MCP service exposes forge, cortex, tiered-memory, and checkpoint tools at the Streamable HTTP JSON-RPC endpoint `/mcp`; the older `/tools` and `/tools/call` routes remain available for the dashboard. Tool calls produce audit receipts.
+- Agent discovery is available at `/.well-known/agent-card.json` (and the brief's `/.well-known/agent.json` alias). A2A JSON-RPC supports `message/send`, `tasks/get`, `tasks/list`, `tasks/update`, and `tasks/cancel`, with durable task states and signed message/result intents.
+- Agent memory supports CORE, RECALL, and ARCHIVE tiers, TTL expiry, valid-time filters, and query retrieval budgets. Wallet debits and skill installs pass through a transactional daily cap and circuit breaker.
+- `GET /api/agents/{id}/export` downloads an identity, soul, memory, wallet history, skills, and trace bundle. Private signing keys are excluded.
+- Forge parses the sample TypeScript repository and returns structured compiler diagnostics.
+- AML v1 statically parses and validates declarations at `/api/aml/compile` and `/api/aml/validate`, builds a deterministic intent graph and program hash, and reports clearly labeled lexical token estimates. AML source is never executed.
+- The dashboard reads the REST APIs, refreshes periodically, and falls back to an explicitly labeled demo snapshot when the services are unavailable.
+- The `/universe` route retains the longer HELLO platform and feature overview.
+- [HELLO Cloud architecture direction](docs/hello-cloud-architecture.md) maps the supplied seven-layer concept to implemented features and planned work; [HELLO EVOLVE](https://codesbyfebin.github.io/Hello-OS/hello-evolve/) is a browser simulation with synthetic demo data.
 
-## License and project status
+## Prototype boundaries
 
-No `LICENSE` file is currently present. The owner should add a license before the project invites reuse or redistribution. HELLO OS is an evolving prototype. Validate the source, runtime configuration, security assumptions, and integration contracts before using it with sensitive information or in production.
+This is a runnable local-first prototype, not a hardened production control plane. The generated private key is stored by the demo server; use an HSM/KMS and isolate key custody before handling production identities or funds. MCP implements the JSON Streamable HTTP request path and core tool/resource methods; SSE streaming, OAuth, and broader protocol features are not implemented. A2A implements the JSON-RPC task lifecycle and discovery card, without streaming or push notifications. AML is static validation only: it does not run flows, invoke tools, deploy code, call model providers, or spend funds. Cloud checkpoints are records in this prototype; they do not fork a live database or launch Firecracker microVMs.

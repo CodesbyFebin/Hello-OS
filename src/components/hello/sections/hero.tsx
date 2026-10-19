@@ -21,7 +21,7 @@ type Stats = {
 const PILLARS_HERO = [
   { icon: Fingerprint, label: "Identity & Soul", color: "soul", desc: "A soul, not a session ID" },
   { icon: BrainCircuit, label: "Memory & Cognition", color: "cognition", desc: "No amnesia. Continuity is default." },
-  { icon: Coins, label: "Native Economy", color: "economy", desc: "Agents own their wallets" },
+  { icon: Coins, label: "Native Economy", color: "economy", desc: "Capped prototype credits (concept)" },
   { icon: Dna, label: "Evolution", color: "evolution", desc: "Evals-as-Genome, skill grafting" },
   { icon: Users, label: "Society & Spaces", color: "society", desc: "Guilds, missions, observation decks" },
 ];

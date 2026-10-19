@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HELLO OS Evolution Lab | Persistent Agentic Optimization Runs</title>
+<meta name="description" content="Create deterministic HELLO OS evolution experiments, inspect synthetic proxy fitness, genetic optimization generations, saved candidate vectors, apprenticeship records, and curriculum data.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://codesbyfebin.github.io/Hello-OS/evolution-lab/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Evolution Lab | HELLO OS">
+<meta property="og:description" content="Persistent, reproducible proxy-optimization runs with inspectable generations, plus live HELLO OS agent and curriculum records.">
+<meta property="og:url" content="https://codesbyfebin.github.io/Hello-OS/evolution-lab/">
+<style>
+:root{color-scheme:dark;--bg:#080b12;--panel:#111827;--line:#263244;--text:#e8eef8;--muted:#a8b4c7;--accent:#82f0bd;--blue:#9ac5ff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.7 system-ui,sans-serif}
+main{max-width:880px;margin:auto;padding:36px 22px 72px}a{color:var(--blue);text-underline-offset:3px}
+.brand{color:var(--accent);font:800 13px ui-monospace,monospace;letter-spacing:.15em;text-decoration:none}
+.eyebrow{margin-top:72px;color:var(--accent);font:12px ui-monospace,monospace;letter-spacing:.18em;text-transform:uppercase}
+h1{font-size:clamp(2.5rem,7vw,4.8rem);line-height:1.03;letter-spacing:-.05em;margin:16px 0}
+h2{margin-top:48px;font-size:1.6rem;letter-spacing:-.03em}p,li{color:var(--muted)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;margin:22px 0}
+pre{overflow:auto;background:#05080d;border:1px solid var(--line);border-radius:8px;padding:16px;color:#d5ffe9}
+code{font-family:ui-monospace,monospace;color:#d5ffe9}
+.note{border-left:3px solid #22d3ee;padding:12px 16px;background:#0b1418}
+footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body><main>
+<a class="brand" href="../">HELLO OS</a>
+<p class="eyebrow">Seeded optimization · Persistent experiment dashboard</p>
+<h1>Evolution Lab</h1>
+<p>The HELLO OS Evolution Lab is a backend-connected experiment workspace. Create a seeded population, optimize candidate gene vectors against a named synthetic objective, evolve generations with selection, crossover, and bounded mutation, then inspect scores and snapshots persisted in SQLite through Prisma.</p>
+<div class="card note"><strong>Fitness boundary:</strong> Fitness is a deterministic mathematical proxy for a synthetic four-value gene vector (reasoning, coding, memory, collaboration). It is not an agent benchmark or evidence of improved capability. Runs do not train models, update weights, mutate live agents, or launch microVMs. The old uploaded mockup’s invented VM metrics and randomized logs are not used.</div>
+<h2>Run the lab locally</h2>
+<p>Start HELLO OS, apply the current Prisma schema to its configured SQLite database, then open <code>http://localhost:3000/evolution</code>. Applying the additive schema creates the run and generation tables needed by the optimizer.</p>
+<pre><code>git clone https://github.com/CodesbyFebin/Hello-OS.git
+cd Hello-OS
+npm install
+cp .env.example .env
+npm run db:push
+npm run dev</code></pre>
+<p>For Docker Compose, start the app as described in the repository README, then run <code>docker compose exec mcp bunx prisma db push</code> against the shared database before creating runs. Prisma schema pushes are non-destructive by default; review any warning before choosing a destructive option.</p>
+<h2>Create and evolve a run</h2>
+<ol>
+<li>Choose a run name and one objective: balanced, reasoning, coding, memory, or collaboration.</li>
+<li>Create a run. The API chooses and stores a random seed unless one is explicitly supplied.</li>
+<li>Step one generation at a time, or run to the generation limit. Pause and resume are persisted in the database.</li>
+<li>Inspect the saved best and average proxy scores, mutation count, parent IDs, and candidate gene vectors.</li>
+</ol>
+<p>Default UI runs use population 16, mutation rate 0.12, and a 12-generation limit. The API accepts populations from 8 to 64, mutation rates from 0 to 0.4, and limits from 1 to 100. Given the same starting seed and run parameters, the optimizer produces the same generations.</p>
+<h2>Backend API</h2>
+<ul>
+<li><code>GET /api/evolution/runs</code> lists recent persisted experiments and their latest generation summary.</li>
+<li><code>POST /api/evolution/runs</code> validates parameters, generates generation zero, and stores the run and population atomically.</li>
+<li><code>GET /api/evolution/runs/{id}</code> returns a run and its most recent generation snapshots.</li>
+<li><code>POST /api/evolution/runs/{id}/step</code> advances exactly one generation with deterministic selection, crossover, bounded mutations, and a compare-and-set update to prevent duplicate concurrent steps.</li>
+<li><code>PATCH /api/evolution/runs/{id}/status</code> accepts <code>{"action":"pause"}</code> or <code>{"action":"resume"}</code>.</li>
+<li><code>GET /api/stats</code>, <code>GET /api/evolution/apprenticeships</code>, and <code>GET /api/evolution/curriculum</code> continue to provide agent-workspace metrics and learning records.</li>
+</ul>
+<p>Each generation stores the full candidate population, champion, proxy score summaries, mutation count, and timestamp. Each run stores its parameters, seed, progress, current status, and best score. Database transactions keep a run step and its generation snapshot together. A listed curriculum node still does not prove an agent passed that skill.</p>
+<h2>What this optimizer does not do</h2>
+<ul>
+<li>It does not train or mutate model weights, prompts, tools, memories, or live agent records.</li>
+<li>It does not measure real agent behavior, run production tournaments, or prove capability improvement.</li>
+<li>It does not launch Firecracker microVMs or report VM utilization.</li>
+<li>It does not use random fitness per request; the score is deterministic for the stored gene vector and selected proxy objective.</li>
+</ul>
+<p>Use the <a href="https://github.com/CodesbyFebin/Hello-OS/tree/main/src/app/ecosystem">Ecosystem dashboard</a> for the broader API-backed workspace view. Check the current source for the exact API behavior and deployment configuration.</p>
+<h2>Implementation links</h2>
+<ul>
+<li><a href="https://github.com/CodesbyFebin/Hello-OS/tree/main/src/app/evolution">Evolution Lab UI source</a></li>
+<li><a href="https://github.com/CodesbyFebin/Hello-OS/tree/main/src/app/api/evolution">Evolution API routes</a></li>
+<li><a href="https://github.com/CodesbyFebin/Hello-OS/blob/main/README.md">README and local setup</a></li>
+<li><a href="../agent-guide/">Agent Guide</a></li>
+</ul>
+<footer><p><a href="../">HELLO OS project guide</a> · <a href="https://github.com/CodesbyFebin/Hello-OS">Source repository</a></p></footer>
+</main></body></html>

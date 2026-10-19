@@ -26,6 +26,8 @@ test("compiles nested declarations into a deterministic, non-executable graph", 
   assert.ok(first.graph.length >= 3);
   assert.equal(first.sourceSha256, second.sourceSha256);
   assert.equal(first.graphSha256, second.graphSha256);
+  assert.equal(first.tokenMetrics.amlTokens, first.lexicalTokenCount);
+  assert.deepEqual(first.tokenMetrics, second.tokenMetrics);
 });
 
 test("collects capability requirements and operation graph", () => {
@@ -39,6 +41,18 @@ test("collects capability requirements and operation graph", () => {
   assert.equal(result.ok, true);
   assert.deepEqual(result.requiredCapabilities, ["build", "deploy"]);
   assert.ok(result.graph.some((node) => node.operation === "build"));
+});
+
+test("reports capability calls that are missing from requires", () => {
+  const result = compileAml(`capability app {
+    requires: [build]
+    flow {
+      build($spec) → $artifact
+      deploy($artifact) → $receipt
+    }
+  }`);
+  assert.equal(result.ok, false);
+  assert.ok(result.diagnostics.some((diagnostic) => diagnostic.code === "AML014" && diagnostic.message.includes("deploy")));
 });
 
 test("accepts static model routing and bridge declarations without executing them", () => {

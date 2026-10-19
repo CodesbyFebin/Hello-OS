@@ -1,0 +1,1587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HELLO EVOLVE · Agent Evolution Simulation</title>
+<meta name="description" content="Explore HELLO EVOLVE, a browser-based agent evolution simulation. All populations, scores, feeds, memory records, and VM-style metrics are synthetic demo data.">
+<meta property="og:title" content="HELLO EVOLVE · Agent Evolution Simulation">
+<meta property="og:description" content="An interactive browser simulation. Synthetic demo data only; no live agents, database, model training, or virtual machines are connected.">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          void: '#05060a',
+          abyss: '#0a0b14',
+          panel: '#0f1019',
+          edge: '#1a1c28',
+          agent: { 300: '#33ffbb', 400: '#00ff9d', 500: '#00d985' },
+          soul: { 300: '#b49cff', 400: '#9775fa', 500: '#7c3aed' },
+          cortex: { 300: '#67e8f9', 400: '#22d3ee', 500: '#06b6d4' },
+          ember: { 400: '#fbbf24', 500: '#f59e0b' },
+          blood: { 400: '#f87171', 500: '#ef4444' },
+          rose: { 400: '#fb7185', 500: '#f43f5e' },
+        },
+        fontFamily: {
+          mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+          sans: ['"Inter"', 'system-ui', 'sans-serif'],
+        }
+      }
+    }
+  };
+</script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/jetbrains-mono@latest/latin-400-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/jetbrains-mono@latest/latin-500-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/jetbrains-mono@latest/latin-700-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-500-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-600-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-700-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-800-normal.css">
+
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+  * { -webkit-font-smoothing: antialiased; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: #05060a;
+    color: #d1d5db;
+    font-family: 'Inter', system-ui, sans-serif;
+    overflow-x: hidden;
+  }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #05060a; }
+  ::-webkit-scrollbar-thumb { background: #1a1c28; border-radius: 3px; }
+
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(0, 255, 157, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 255, 157, 0.03) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  .pulse-dot { position: relative; }
+  .pulse-dot::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.4;
+    animation: pulse-ring 2s ease-out infinite;
+  }
+  @keyframes pulse-ring {
+    0% { transform: scale(0.8); opacity: 0.6; }
+    100% { transform: scale(2.2); opacity: 0; }
+  }
+
+  .card {
+    background: linear-gradient(135deg, rgba(15, 16, 25, 0.9), rgba(10, 11, 20, 0.9));
+    border: 1px solid #1a1c28;
+    transition: all 0.25s;
+  }
+  .card:hover { border-color: rgba(0, 255, 157, 0.3); }
+
+  .terminal {
+    background: linear-gradient(180deg, #0a0b14 0%, #05060a 100%);
+    border: 1px solid #1a1c28;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .terminal-header {
+    background: #0f1019;
+    border-bottom: 1px solid #1a1c28;
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #00ff9d 0%, #9775fa 50%, #22d3ee 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-glow-agent { text-shadow: 0 0 20px rgba(0, 255, 157, 0.6); }
+
+  .log-line { animation: logIn 0.3s ease-out; }
+  @keyframes logIn {
+    from { opacity: 0; transform: translateX(-8px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .stat-num {
+    font-variant-numeric: tabular-nums;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Evolution chamber */
+  .evo-chamber {
+    position: relative;
+    background: radial-gradient(ellipse at center, rgba(0, 255, 157, 0.03) 0%, transparent 70%);
+  }
+
+  .agent-particle {
+    position: absolute;
+    border-radius: 50%;
+    transition: all 0.5s ease-out;
+    cursor: pointer;
+  }
+  .agent-particle:hover {
+    transform: scale(1.5);
+    z-index: 10;
+  }
+  .agent-particle.elite {
+    box-shadow: 0 0 20px currentColor;
+  }
+
+  /* Genome helix */
+  .gene-block {
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .gene-block:hover {
+    transform: scaleY(1.2);
+    filter: brightness(1.3);
+  }
+
+  /* Tournament bracket */
+  .bracket-match {
+    border: 1px solid #1a1c28;
+    transition: all 0.3s;
+  }
+  .bracket-match:hover {
+    border-color: #00ff9d;
+  }
+  .bracket-match.winner {
+    border-color: #00ff9d;
+    background: rgba(0, 255, 157, 0.05);
+  }
+
+  /* VM monitor */
+  .vm-card {
+    position: relative;
+    overflow: hidden;
+  }
+  .vm-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--vm-color, #00ff9d), transparent);
+    animation: vmScan 3s linear infinite;
+  }
+  @keyframes vmScan {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  /* Memory graph node */
+  .mem-node {
+    transition: all 0.3s;
+  }
+  .mem-node:hover {
+    transform: scale(1.2);
+  }
+
+  /* Chart */
+  .chart-line {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: drawLine 2s ease-out forwards;
+  }
+  @keyframes drawLine {
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* Generation counter */
+  .gen-counter {
+    font-variant-numeric: tabular-nums;
+    transition: all 0.3s;
+  }
+
+  /* Fitness bar */
+  .fitness-bar {
+    transition: width 1s ease-out;
+  }
+
+  /* Mutation flash */
+  .mutation-flash {
+    animation: mutFlash 0.6s ease-out;
+  }
+  @keyframes mutFlash {
+    0%, 100% { background: transparent; }
+    50% { background: rgba(151, 117, 250, 0.2); }
+  }
+
+  /* DB query */
+  .db-row {
+    transition: all 0.2s;
+  }
+  .db-row:hover {
+    background: rgba(0, 255, 157, 0.03);
+  }
+
+  .noise {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.02;
+    z-index: 100;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .simulation-banner { min-height: 38px; }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+  }
+</style>
+</head>
+<body class="relative">
+
+<div role="note" aria-label="Simulation disclosure" class="simulation-banner fixed inset-x-0 top-0 z-[60] border-b border-amber-300/50 bg-amber-300 px-4 py-2 text-slate-950 shadow-lg">
+  <div class="mx-auto flex max-w-[1600px] flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] sm:text-xs">
+    <strong class="rounded bg-slate-950 px-2 py-1 text-amber-200 tracking-wider">SIMULATION · DEMO DATA</strong>
+    <span>All agents, matches, scores, timelines, feeds, memory records, and VM-style metrics are generated in this browser. No live service, real database, model training, or microVM is connected.</span>
+  </div>
+</div>
+
+<div class="noise"></div>
+
+<!-- Top Status Bar -->
+<div class="fixed top-[38px] left-0 right-0 z-40 border-b border-edge bg-void/90 backdrop-blur-md">
+  <div class="flex items-center justify-between px-4 h-10 font-mono text-xs">
+    <div class="flex items-center gap-4">
+      <span class="flex items-center gap-1.5 text-agent-400">
+        <span class="w-1.5 h-1.5 rounded-full bg-agent-400 pulse-dot"></span>
+        HELLO://EVOLVE
+      </span>
+      <span class="hidden md:flex items-center gap-1.5 text-gray-500">
+        <span>GEN</span>
+        <span class="text-agent-400 font-bold" id="genCounter">0</span>
+        <span class="text-gray-700">·</span>
+        <span>POP</span>
+        <span class="text-soul-400 font-bold" id="popCounter">0</span>
+        <span class="text-gray-700">·</span>
+        <span>SIM BEST</span>
+        <span class="text-ember-400 font-bold" id="bestFitness">0.00</span>
+      </span>
+    </div>
+    <div class="flex items-center gap-4 text-gray-500">
+      <span class="hidden sm:flex items-center gap-1.5">
+        <i data-lucide="cpu" class="w-3 h-3 text-cortex-400"></i>
+        <span id="vmCount">0</span> VMs
+      </span>
+      <span class="hidden sm:flex items-center gap-1.5">
+        <i data-lucide="database" class="w-3 h-3 text-soul-400"></i>
+        <span id="dbSize">0</span> facts
+      </span>
+      <span id="clock" class="text-agent-300">00:00:00Z</span>
+    </div>
+  </div>
+</div>
+
+<!-- Nav -->
+<nav class="fixed top-[78px] left-0 right-0 z-30 border-b border-edge bg-abyss/95 backdrop-blur-xl">
+  <div class="max-w-[1600px] mx-auto px-4 h-14 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="relative w-8 h-8 flex items-center justify-center">
+        <div class="absolute inset-0 bg-agent-400/20 rounded-md blur-md"></div>
+        <div class="relative w-8 h-8 border border-agent-400 rounded-md flex items-center justify-center bg-void">
+          <span class="font-mono font-bold text-agent-400 text-sm">∞</span>
+        </div>
+      </div>
+      <div>
+        <div class="font-mono font-bold text-white text-sm tracking-widest">HELLO EVOLVE</div>
+        <div class="font-mono text-[10px] text-gray-500 -mt-0.5">AGENT EVOLUTION LABORATORY</div>
+      </div>
+    </div>
+
+    <div class="hidden lg:flex items-center gap-1 font-mono text-xs">
+      <a href="#chamber" class="px-3 py-1.5 text-gray-400 hover:text-agent-400 transition">chamber</a>
+      <a href="#genome" class="px-3 py-1.5 text-gray-400 hover:text-agent-400 transition">genome</a>
+      <a href="#arena" class="px-3 py-1.5 text-gray-400 hover:text-agent-400 transition">arena</a>
+      <a href="#database" class="px-3 py-1.5 text-gray-400 hover:text-agent-400 transition">database</a>
+      <a href="#vms" class="px-3 py-1.5 text-gray-400 hover:text-agent-400 transition">vms</a>
+      <a href="#timeline" class="px-3 py-1.5 text-gray-400 hover:text-agent-400 transition">timeline</a>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <button id="evolveBtn" class="font-mono text-xs px-4 py-1.5 border border-agent-400/40 text-agent-400 rounded hover:bg-agent-400/10 transition flex items-center gap-2">
+        <span class="w-1.5 h-1.5 rounded-full bg-agent-400 pulse-dot"></span>
+        <span id="evolveBtnText">START EVOLUTION</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="relative min-h-[70vh] flex items-center justify-center pt-40 pb-12 px-4 overflow-hidden">
+  <div class="absolute inset-0 grid-bg opacity-40"></div>
+  <div class="absolute top-1/3 left-1/4 w-96 h-96 bg-soul-500/10 rounded-full blur-3xl"></div>
+  <div class="absolute bottom-1/3 right-1/4 w-96 h-96 bg-agent-400/10 rounded-full blur-3xl"></div>
+
+  <div class="relative max-w-5xl mx-auto text-center z-10">
+    <div class="inline-flex items-center gap-2 font-mono text-xs text-gray-500 mb-6 px-4 py-2 border border-edge rounded-full bg-panel/50 backdrop-blur">
+      <span class="w-1.5 h-1.5 rounded-full bg-agent-400 pulse-dot"></span>
+      <span>Agent Memory Concept · Sandbox Concept · Evolution Simulation</span>
+    </div>
+
+    <h1 class="font-mono font-bold text-5xl md:text-7xl tracking-tighter mb-6">
+      <span class="gradient-text">Agents don't get built.</span>
+      <br>
+      <span class="text-white">They <span class="text-agent-400 text-glow-agent">evolve</span>.</span>
+    </h1>
+
+    <p class="text-base md:text-lg text-gray-400 max-w-3xl mx-auto leading-relaxed mb-8">
+      HELLO EVOLVE is an <span class="text-agent-400">interactive browser simulation</span> of synthetic agents and genetic optimization.
+      Its scores, match outcomes, memory records, and activity are generated demo data.
+      The page does not connect to a real database, train models, change agent behavior, or start virtual machines.
+    </p>
+
+    <div class="flex flex-wrap items-center justify-center gap-3">
+      <a href="#chamber" class="px-6 py-3 rounded-lg bg-agent-400/10 border border-agent-400/40 text-agent-400 font-mono text-sm hover:bg-agent-400/20 transition flex items-center gap-2">
+        <i data-lucide="play" class="w-4 h-4"></i>
+        Watch Evolution
+      </a>
+      <a href="https://github.com/CodesbyFebin/Hello-OS/stargazers" class="px-6 py-3 rounded-lg bg-white/5 border border-edge text-gray-300 font-mono text-sm hover:border-white/30 transition flex items-center gap-2">
+        <i data-lucide="github" class="w-4 h-4"></i>
+        Star on GitHub
+      </a>
+      <a href="https://github.com/CodesbyFebin/Hello-OS/tree/main/docs" class="px-6 py-3 rounded-lg bg-white/5 border border-edge text-gray-300 font-mono text-sm hover:border-white/30 transition flex items-center gap-2">
+        <i data-lucide="book" class="w-4 h-4"></i>
+        Read Docs
+      </a>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-12 max-w-4xl mx-auto">
+      <div class="card rounded-lg p-4 text-left">
+        <div class="font-mono text-[10px] text-agent-400 tracking-widest mb-1">SIMULATED GENERATIONS</div>
+        <div class="stat-num text-2xl text-white font-bold" id="heroGen">0</div>
+        <div class="font-mono text-[10px] text-gray-500">and counting</div>
+      </div>
+      <div class="card rounded-lg p-4 text-left">
+        <div class="font-mono text-[10px] text-soul-400 tracking-widest mb-1">DEMO AGENTS</div>
+        <div class="stat-num text-2xl text-white font-bold" id="heroSpecies">0</div>
+        <div class="font-mono text-[10px] text-gray-500">unique genomes</div>
+      </div>
+      <div class="card rounded-lg p-4 text-left">
+        <div class="font-mono text-[10px] text-cortex-400 tracking-widest mb-1">DEMO MEMORY</div>
+        <div class="stat-num text-2xl text-white font-bold" id="heroMem">0</div>
+        <div class="font-mono text-[10px] text-gray-500">temporal facts</div>
+      </div>
+      <div class="card rounded-lg p-4 text-left">
+        <div class="font-mono text-[10px] text-ember-400 tracking-widest mb-1">FITNESS Δ</div>
+        <div class="stat-num text-2xl text-white font-bold" id="heroDelta">+0%</div>
+        <div class="font-mono text-[10px] text-gray-500">since gen 0</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EVOLUTION CHAMBER -->
+<section id="chamber" class="relative py-20 px-4 border-t border-edge">
+  <div class="max-w-[1600px] mx-auto">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="font-mono text-xs text-agent-400 tracking-widest">§ 01</span>
+      <div class="h-px flex-1 bg-gradient-to-r from-agent-400/40 to-transparent"></div>
+    </div>
+
+    <h2 class="font-mono text-3xl md:text-4xl font-bold text-white mb-2 tracking-tight">
+      The Evolution <span class="text-agent-400 text-glow-agent">Chamber</span>
+    </h2>
+    <p class="text-gray-400 mb-8">Each dot is a generated demo agent. Color shows its synthetic genome; size shows its proxy score. This is a local simulation.</p>
+
+    <div class="grid lg:grid-cols-3 gap-4">
+      <!-- Chamber visualization -->
+      <div class="lg:col-span-2 card rounded-xl p-5">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-agent-400 pulse-dot"></span>
+            <span class="font-mono text-xs text-white font-bold">POPULATION · GEN <span id="chamberGen">0</span></span>
+          </div>
+          <div class="flex items-center gap-3 font-mono text-[10px]">
+            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-agent-400"></span><span class="text-gray-500">elite</span></span>
+            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-soul-400"></span><span class="text-gray-500">fit</span></span>
+            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-gray-600"></span><span class="text-gray-500">weak</span></span>
+          </div>
+        </div>
+
+        <div id="evoChamber" class="evo-chamber rounded-lg border border-edge relative overflow-hidden" style="height: 480px;">
+          <div class="absolute inset-0 grid-bg opacity-20"></div>
+          <!-- Agents will be rendered here by JS -->
+        </div>
+
+        <div class="mt-4 grid grid-cols-4 gap-3">
+          <div class="text-center">
+            <div class="font-mono text-[10px] text-gray-500">ALIVE</div>
+            <div class="stat-num text-lg text-agent-400 font-bold" id="statAlive">0</div>
+          </div>
+          <div class="text-center">
+            <div class="font-mono text-[10px] text-gray-500">ELITE</div>
+            <div class="stat-num text-lg text-soul-400 font-bold" id="statElite">0</div>
+          </div>
+          <div class="text-center">
+            <div class="font-mono text-[10px] text-gray-500">AVG FITNESS</div>
+            <div class="stat-num text-lg text-ember-400 font-bold" id="statAvgFit">0.00</div>
+          </div>
+          <div class="text-center">
+            <div class="font-mono text-[10px] text-gray-500">MUTATIONS</div>
+            <div class="stat-num text-lg text-blood-400 font-bold" id="statMuts">0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fitness over time chart -->
+      <div class="card rounded-xl p-5">
+        <div class="flex items-center justify-between mb-4">
+          <span class="font-mono text-xs text-white font-bold">FITNESS OVER TIME</span>
+          <span class="font-mono text-[10px] text-gray-500">last 50 gen</span>
+        </div>
+
+        <svg id="fitnessChart" viewBox="0 0 300 200" class="w-full" style="height: 200px;">
+          <defs>
+            <linearGradient id="fitGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#00ff9d" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="#00ff9d" stop-opacity="0"/>
+            </linearGradient>
+            <linearGradient id="bestGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <!-- Grid -->
+          <line x1="0" y1="50" x2="300" y2="50" stroke="#1a1c28" stroke-width="0.5"/>
+          <line x1="0" y1="100" x2="300" y2="100" stroke="#1a1c28" stroke-width="0.5"/>
+          <line x1="0" y1="150" x2="300" y2="150" stroke="#1a1c28" stroke-width="0.5"/>
+          <!-- Areas and lines will be drawn by JS -->
+          <path id="bestArea" fill="url(#bestGrad)" d=""/>
+          <path id="avgArea" fill="url(#fitGrad)" d=""/>
+          <path id="bestLine" fill="none" stroke="#fbbf24" stroke-width="1.5" d=""/>
+          <path id="avgLine" fill="none" stroke="#00ff9d" stroke-width="1.5" d=""/>
+        </svg>
+
+        <div class="mt-4 flex items-center justify-between font-mono text-[10px]">
+          <span class="flex items-center gap-1.5"><span class="w-3 h-0.5 bg-ember-400"></span><span class="text-gray-500">best</span></span>
+          <span class="flex items-center gap-1.5"><span class="w-3 h-0.5 bg-agent-400"></span><span class="text-gray-500">avg</span></span>
+        </div>
+
+        <!-- Generation log -->
+        <div class="mt-4 pt-4 border-t border-edge">
+          <div class="font-mono text-[10px] text-gray-500 mb-2">RECENT GENERATIONS</div>
+          <div id="genLog" class="space-y-1 font-mono text-[10px] max-h-[160px] overflow-y-auto">
+            <!-- filled by JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GENOME VIEWER -->
+<section id="genome" class="relative py-20 px-4 border-t border-edge">
+  <div class="max-w-[1600px] mx-auto">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="font-mono text-xs text-soul-400 tracking-widest">§ 02</span>
+      <div class="h-px flex-1 bg-gradient-to-r from-soul-400/40 to-transparent"></div>
+    </div>
+
+    <h2 class="font-mono text-3xl md:text-4xl font-bold text-white mb-2 tracking-tight">
+      Genome <span class="text-soul-400">Viewer</span>
+    </h2>
+    <p class="text-gray-400 mb-8">Every agent has a genome — a vector of capabilities. Click an agent in the chamber to inspect.</p>
+
+    <div class="grid lg:grid-cols-3 gap-4">
+      <!-- Selected agent -->
+      <div class="card rounded-xl p-5">
+        <div class="flex items-center gap-3 mb-4">
+          <div id="selectedAgentOrb" class="w-12 h-12 rounded-full bg-agent-400/20 border-2 border-agent-400 flex items-center justify-center">
+            <i data-lucide="bot" class="w-5 h-5 text-agent-400"></i>
+          </div>
+          <div>
+            <div class="font-mono text-sm text-white font-bold" id="selectedName">agent-0000</div>
+            <div class="font-mono text-[10px] text-gray-500" id="selectedGen">generation 0 · alive</div>
+          </div>
+        </div>
+
+        <div class="space-y-2 font-mono text-xs">
+          <div class="flex justify-between"><span class="text-gray-500">fitness</span><span class="text-agent-400 font-bold" id="selectedFit">0.00</span></div>
+          <div class="flex justify-between"><span class="text-gray-500">rank</span><span class="text-white" id="selectedRank">#0</span></div>
+          <div class="flex justify-between"><span class="text-gray-500">parent</span><span class="text-soul-400" id="selectedParent">none</span></div>
+          <div class="flex justify-between"><span class="text-gray-500">mutations</span><span class="text-blood-400" id="selectedMuts">0</span></div>
+          <div class="flex justify-between"><span class="text-gray-500">offspring</span><span class="text-white" id="selectedOff">0</span></div>
+          <div class="flex justify-between"><span class="text-gray-500">lifespan</span><span class="text-gray-400" id="selectedLife">0 gen</span></div>
+        </div>
+
+        <div class="mt-4 pt-4 border-t border-edge">
+          <div class="font-mono text-[10px] text-gray-500 mb-2">TOURNAMENT RECORD</div>
+          <div class="grid grid-cols-3 gap-2 text-center font-mono text-[10px]">
+            <div><div class="text-agent-400 font-bold" id="selectedWins">0</div><div class="text-gray-600">wins</div></div>
+            <div><div class="text-blood-400 font-bold" id="selectedLoss">0</div><div class="text-gray-600">losses</div></div>
+            <div><div class="text-ember-400 font-bold" id="selectedWR">0%</div><div class="text-gray-600">win rate</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Genome visualization -->
+      <div class="lg:col-span-2 card rounded-xl p-5">
+        <div class="flex items-center justify-between mb-4">
+          <span class="font-mono text-xs text-white font-bold">GENOME · 32 GENES</span>
+          <span class="font-mono text-[10px] text-gray-500">click gene to mutate</span>
+        </div>
+
+        <div id="genomeViz" class="grid grid-cols-8 gap-1 mb-4">
+          <!-- Genes rendered by JS -->
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4 pt-4 border-t border-edge">
+          <div>
+            <div class="font-mono text-[10px] text-gray-500 mb-1">REASONING</div>
+            <div class="h-1.5 bg-edge rounded-full overflow-hidden">
+              <div id="geneReasoning" class="h-full bg-soul-400 fitness-bar" style="width: 50%;"></div>
+            </div>
+            <div class="font-mono text-[10px] text-soul-300 mt-1" id="geneReasoningVal">0.50</div>
+          </div>
+          <div>
+            <div class="font-mono text-[10px] text-gray-500 mb-1">CODE GEN</div>
+            <div class="h-1.5 bg-edge rounded-full overflow-hidden">
+              <div id="geneCode" class="h-full bg-agent-400 fitness-bar" style="width: 50%;"></div>
+            </div>
+            <div class="font-mono text-[10px] text-agent-300 mt-1" id="geneCodeVal">0.50</div>
+          </div>
+          <div>
+            <div class="font-mono text-[10px] text-gray-500 mb-1">MEMORY</div>
+            <div class="h-1.5 bg-edge rounded-full overflow-hidden">
+              <div id="geneMemory" class="h-full bg-cortex-400 fitness-bar" style="width: 50%;"></div>
+            </div>
+            <div class="font-mono text-[10px] text-cortex-300 mt-1" id="geneMemoryVal">0.50</div>
+          </div>
+          <div>
+            <div class="font-mono text-[10px] text-gray-500 mb-1">SOCIAL</div>
+            <div class="h-1.5 bg-edge rounded-full overflow-hidden">
+              <div id="geneSocial" class="h-full bg-ember-400 fitness-bar" style="width: 50%;"></div>
+            </div>
+            <div class="font-mono text-[10px] text-ember-300 mt-1" id="geneSocialVal">0.50</div>
+          </div>
+        </div>
+
+        <!-- Gene legend -->
+        <div class="mt-4 pt-4 border-t border-edge">
+          <div class="font-mono text-[10px] text-gray-500 mb-2">GENE CATEGORIES</div>
+          <div class="flex flex-wrap gap-2">
+            <span class="badge bg-soul-500/10 text-soul-300 border border-soul-500/20">reasoning (8)</span>
+            <span class="badge bg-agent-400/10 text-agent-300 border border-agent-400/20">code (8)</span>
+            <span class="badge bg-cortex-500/10 text-cortex-300 border border-cortex-500/20">memory (8)</span>
+            <span class="badge bg-ember-500/10 text-ember-300 border border-ember-500/20">social (8)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TOURNAMENT ARENA -->
+<section id="arena" class="relative py-20 px-4 border-t border-edge">
+  <div class="max-w-[1600px] mx-auto">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="font-mono text-xs text-blood-400 tracking-widest">§ 03</span>
+      <div class="h-px flex-1 bg-gradient-to-r from-blood-400/40 to-transparent"></div>
+    </div>
+
+    <h2 class="font-mono text-3xl md:text-4xl font-bold text-white mb-2 tracking-tight">
+      Tournament <span class="text-blood-400">Arena</span>
+    </h2>
+    <p class="text-gray-400 mb-8">Agents compete in head-to-head battles. Winners reproduce. Losers get archived. The gene pool sharpens.</p>
+
+    <div class="grid lg:grid-cols-3 gap-4">
+      <!-- Simulated match -->
+      <div class="lg:col-span-2 card rounded-xl p-5">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-blood-400 pulse-dot"></span>
+            <span class="font-mono text-xs text-white font-bold">SIMULATED MATCH · ROUND <span id="matchRound">0</span></span>
+          </div>
+          <span class="font-mono text-[10px] text-gray-500" id="matchTask">task: optimize_query</span>
+        </div>
+
+        <!-- Match display -->
+        <div class="grid grid-cols-3 gap-4 items-center">
+          <!-- Agent A -->
+          <div id="matchA" class="card rounded-lg p-4 text-center">
+            <div class="w-12 h-12 rounded-full bg-agent-400/20 border-2 border-agent-400 mx-auto mb-2 flex items-center justify-center">
+              <i data-lucide="bot" class="w-5 h-5 text-agent-400"></i>
+            </div>
+            <div class="font-mono text-xs text-white font-bold" id="matchAName">agent-0000</div>
+            <div class="font-mono text-[10px] text-gray-500" id="matchAFit">fitness: 0.00</div>
+            <div class="mt-2 h-1.5 bg-edge rounded-full overflow-hidden">
+              <div id="matchABar" class="h-full bg-agent-400 fitness-bar" style="width: 0%;"></div>
+            </div>
+            <div class="font-mono text-[10px] text-agent-400 mt-1" id="matchAScore">0</div>
+          </div>
+
+          <!-- VS -->
+          <div class="text-center">
+            <div class="font-mono text-2xl text-blood-400 font-bold">VS</div>
+            <div class="font-mono text-[10px] text-gray-500 mt-2" id="matchTimer">00:00</div>
+          </div>
+
+          <!-- Agent B -->
+          <div id="matchB" class="card rounded-lg p-4 text-center">
+            <div class="w-12 h-12 rounded-full bg-soul-400/20 border-2 border-soul-400 mx-auto mb-2 flex items-center justify-center">
+              <i data-lucide="bot" class="w-5 h-5 text-soul-400"></i>
+            </div>
+            <div class="font-mono text-xs text-white font-bold" id="matchBName">agent-0000</div>
+            <div class="font-mono text-[10px] text-gray-500" id="matchBFit">fitness: 0.00</div>
+            <div class="mt-2 h-1.5 bg-edge rounded-full overflow-hidden">
+              <div id="matchBBar" class="h-full bg-soul-400 fitness-bar" style="width: 0%;"></div>
+            </div>
+            <div class="font-mono text-[10px] text-soul-400 mt-1" id="matchBScore">0</div>
+          </div>
+        </div>
+
+        <!-- Match log -->
+        <div class="mt-4 pt-4 border-t border-edge">
+          <div class="font-mono text-[10px] text-gray-500 mb-2">MATCH LOG</div>
+          <div id="matchLog" class="terminal rounded p-2 h-32 overflow-y-auto font-mono text-[10px] space-y-0.5">
+            <div class="text-gray-600">awaiting match...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Leaderboard -->
+      <div class="card rounded-xl p-5">
+        <div class="flex items-center justify-between mb-4">
+          <span class="font-mono text-xs text-white font-bold">LEADERBOARD</span>
+          <span class="font-mono text-[10px] text-gray-500">top 10</span>
+        </div>
+
+        <div id="leaderboard" class="space-y-1.5">
+          <!-- filled by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DATABASE -->
+<section id="database" class="relative py-20 px-4 border-t border-edge">
+  <div class="max-w-[1600px] mx-auto">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="font-mono text-xs text-soul-400 tracking-widest">§ 04</span>
+      <div class="h-px flex-1 bg-gradient-to-r from-soul-400/40 to-transparent"></div>
+    </div>
+
+    <h2 class="font-mono text-3xl md:text-4xl font-bold text-white mb-2 tracking-tight">
+      Temporal <span class="text-soul-400">Database</span>
+    </h2>
+    <p class="text-gray-400 mb-8">This section displays generated facts held in this browser session. Refreshing the page clears the simulation; no persistent store is connected.</p>
+
+    <div class="grid lg:grid-cols-3 gap-4">
+      <!-- Query interface -->
+      <div class="card rounded-xl p-5">
+        <div class="flex items-center gap-2 mb-4">
+          <i data-lucide="search" class="w-4 h-4 text-soul-400"></i>
+          <span class="font-mono text-xs text-white font-bold">SIMULATED QUERY CONSOLE</span>
+        </div>
+
+        <div class="terminal rounded-lg overflow-hidden">
+          <div class="terminal-header px-3 py-2 flex items-center gap-2">
+            <div class="flex gap-1">
+              <div class="w-2 h-2 rounded-full bg-red-500/60"></div>
+              <div class="w-2 h-2 rounded-full bg-ember-400/60"></div>
+              <div class="w-2 h-2 rounded-full bg-agent-400/60"></div>
+            </div>
+            <span class="font-mono text-[10px] text-gray-500 ml-2">demo.memory</span>
+          </div>
+          <div id="dbQueryOutput" class="p-3 h-48 overflow-y-auto font-mono text-[10px]" aria-live="polite">
+            <div class="text-amber-300">SIMULATED DATA · BROWSER MEMORY ONLY</div>
+            <div class="mt-1 text-gray-500">No SQL engine or database connection. Commands filter this page's generated demo facts.</div>
+            <div class="mt-1 text-gray-500">Try: recent, dead_ends, mutations, champions</div>
+          </div>
+          <div class="border-t border-edge p-2">
+            <input id="dbQueryInput" type="text" class="w-full bg-transparent font-mono text-[11px] text-agent-400 outline-none" placeholder="demo.memory> " />
+          </div>
+        </div>
+
+        <div class="mt-4 grid grid-cols-2 gap-2">
+          <button class="db-query-btn px-2 py-1.5 font-mono text-[10px] border border-edge text-gray-400 rounded hover:text-soul-400 hover:border-soul-400/40 transition" data-query="recent">recent facts</button>
+          <button class="db-query-btn px-2 py-1.5 font-mono text-[10px] border border-edge text-gray-400 rounded hover:text-soul-400 hover:border-soul-400/40 transition" data-query="dead_ends">dead ends</button>
+          <button class="db-query-btn px-2 py-1.5 font-mono text-[10px] border border-edge text-gray-400 rounded hover:text-soul-400 hover:border-soul-400/40 transition" data-query="mutations">mutations</button>
+          <button class="db-query-btn px-2 py-1.5 font-mono text-[10px] border border-edge text-gray-400 rounded hover:text-soul-400 hover:border-soul-400/40 transition" data-query="champions">champions</button>
+        </div>
+      </div>
+
+      <!-- Facts table -->
+      <div class="lg:col-span-2 card rounded-xl p-5">
+        <div class="flex items-center justify-between mb-4">
+          <span class="font-mono text-xs text-white font-bold">SIMULATED MEMORY FACTS · <span id="factCount">0</span> IN SESSION</span>
+          <span class="font-mono text-[10px] text-gray-500">generated demo feed</span>
+        </div>
+
+        <div class="overflow-hidden rounded border border-edge">
+          <table class="w-full font-mono text-[11px]">
+            <thead>
+              <tr class="bg-panel border-b border-edge">
+                <th class="text-left px-3 py-2 text-gray-500 font-medium text-[10px]">TIME</th>
+                <th class="text-left px-3 py-2 text-gray-500 font-medium text-[10px]">AGENT</th>
+                <th class="text-left px-3 py-2 text-gray-500 font-medium text-[10px]">FACT</th>
+                <th class="text-left px-3 py-2 text-gray-500 font-medium text-[10px]">CONF</th>
+                <th class="text-left px-3 py-2 text-gray-500 font-medium text-[10px]">TYPE</th>
+              </tr>
+            </thead>
+            <tbody id="factsTable">
+              <!-- filled by JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="mt-4 grid grid-cols-3 gap-3 pt-4 border-t border-edge">
+          <div>
+            <div class="font-mono text-[10px] text-gray-500 mb-1">WRITE RATE</div>
+            <div class="stat-num text-lg text-soul-400 font-bold" id="writeRate">0</div>
+            <div class="font-mono text-[9px] text-gray-600">facts/sec</div>
+          </div>
+          <div>
+            <div class="font-mono text-[10px] text-gray-500 mb-1">QUERY LATENCY</div>
+            <div class="stat-num text-lg text-cortex-400 font-bold" id="queryLatency">0ms</div>
+            <div class="font-mono text-[9px] text-gray-600">p50</div>
+          </div>
+          <div>
+            <div class="font-mono text-[10px] text-gray-500 mb-1">STORAGE</div>
+            <div class="stat-num text-lg text-ember-400 font-bold" id="dbStorage">0MB</div>
+            <div class="font-mono text-[9px] text-gray-600">compressed</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Synthetic VM-style visualization; no virtual machines are launched -->
+<section id="vms" class="relative py-20 px-4 border-t border-edge">
+  <div class="max-w-[1600px] mx-auto">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="font-mono text-xs text-cortex-400 tracking-widest">§ 05</span>
+      <div class="h-px flex-1 bg-gradient-to-r from-cortex-400/40 to-transparent"></div>
+    </div>
+
+    <h2 class="font-mono text-3xl md:text-4xl font-bold text-white mb-2 tracking-tight">
+      Synthetic <span class="text-cortex-400">VM-style Metrics</span>
+    </h2>
+    <p class="text-gray-400 mb-8">Illustrative browser-generated utilization values only. No model is launched and no microVM, checkpoint, fork, or rollback is performed.</p>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-3" id="vmGrid">
+      <!-- VMs rendered by JS -->
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-4 mt-6">
+      <div class="card rounded-xl p-5">
+        <div class="font-mono text-[10px] text-cortex-400 tracking-widest mb-2">COLD START</div>
+        <div class="stat-num text-3xl text-white font-bold">50<span class="text-lg text-gray-500">ms</span></div>
+        <div class="font-mono text-[10px] text-gray-500 mt-1">SIMULATED · NO VM RUNNING</div>
+      </div>
+      <div class="card rounded-xl p-5">
+        <div class="font-mono text-[10px] text-cortex-400 tracking-widest mb-2">CHECKPOINT</div>
+        <div class="stat-num text-3xl text-white font-bold">12<span class="text-lg text-gray-500">ms</span></div>
+        <div class="font-mono text-[10px] text-gray-500 mt-1">copy-on-write snapshot</div>
+      </div>
+      <div class="card rounded-xl p-5">
+        <div class="font-mono text-[10px] text-cortex-400 tracking-widest mb-2">ROLLBACK</div>
+        <div class="stat-num text-3xl text-white font-bold">8<span class="text-lg text-gray-500">ms</span></div>
+        <div class="font-mono text-[10px] text-gray-500 mt-1">atomic state restore</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TIMELINE -->
+<section id="timeline" class="relative py-20 px-4 border-t border-edge">
+  <div class="max-w-[1600px] mx-auto">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="font-mono text-xs text-ember-400 tracking-widest">§ 06</span>
+      <div class="h-px flex-1 bg-gradient-to-r from-ember-400/40 to-transparent"></div>
+    </div>
+
+    <h2 class="font-mono text-3xl md:text-4xl font-bold text-white mb-2 tracking-tight">
+      Simulation <span class="text-ember-400">Timeline</span>
+    </h2>
+    <p class="text-gray-400 mb-8">Browse snapshots generated by this browser simulation. Previous and next move through the saved demo generations.</p>
+
+    <div class="card rounded-xl p-5">
+      <div class="flex items-center justify-between mb-4">
+        <span class="font-mono text-xs text-white font-bold">EVOLUTION HISTORY</span>
+        <div class="flex items-center gap-2 font-mono text-[10px]">
+          <button id="timelinePrev" class="px-2 py-1 border border-edge text-gray-400 rounded hover:text-white transition">← prev</button>
+          <span class="text-gray-500">gen <span id="timelineGen" class="text-ember-400">0</span></span>
+          <button id="timelineNext" class="px-2 py-1 border border-edge text-gray-400 rounded hover:text-white transition">next →</button>
+        </div>
+      </div>
+
+      <!-- Timeline visualization -->
+      <div class="relative h-32 bg-void/50 rounded border border-edge overflow-hidden">
+        <div id="timelineTrack" class="absolute inset-0 flex items-center">
+          <!-- Generations rendered by JS -->
+        </div>
+      </div>
+
+      <!-- Generation detail -->
+      <div class="grid md:grid-cols-4 gap-4 mt-4 pt-4 border-t border-edge">
+        <div>
+          <div class="font-mono text-[10px] text-gray-500 mb-1">POPULATION</div>
+          <div class="stat-num text-xl text-white font-bold" id="tlPop">0</div>
+        </div>
+        <div>
+          <div class="font-mono text-[10px] text-gray-500 mb-1">BEST FITNESS</div>
+          <div class="stat-num text-xl text-ember-400 font-bold" id="tlBest">0.00</div>
+        </div>
+        <div>
+          <div class="font-mono text-[10px] text-gray-500 mb-1">MUTATIONS</div>
+          <div class="stat-num text-xl text-blood-400 font-bold" id="tlMuts">0</div>
+        </div>
+        <div>
+          <div class="font-mono text-[10px] text-gray-500 mb-1">CHAMPION</div>
+          <div class="stat-num text-xl text-agent-400 font-bold truncate" id="tlChamp">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="border-t border-edge py-12 px-4 mt-12">
+  <div class="max-w-[1600px] mx-auto text-center">
+    <div class="inline-flex items-center gap-3 mb-4">
+      <div class="w-10 h-10 border border-agent-400 rounded-md flex items-center justify-center bg-void">
+        <span class="font-mono font-bold text-agent-400">∞</span>
+      </div>
+      <div class="text-left">
+        <div class="font-mono font-bold text-white tracking-widest">HELLO EVOLVE</div>
+        <div class="font-mono text-[10px] text-gray-500">AGENT EVOLUTION LABORATORY</div>
+      </div>
+    </div>
+    <p class="font-mono text-sm text-gray-400 max-w-3xl mx-auto mb-6 leading-relaxed">
+      Browser simulation for agent evolution. No agents or models are run here.<br>
+      <span class="text-agent-400">Synthetic proxy scores change each simulated generation; they do not measure real agent capability.</span>
+    </p>
+    <div class="flex flex-wrap items-center justify-center gap-4 font-mono text-xs mb-6">
+      <a href="https://github.com/CodesbyFebin/Hello-OS" class="text-gray-400 hover:text-agent-400 transition flex items-center gap-1.5">
+        <i data-lucide="github" class="w-3.5 h-3.5"></i> GitHub
+      </a>
+      <span class="text-gray-700">·</span>
+      <a href="https://github.com/CodesbyFebin/Hello-OS/tree/main/docs" class="text-gray-400 hover:text-agent-400 transition">Docs</a>
+      <span class="text-gray-700">·</span>
+      <a href="https://github.com/CodesbyFebin/Hello-OS/issues" class="text-gray-400 hover:text-agent-400 transition">Issues</a>
+    </div>
+    <div class="font-mono text-[10px] text-gray-600">
+      © 2026 HELLO EVOLVE · MIT License · <span class="text-agent-400">evolution never stops</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  lucide.createIcons();
+
+  // ============ CLOCK ============
+  function updateClock() {
+    const now = new Date();
+    const h = String(now.getUTCHours()).padStart(2, '0');
+    const m = String(now.getUTCMinutes()).padStart(2, '0');
+    const s = String(now.getUTCSeconds()).padStart(2, '0');
+    document.getElementById('clock').textContent = `${h}:${m}:${s}Z`;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // ============ EVOLUTION ENGINE ============
+  const GENE_COUNT = 32;
+  const INITIAL_POP = 64;
+  const ELITE_RATIO = 0.15;
+  const MUTATION_RATE = 0.08;
+  const TOURNAMENT_SIZE = 4;
+
+  let agents = [];
+  let generation = 0;
+  let totalMutations = 0;
+  let selectedAgent = null;
+  let isEvolving = false;
+  let evolutionInterval = null;
+  let fitnessHistory = [];
+  let facts = [];
+  let generationSnapshots = [];
+  let selectedTimelineIndex = -1;
+  let timelineFollowLatest = true;
+
+  const agentNames = ['alpha','beta','gamma','delta','epsilon','zeta','eta','theta','iota','kappa','lambda','mu','nu','xi','omicron','pi','rho','sigma','tau','upsilon','phi','chi','psi','omega'];
+  const tasks = ['optimize_query','synthesize_paper','audit_contract','detect_arb','generate_ui','debug_race','write_tests','refactor_auth'];
+
+  // Create agent
+  function createAgent(parent = null, gen = 0) {
+    const genome = [];
+    if (parent) {
+      // Inherit with mutation
+      for (let i = 0; i < GENE_COUNT; i++) {
+        let gene = parent.genome[i];
+        if (Math.random() < MUTATION_RATE) {
+          gene = Math.max(0, Math.min(1, gene + (Math.random() - 0.5) * 0.3));
+          totalMutations++;
+        }
+        genome.push(gene);
+      }
+    } else {
+      // Random genome
+      for (let i = 0; i < GENE_COUNT; i++) {
+        genome.push(Math.random());
+      }
+    }
+
+    const id = 'agent-' + String(agents.length).padStart(4, '0');
+    const species = agentNames[Math.floor(Math.random() * agentNames.length)];
+
+    return {
+      id,
+      species,
+      genome,
+      fitness: 0,
+      generation: gen,
+      parent: parent ? parent.id : null,
+      mutations: parent ? parent.mutations + (genome.filter((g, i) => parent && Math.abs(g - parent.genome[i]) > 0.01).length) : 0,
+      offspring: 0,
+      wins: 0,
+      losses: 0,
+      born: gen,
+      alive: true,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      vx: (Math.random() - 0.5) * 0.5,
+      vy: (Math.random() - 0.5) * 0.5,
+    };
+  }
+
+  // Calculate fitness
+  function calculateFitness(agent) {
+    // Fitness is a weighted sum of genes with some non-linearity
+    let fitness = 0;
+    const weights = [
+      1.5, 1.2, 1.0, 0.8, 0.9, 1.1, 0.7, 1.3, // reasoning (high weight)
+      1.0, 1.4, 0.9, 1.1, 1.2, 0.8, 1.3, 1.0, // code
+      1.3, 1.0, 1.2, 0.9, 1.1, 1.4, 0.8, 1.0, // memory
+      0.8, 1.0, 1.2, 1.1, 0.9, 1.3, 1.0, 1.2, // social
+    ];
+    for (let i = 0; i < GENE_COUNT; i++) {
+      fitness += agent.genome[i] * weights[i];
+    }
+    // Add non-linearity: synergy between related genes
+    for (let i = 0; i < 8; i++) {
+      fitness += agent.genome[i] * agent.genome[i + 8] * 0.3; // reasoning × code synergy
+      fitness += agent.genome[i + 16] * agent.genome[i + 24] * 0.2; // memory × social synergy
+    }
+    return Math.min(1, fitness / 25);
+  }
+
+  // Tournament selection
+  function tournament() {
+    const alive = agents.filter(a => a.alive);
+    if (alive.length < TOURNAMENT_SIZE) return null;
+
+    const contestants = [];
+    for (let i = 0; i < TOURNAMENT_SIZE; i++) {
+      contestants.push(alive[Math.floor(Math.random() * alive.length)]);
+    }
+
+    // Sort by fitness
+    contestants.sort((a, b) => b.fitness - a.fitness);
+    const winner = contestants[0];
+    const loser = contestants[contestants.length - 1];
+
+    winner.wins++;
+    loser.losses++;
+
+    return { winner, loser, contestants };
+  }
+
+  // Run one generation
+  function runGeneration() {
+    generation++;
+
+    // Calculate fitness for all
+    agents.forEach(a => {
+      if (a.alive) a.fitness = calculateFitness(a);
+    });
+
+    // Run tournaments
+    const tournamentCount = Math.floor(agents.filter(a => a.alive).length / 2);
+    for (let i = 0; i < tournamentCount; i++) {
+      const result = tournament();
+      if (result) {
+        logMatch(result);
+      }
+    }
+
+    // Select elites
+    const alive = agents.filter(a => a.alive).sort((a, b) => b.fitness - a.fitness);
+    const eliteCount = Math.floor(alive.length * ELITE_RATIO);
+    const elites = alive.slice(0, eliteCount);
+
+    // Kill weakest
+    const killCount = Math.floor(alive.length * 0.3);
+    for (let i = 0; i < killCount; i++) {
+      const weakest = alive[alive.length - 1 - i];
+      weakest.alive = false;
+      storeFact(weakest, 'death', `agent ${weakest.id} archived (fitness: ${weakest.fitness.toFixed(2)})`);
+    }
+
+    // Reproduce from elites
+    const newAgents = [];
+    for (let i = 0; i < eliteCount * 2; i++) {
+      const parent = elites[Math.floor(Math.random() * elites.length)];
+      const child = createAgent(parent, generation);
+      child.fitness = calculateFitness(child);
+      parent.offspring++;
+      newAgents.push(child);
+      storeFact(child, 'birth', `agent ${child.id} born from ${parent.id} (${child.mutations} mutations)`);
+    }
+
+    agents = agents.filter(a => a.alive).concat(newAgents);
+
+    // Record snapshot
+    const avgFit = alive.reduce((s, a) => s + a.fitness, 0) / alive.length;
+    const bestFit = alive[0].fitness;
+    fitnessHistory.push({ gen: generation, avg: avgFit, best: bestFit });
+    if (fitnessHistory.length > 50) fitnessHistory.shift();
+
+    generationSnapshots.push({
+      gen: generation,
+      pop: alive.length,
+      best: bestFit,
+      avg: avgFit,
+      mutations: totalMutations,
+      champ: alive[0].id,
+    });
+    if (generationSnapshots.length > 100) {
+      generationSnapshots.shift();
+      selectedTimelineIndex = Math.max(-1, selectedTimelineIndex - 1);
+    }
+
+    // Update UI
+    updateStats();
+    updateChamber();
+    updateChart();
+    updateLeaderboard();
+    updateTimeline();
+    logGeneration(generation, avgFit, bestFit);
+  }
+
+  // ============ UI UPDATES ============
+  function updateStats() {
+    const alive = agents.filter(a => a.alive);
+    const elites = alive.filter(a => a.fitness > 0.7);
+    const avgFit = alive.length > 0 ? alive.reduce((s, a) => s + a.fitness, 0) / alive.length : 0;
+    const bestFit = alive.length > 0 ? Math.max(...alive.map(a => a.fitness)) : 0;
+
+    document.getElementById('genCounter').textContent = generation;
+    document.getElementById('popCounter').textContent = alive.length;
+    document.getElementById('bestFitness').textContent = bestFit.toFixed(2);
+    document.getElementById('chamberGen').textContent = generation;
+    document.getElementById('statAlive').textContent = alive.length;
+    document.getElementById('statElite').textContent = elites.length;
+    document.getElementById('statAvgFit').textContent = avgFit.toFixed(2);
+    document.getElementById('statMuts').textContent = totalMutations;
+
+    document.getElementById('heroGen').textContent = generation;
+    document.getElementById('heroSpecies').textContent = new Set(agents.map(a => a.species)).size;
+    document.getElementById('heroMem').textContent = facts.length.toLocaleString();
+    const delta = generation > 0 ? ((bestFit - 0.5) * 100).toFixed(0) : 0;
+    document.getElementById('heroDelta').textContent = '+' + delta + '%';
+  }
+
+  function updateChamber() {
+    const chamber = document.getElementById('evoChamber');
+    // Remove old particles
+    chamber.querySelectorAll('.agent-particle').forEach(p => p.remove());
+
+    const alive = agents.filter(a => a.alive);
+    alive.forEach(agent => {
+      // Move agent
+      agent.x += agent.vx;
+      agent.y += agent.vy;
+      if (agent.x < 0 || agent.x > 100) agent.vx *= -1;
+      if (agent.y < 0 || agent.y > 100) agent.vy *= -1;
+      agent.x = Math.max(0, Math.min(100, agent.x));
+      agent.y = Math.max(0, Math.min(100, agent.y));
+
+      const particle = document.createElement('div');
+      particle.className = 'agent-particle';
+      const size = 6 + agent.fitness * 14;
+      const hue = agent.fitness > 0.7 ? '150' : agent.fitness > 0.5 ? '270' : '220';
+      const lightness = 40 + agent.fitness * 30;
+      particle.style.cssText = `
+        left: ${agent.x}%;
+        top: ${agent.y}%;
+        width: ${size}px;
+        height: ${size}px;
+        background: hsl(${hue}, 80%, ${lightness}%);
+        transform: translate(-50%, -50%);
+      `;
+      if (agent.fitness > 0.7) particle.classList.add('elite');
+      if (selectedAgent && agent.id === selectedAgent.id) {
+        particle.style.border = '2px solid white';
+        particle.style.zIndex = '20';
+      }
+      particle.addEventListener('click', () => selectAgent(agent));
+      chamber.appendChild(particle);
+    });
+  }
+
+  function selectAgent(agent) {
+    selectedAgent = agent;
+    document.getElementById('selectedName').textContent = agent.id;
+    document.getElementById('selectedGen').textContent = `generation ${agent.generation} · ${agent.alive ? 'alive' : 'archived'}`;
+    document.getElementById('selectedFit').textContent = agent.fitness.toFixed(2);
+    const rank = agents.filter(a => a.alive).sort((a, b) => b.fitness - a.fitness).findIndex(a => a.id === agent.id) + 1;
+    document.getElementById('selectedRank').textContent = '#' + rank;
+    document.getElementById('selectedParent').textContent = agent.parent || 'none';
+    document.getElementById('selectedMuts').textContent = agent.mutations;
+    document.getElementById('selectedOff').textContent = agent.offspring;
+    document.getElementById('selectedLife').textContent = (generation - agent.born) + ' gen';
+    document.getElementById('selectedWins').textContent = agent.wins;
+    document.getElementById('selectedLoss').textContent = agent.losses;
+    const wr = agent.wins + agent.losses > 0 ? ((agent.wins / (agent.wins + agent.losses)) * 100).toFixed(0) : 0;
+    document.getElementById('selectedWR').textContent = wr + '%';
+
+    // Update genome viz
+    updateGenomeViz(agent);
+    updateChamber();
+  }
+
+  function updateGenomeViz(agent) {
+    const viz = document.getElementById('genomeViz');
+    viz.innerHTML = '';
+    const categories = ['soul', 'agent', 'cortex', 'ember'];
+    const categoryNames = ['reasoning', 'code', 'memory', 'social'];
+
+    for (let i = 0; i < GENE_COUNT; i++) {
+      const cat = Math.floor(i / 8);
+      const val = agent.genome[i];
+      const block = document.createElement('div');
+      block.className = 'gene-block rounded';
+      const color = categories[cat];
+      block.style.cssText = `
+        height: 32px;
+        background: hsl(${cat === 0 ? 270 : cat === 1 ? 150 : cat === 2 ? 190 : 40}, 70%, ${20 + val * 40}%);
+        opacity: ${0.3 + val * 0.7};
+      `;
+      block.title = `${categoryNames[cat]}[${i % 8}]: ${val.toFixed(2)}`;
+      block.addEventListener('click', () => {
+        // Mutate this gene
+        agent.genome[i] = Math.max(0, Math.min(1, agent.genome[i] + (Math.random() - 0.5) * 0.3));
+        agent.fitness = calculateFitness(agent);
+        agent.mutations++;
+        totalMutations++;
+        block.classList.add('mutation-flash');
+        setTimeout(() => block.classList.remove('mutation-flash'), 600);
+        updateGenomeViz(agent);
+        storeFact(agent, 'mutation', `gene ${i} mutated to ${agent.genome[i].toFixed(2)}`);
+      });
+      viz.appendChild(block);
+    }
+
+    // Update category bars
+    const catAvgs = [0, 0, 0, 0];
+    for (let i = 0; i < GENE_COUNT; i++) {
+      catAvgs[Math.floor(i / 8)] += agent.genome[i];
+    }
+    catAvgs.forEach((sum, i) => {
+      const avg = sum / 8;
+      const barId = ['geneReasoning', 'geneCode', 'geneMemory', 'geneSocial'][i];
+      const valId = barId + 'Val';
+      document.getElementById(barId).style.width = (avg * 100) + '%';
+      document.getElementById(valId).textContent = avg.toFixed(2);
+    });
+  }
+
+  function updateChart() {
+    if (fitnessHistory.length < 2) return;
+
+    const w = 300, h = 200;
+    const maxFit = 1;
+    const step = w / (fitnessHistory.length - 1);
+
+    let bestPath = '';
+    let avgPath = '';
+    let bestAreaPath = '';
+    let avgAreaPath = '';
+
+    fitnessHistory.forEach((point, i) => {
+      const x = i * step;
+      const bestY = h - (point.best / maxFit) * h;
+      const avgY = h - (point.avg / maxFit) * h;
+      bestPath += (i === 0 ? 'M' : 'L') + x + ',' + bestY;
+      avgPath += (i === 0 ? 'M' : 'L') + x + ',' + avgY;
+    });
+
+    bestAreaPath = bestPath + `L${w},${h}L0,${h}Z`;
+    avgAreaPath = avgPath + `L${w},${h}L0,${h}Z`;
+
+    document.getElementById('bestLine').setAttribute('d', bestPath);
+    document.getElementById('avgLine').setAttribute('d', avgPath);
+    document.getElementById('bestArea').setAttribute('d', bestAreaPath);
+    document.getElementById('avgArea').setAttribute('d', avgAreaPath);
+  }
+
+  function updateLeaderboard() {
+    const lb = document.getElementById('leaderboard');
+    lb.innerHTML = '';
+    const top10 = agents.filter(a => a.alive).sort((a, b) => b.fitness - a.fitness).slice(0, 10);
+
+    top10.forEach((agent, i) => {
+      const div = document.createElement('div');
+      div.className = 'flex items-center justify-between p-2 rounded hover:bg-white/5 transition cursor-pointer';
+      div.addEventListener('click', () => selectAgent(agent));
+      div.innerHTML = `
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-[10px] ${i === 0 ? 'text-ember-400' : i < 3 ? 'text-agent-400' : 'text-gray-500'} font-bold w-5">${i + 1}</span>
+          <div class="w-5 h-5 rounded-full" style="background: hsl(${agent.fitness > 0.7 ? 150 : 270}, 70%, ${30 + agent.fitness * 30}%);"></div>
+          <span class="font-mono text-[11px] text-white">${agent.id}</span>
+        </div>
+        <div class="text-right">
+          <div class="font-mono text-[11px] ${i === 0 ? 'text-ember-400' : 'text-agent-400'} font-bold">${agent.fitness.toFixed(2)}</div>
+          <div class="font-mono text-[9px] text-gray-500">${agent.wins}W/${agent.losses}L</div>
+        </div>
+      `;
+      lb.appendChild(div);
+    });
+  }
+
+  function updateTimeline() {
+    const track = document.getElementById('timelineTrack');
+    track.innerHTML = '';
+    const visible = generationSnapshots.slice(-20);
+
+    visible.forEach((snap, i) => {
+      const marker = document.createElement('div');
+      marker.className = 'flex flex-col items-center mx-2 cursor-pointer opacity-50 hover:opacity-100';
+      marker.dataset.genIndex = String(generationSnapshots.indexOf(snap));
+      marker.setAttribute('aria-label', `View simulated generation ${snap.gen}`);
+      marker.style.minWidth = '40px';
+      const intensity = snap.best;
+      marker.innerHTML = `
+        <div class="w-3 h-3 rounded-full mb-1" style="background: hsl(40, 80%, ${30 + intensity * 40}%); box-shadow: 0 0 ${intensity * 10}px rgba(251, 191, 36, ${intensity * 0.5});"></div>
+        <div class="font-mono text-[9px] text-gray-500">G${snap.gen}</div>
+      `;
+      marker.addEventListener('click', () => showGenerationAt(generationSnapshots.indexOf(snap)));
+      track.appendChild(marker);
+    });
+
+    if (generationSnapshots.length > 0) {
+      if (timelineFollowLatest || selectedTimelineIndex < 0) selectedTimelineIndex = generationSnapshots.length - 1;
+      selectedTimelineIndex = Math.min(selectedTimelineIndex, generationSnapshots.length - 1);
+      showGenerationAt(selectedTimelineIndex, false);
+    } else {
+      updateTimelineButtons();
+    }
+  }
+
+  function showGenerationAt(index, manual = true) {
+    if (index < 0 || index >= generationSnapshots.length) return;
+    selectedTimelineIndex = index;
+    if (manual) timelineFollowLatest = index === generationSnapshots.length - 1;
+    const snap = generationSnapshots[index];
+    document.getElementById('timelineGen').textContent = snap.gen;
+    document.getElementById('tlPop').textContent = snap.pop;
+    document.getElementById('tlBest').textContent = snap.best.toFixed(2);
+    document.getElementById('tlMuts').textContent = snap.mutations;
+    document.getElementById('tlChamp').textContent = snap.champ;
+    document.querySelectorAll('#timelineTrack [data-gen-index]').forEach((marker) => {
+      const selected = Number(marker.dataset.genIndex) === selectedTimelineIndex;
+      marker.setAttribute('aria-current', selected ? 'true' : 'false');
+      marker.classList.toggle('opacity-100', selected);
+      marker.classList.toggle('opacity-50', !selected);
+    });
+    updateTimelineButtons();
+  }
+
+  function updateTimelineButtons() {
+    const previous = document.getElementById('timelinePrev');
+    const next = document.getElementById('timelineNext');
+    previous.disabled = selectedTimelineIndex <= 0;
+    next.disabled = selectedTimelineIndex < 0 || selectedTimelineIndex >= generationSnapshots.length - 1;
+    previous.setAttribute('aria-label', 'Show previous simulated generation');
+    next.setAttribute('aria-label', 'Show next simulated generation');
+  }
+
+  document.getElementById('timelinePrev').addEventListener('click', () => showGenerationAt(selectedTimelineIndex - 1));
+  document.getElementById('timelineNext').addEventListener('click', () => showGenerationAt(selectedTimelineIndex + 1));
+
+  // ============ DATABASE ============
+  function storeFact(agent, type, message) {
+    const fact = {
+      time: new Date().toISOString().slice(11, 19),
+      gen: generation,
+      agent: agent.id,
+      type,
+      message,
+      confidence: 0.7 + Math.random() * 0.3,
+    };
+    facts.unshift(fact);
+    if (facts.length > 500) facts.pop();
+    updateFactsTable();
+    document.getElementById('dbSize').textContent = facts.length;
+    document.getElementById('factCount').textContent = facts.length;
+    document.getElementById('writeRate').textContent = Math.floor(facts.length / Math.max(1, generation));
+    document.getElementById('queryLatency').textContent = Math.floor(15 + Math.random() * 20) + 'ms';
+    document.getElementById('dbStorage').textContent = (facts.length * 0.12).toFixed(1) + 'MB';
+    document.getElementById('heroMem').textContent = facts.length.toLocaleString();
+  }
+
+  function updateFactsTable() {
+    const table = document.getElementById('factsTable');
+    table.innerHTML = '';
+    facts.slice(0, 15).forEach(fact => {
+      const row = document.createElement('tr');
+      row.className = 'db-row border-b border-edge';
+      const typeColor = fact.type === 'birth' ? 'text-agent-400' :
+                        fact.type === 'death' ? 'text-blood-400' :
+                        fact.type === 'mutation' ? 'text-soul-400' :
+                        'text-cortex-400';
+      row.innerHTML = `
+        <td class="px-3 py-1.5 text-gray-500">${fact.time}</td>
+        <td class="px-3 py-1.5 text-gray-400">${fact.agent}</td>
+        <td class="px-3 py-1.5 text-gray-300 truncate max-w-[200px]">${fact.message}</td>
+        <td class="px-3 py-1.5 ${fact.confidence > 0.9 ? 'text-agent-400' : 'text-ember-400'}">${fact.confidence.toFixed(2)}</td>
+        <td class="px-3 py-1.5 ${typeColor}">${fact.type}</td>
+      `;
+      table.appendChild(row);
+    });
+  }
+
+  // Demo query console: allowlisted selectors over this page's in-memory facts only.
+  // Typed text is rendered with textContent; it is never evaluated or parsed as SQL.
+  const dbQueries = {
+    recent: () => facts.slice(0, 10).map(f => `[${f.time}] ${f.agent} ${f.message}`),
+    dead_ends: () => {
+      const dead = facts.filter(f => f.type === 'death');
+      return [`${dead.length} simulated agents archived`, ...dead.slice(0, 5).map(f => `${f.agent} · ${f.message.match(/\d+\.\d+/)?.[0] || 'score unavailable'}`)];
+    },
+    mutations: () => {
+      const mutations = facts.filter(f => f.type === 'mutation');
+      return [`${mutations.length} simulated mutations recorded`, ...mutations.slice(0, 5).map(f => f.message)];
+    },
+    champions: () => {
+      const top = agents.filter(a => a.alive).sort((a, b) => b.fitness - a.fitness).slice(0, 5);
+      return ['Top simulated agents:', ...top.map((a, i) => `${i + 1}. ${a.id} · proxy score ${a.fitness.toFixed(2)} · ${a.wins}W/${a.losses}L`)];
+    }
+  };
+
+  function runDemoQuery(rawValue) {
+    const command = String(rawValue).trim().toLowerCase().slice(0, 80);
+    const output = document.getElementById('dbQueryOutput');
+    const prompt = document.createElement('div');
+    prompt.className = 'text-agent-400';
+    prompt.textContent = `demo.memory> ${command || '(empty command)'}`;
+    output.appendChild(prompt);
+
+    const renderLines = Object.hasOwn(dbQueries, command) ? dbQueries[command] : null;
+    const lines = renderLines ? renderLines() : ['Unknown demo command. Use: recent, dead_ends, mutations, champions.'];
+    for (const text of lines.length ? lines : ['No matching demo facts yet.']) {
+      const line = document.createElement('div');
+      line.className = renderLines ? 'text-gray-400' : 'text-amber-300';
+      line.textContent = text;
+      output.appendChild(line);
+    }
+    output.scrollTop = output.scrollHeight;
+  }
+
+  document.querySelectorAll('.db-query-btn').forEach(btn => {
+    btn.addEventListener('click', () => runDemoQuery(btn.dataset.query || ''));
+  });
+
+  document.getElementById('dbQueryInput').addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter') return;
+    event.preventDefault();
+    const input = event.currentTarget;
+    const value = input.value;
+    input.value = '';
+    runDemoQuery(value);
+  });
+
+  // ============ VMs ============
+  const vmModels = [
+    { name: 'claude-3.5-sonnet', provider: 'Anthropic', color: '#9775fa' },
+    { name: 'gpt-4-turbo', provider: 'OpenAI', color: '#34d399' },
+    { name: 'gemini-1.5-pro', provider: 'Google', color: '#60a5fa' },
+    { name: 'llama-3.1-405b', provider: 'Meta', color: '#fb923c' },
+    { name: 'deepseek-v3', provider: 'DeepSeek', color: '#2dd4bf' },
+    { name: 'mistral-large', provider: 'Mistral', color: '#f472b6' },
+    { name: 'qwen-2.5-72b', provider: 'Alibaba', color: '#a78bfa' },
+    { name: 'command-r-plus', provider: 'Cohere', color: '#fbbf24' },
+  ];
+
+  function renderVMs() {
+    const grid = document.getElementById('vmGrid');
+    grid.innerHTML = '';
+    vmModels.forEach((model, i) => {
+      const cpu = 20 + Math.random() * 70;
+      const mem = 30 + Math.random() * 60;
+      const status = Math.random() > 0.1 ? 'running' : 'idle';
+      const vm = document.createElement('div');
+      vm.className = 'vm-card card rounded-lg p-4';
+      vm.style.setProperty('--vm-color', model.color);
+      vm.innerHTML = `
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded flex items-center justify-center" style="background: ${model.color}20; border: 1px solid ${model.color}40;">
+              <span class="font-mono text-[9px] font-bold" style="color: ${model.color};">${model.name.slice(0, 2).toUpperCase()}</span>
+            </div>
+            <div>
+              <div class="font-mono text-[11px] text-white font-semibold">${model.name}</div>
+              <div class="font-mono text-[9px] text-gray-500">${model.provider}</div>
+            </div>
+          </div>
+          <span class="w-1.5 h-1.5 rounded-full ${status === 'running' ? 'bg-agent-400 pulse-dot' : 'bg-gray-600'}"></span>
+        </div>
+        <div class="space-y-1.5">
+          <div>
+            <div class="flex justify-between font-mono text-[9px] mb-0.5">
+              <span class="text-gray-500">CPU</span>
+              <span class="text-gray-400">${cpu.toFixed(0)}%</span>
+            </div>
+            <div class="h-1 bg-edge rounded-full overflow-hidden">
+              <div class="h-full fitness-bar" style="width: ${cpu}%; background: ${model.color};"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between font-mono text-[9px] mb-0.5">
+              <span class="text-gray-500">MEM</span>
+              <span class="text-gray-400">${mem.toFixed(0)}%</span>
+            </div>
+            <div class="h-1 bg-edge rounded-full overflow-hidden">
+              <div class="h-full fitness-bar" style="width: ${mem}%; background: ${model.color}; opacity: 0.7;"></div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-2 pt-2 border-t border-edge flex items-center justify-between font-mono text-[9px]">
+          <span class="text-gray-500">vm-${String(i).padStart(3, '0')}</span>
+          <span style="color: ${model.color};">${status}</span>
+        </div>
+      `;
+      grid.appendChild(vm);
+    });
+    document.getElementById('vmCount').textContent = vmModels.length;
+  }
+
+  renderVMs();
+  setInterval(() => {
+    document.querySelectorAll('.vm-card .fitness-bar').forEach(bar => {
+      const current = parseFloat(bar.style.width);
+      const next = Math.max(10, Math.min(95, current + (Math.random() - 0.5) * 15));
+      bar.style.width = next + '%';
+    });
+  }, 2000);
+
+  // ============ MATCH LOGGING ============
+  function logMatch(result) {
+    const log = document.getElementById('matchLog');
+    const div = document.createElement('div');
+    div.className = 'log-line';
+    div.innerHTML = `<span class="text-gray-600">G${generation}</span> <span class="text-agent-400">${result.winner.id}</span> <span class="text-gray-500">beat</span> <span class="text-blood-400">${result.loser.id}</span> <span class="text-gray-600">(${result.winner.fitness.toFixed(2)} vs ${result.loser.fitness.toFixed(2)})</span>`;
+    log.appendChild(div);
+    if (log.children.length > 30) log.removeChild(log.firstChild);
+    log.scrollTop = log.scrollHeight;
+
+    // Update live match display
+    document.getElementById('matchAName').textContent = result.winner.id;
+    document.getElementById('matchAFit').textContent = 'fitness: ' + result.winner.fitness.toFixed(2);
+    document.getElementById('matchABar').style.width = (result.winner.fitness * 100) + '%';
+    document.getElementById('matchAScore').textContent = result.winner.wins + ' wins';
+
+    document.getElementById('matchBName').textContent = result.loser.id;
+    document.getElementById('matchBFit').textContent = 'fitness: ' + result.loser.fitness.toFixed(2);
+    document.getElementById('matchBBar').style.width = (result.loser.fitness * 100) + '%';
+    document.getElementById('matchBScore').textContent = result.loser.losses + ' losses';
+
+    document.getElementById('matchRound').textContent = generation;
+    document.getElementById('matchTask').textContent = 'task: ' + tasks[Math.floor(Math.random() * tasks.length)];
+  }
+
+  function logGeneration(gen, avg, best) {
+    const log = document.getElementById('genLog');
+    const div = document.createElement('div');
+    div.className = 'log-line flex items-center justify-between';
+    div.innerHTML = `
+      <span class="text-gray-400">G${gen}</span>
+      <span class="text-gray-500">pop: ${agents.filter(a => a.alive).length}</span>
+      <span class="text-agent-400">avg: ${avg.toFixed(2)}</span>
+      <span class="text-ember-400">best: ${best.toFixed(2)}</span>
+    `;
+    log.insertBefore(div, log.firstChild);
+    if (log.children.length > 20) log.removeChild(log.lastChild);
+  }
+
+  // ============ EVOLUTION CONTROL ============
+  const evolveBtn = document.getElementById('evolveBtn');
+  const evolveBtnText = document.getElementById('evolveBtnText');
+
+  evolveBtn.addEventListener('click', () => {
+    if (isEvolving) {
+      clearInterval(evolutionInterval);
+      isEvolving = false;
+      evolveBtnText.textContent = 'START EVOLUTION';
+      evolveBtn.classList.remove('bg-agent-400/10');
+    } else {
+      if (agents.length === 0) {
+        // Initialize population
+        for (let i = 0; i < INITIAL_POP; i++) {
+          const agent = createAgent(null, 0);
+          agent.fitness = calculateFitness(agent);
+          agents.push(agent);
+        }
+        selectAgent(agents[0]);
+        storeFact(agents[0], 'birth', `population initialized with ${INITIAL_POP} agents`);
+      }
+      evolutionInterval = setInterval(runGeneration, 1500);
+      isEvolving = true;
+      evolveBtnText.textContent = 'PAUSE EVOLUTION';
+    }
+  });
+
+  // Auto-start after a moment
+  setTimeout(() => {
+    evolveBtn.click();
+  }, 1000);
+
+  // ============ INITIALIZE ============
+  // Select first agent once population is created
+  const initCheck = setInterval(() => {
+    if (agents.length > 0 && !selectedAgent) {
+      selectAgent(agents[0]);
+      clearInterval(initCheck);
+    }
+  }, 100);
+
+  // Smooth scroll
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const href = a.getAttribute('href');
+      if (href === '#') return;
+      const target = document.querySelector(href);
+      if (target) {
+        e.preventDefault();
+        window.scrollTo({ top: target.offsetTop - 100, behavior: 'smooth' });
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

@@ -30,7 +30,7 @@ mission optimize_sql {
 
 ```aml
 capability fullstack_deploy {
-  requires: [code_gen, test_gen, deploy]
+  requires: [code_gen, test_gen, run, deploy]
 
   flow {
     code_gen($spec) → $code
@@ -95,7 +95,9 @@ Send JSON to `POST /api/aml/compile`:
 {"source":"mission example {\n  steps {\n    verify: proof.check($input) → $result\n  }\n}"}
 ```
 
-Successful validation returns `ok: true`, `executable: false`, the AST, intent graph, budgets, source and graph hashes, and lexical token count. Invalid AML returns diagnostics with HTTP 422. The lexical count is a source token count, not a model tokenizer's billing estimate.
+Successful compilation returns `ok: true`, `executable: false`, the AST, intent graph, budgets, a deterministic `programHash`, SHA-256 hashes, lexical token metrics, and a receipt schema. Invalid AML returns diagnostics with HTTP 422. `POST /api/aml/validate` returns a smaller validation report and checks every operation called from a `capability` flow against that capability's `requires` list. These endpoints only parse and validate source; they do not execute operations.
+
+`amlTokens` is a deterministic comment-stripped lexical count. JSON and Python comparison figures are explicitly labeled estimates based on canonical AST projections; they are not counts from a model vendor tokenizer and do not promise a billing-token reduction. `tokenizer` identifies the stable counting rule used by this API.
 
 ## Execution boundary
 

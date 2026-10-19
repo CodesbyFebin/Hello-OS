@@ -191,6 +191,43 @@ model CurriculumProgress {
   @@unique([agentId, skillTreeId])
 }
 
+// Persistent, bounded proxy-optimization experiments. Candidate genes are
+// test vectors; these records do not represent model weights or live agents.
+model EvolutionRun {
+  id                String   @id @default(cuid())
+  name              String
+  profile           String
+  status            String   @default("active") // active | paused | completed
+  populationSize    Int
+  mutationRate      Float
+  generationLimit   Int
+  currentGeneration Int      @default(0)
+  bestFitness       Float    @default(0)
+  seed              Int
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  completedAt       DateTime?
+  generations       EvolutionGeneration[]
+
+  @@index([status, updatedAt])
+}
+
+model EvolutionGeneration {
+  id             String   @id @default(cuid())
+  runId          String
+  run            EvolutionRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  generation     Int
+  bestFitness    Float
+  averageFitness Float
+  mutationCount  Int
+  populationJson String
+  championJson   String
+  createdAt      DateTime @default(now())
+
+  @@unique([runId, generation])
+  @@index([runId, generation])
+}
+
 // ============================================================
 // PILLAR 5 — SOCIETY & SPACES
 // ============================================================

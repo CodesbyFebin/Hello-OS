@@ -8,6 +8,9 @@
 - Installation guide: https://codesbyfebin.github.io/Hello-OS/getting-started/
 - Agent guide: https://codesbyfebin.github.io/Hello-OS/agent-guide/
 - AML Studio guide: https://codesbyfebin.github.io/Hello-OS/aml-studio/
+- Evolution Lab guide: https://codesbyfebin.github.io/Hello-OS/evolution-lab/\n- HELLO EVOLVE simulation demo: https://codesbyfebin.github.io/Hello-OS/hello-evolve/ (browser-generated demo data; no live backend).
+- Local Evolution Lab route: http://localhost:3000/evolution (requires the app and Prisma schema to be applied with npm run db:push)
+- Evolution Lab backend: persisted seeded optimization runs with selection, crossover, bounded mutation, proxy fitness, pause/resume, and per-generation snapshots. It evolves synthetic vectors and does not train models or alter live agents.
 - Local AML Studio route: http://localhost:3000/aml-studio (available when the app is running)
 - Downloads: https://codesbyfebin.github.io/Hello-OS/downloads/
 - Full feature and security notes: https://github.com/CodesbyFebin/Hello-OS/blob/main/README.md
@@ -32,6 +35,6 @@ Clone the repository and run `docker compose up --build`; open http://localhost:
 This is an experimental prototype. It does not claim full MCP/A2A conformance, OAuth, SSE, production multi-tenancy, tamper-proof auditing, real payments, or Firecracker microVM checkpoints. No crawler ping guarantees search indexing or ranking.
 
 ## Vision claims not verified as implemented
-A broader concept brief mentions hello.id, hello.cortex, hello.ledger, hello.mesh, hello.forge, hello.cloud, and hello.nexus. Treat these as vision labels, not deployed services. USDC, paid marketplace/escrow, verifiable credentials, lineage chains, temporal graph and sleep-cycle memory, Firecracker execution, database forks, swarms, governance, and evolutionary tournaments are not shipped by this codebase. The brief's performance figures, agent counts, case studies, release checksums, external URLs, and claimed license are unverified and must not be repeated as facts. No native APK, EXE/PEXE, DEB, AppImage, DMG, IPA, AAB, standalone binary, or SDK archive is published. The repository currently has no LICENSE file.
+A broader concept brief mentions hello.id, hello.cortex, hello.ledger, hello.mesh, hello.forge, hello.cloud, and hello.nexus. Treat these as vision labels, not deployed services. USDC, paid marketplace/escrow, verifiable credentials, lineage chains, temporal graph and sleep-cycle memory, Firecracker execution, database forks, swarms, governance, and agent-training/evolutionary tournament systems are not shipped by this codebase. The Evolution Lab only optimizes a synthetic gene-vector objective; its proxy scores are not agent benchmarks. The brief's performance figures, agent counts, case studies, release checksums, external URLs, and claimed license are unverified and must not be repeated as facts. No native APK, EXE/PEXE, DEB, AppImage, DMG, IPA, AAB, standalone binary, or SDK archive is published. The repository currently has no LICENSE file.
 
 - Static AML compiler API (`POST /api/aml/compile`) and MCP `aml.compile` validate intent declarations without executing them. See `docs/aml-examples.md` and `docs/aml-spec.ebnf`.

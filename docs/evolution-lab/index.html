@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Evolution Lab | HELLO OS Agent Learning Data</title>
+<meta name="description" content="Inspect HELLO OS agent counts, apprenticeship records, and the static skill curriculum using the Evolution Lab. The page reads application APIs and does not simulate training.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://codesbyfebin.github.io/Hello-OS/evolution-lab/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Evolution Lab | HELLO OS">
+<meta property="og:description" content="A read-only view of HELLO OS agent and curriculum records from application APIs.">
+<meta property="og:url" content="https://codesbyfebin.github.io/Hello-OS/evolution-lab/">
+<style>
+:root{color-scheme:dark;--bg:#080b12;--panel:#111827;--line:#263244;--text:#e8eef8;--muted:#a8b4c7;--accent:#82f0bd;--blue:#9ac5ff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.7 system-ui,sans-serif}
+main{max-width:880px;margin:auto;padding:36px 22px 72px}a{color:var(--blue);text-underline-offset:3px}
+.brand{color:var(--accent);font:800 13px ui-monospace,monospace;letter-spacing:.15em;text-decoration:none}
+.eyebrow{margin-top:72px;color:var(--accent);font:12px ui-monospace,monospace;letter-spacing:.18em;text-transform:uppercase}
+h1{font-size:clamp(2.5rem,7vw,4.8rem);line-height:1.03;letter-spacing:-.05em;margin:16px 0}
+h2{margin-top:48px;font-size:1.6rem;letter-spacing:-.03em}p,li{color:var(--muted)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;margin:22px 0}
+pre{overflow:auto;background:#05080d;border:1px solid var(--line);border-radius:8px;padding:16px;color:#d5ffe9}
+code{font-family:ui-monospace,monospace;color:#d5ffe9}
+.note{border-left:3px solid #22d3ee;padding:12px 16px;background:#0b1418}
+footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body><main>
+<a class="brand" href="../">HELLO OS</a>
+<p class="eyebrow">Agent learning data · Read-only dashboard</p>
+<h1>Evolution Lab</h1>
+<p>The HELLO OS Evolution Lab is a focused view over the application’s current agent, apprenticeship, and curriculum APIs. It reports database-backed records and the skill tree returned by the curriculum endpoint. It is not an autonomous training system.</p>
+<div class="card note"><strong>Data boundary:</strong> the uploaded HELLO EVOLVE HTML is a browser-side simulation with randomized agent populations, fitness, logs, and microVM readings. The HELLO OS Evolution Lab does not present those values as real. It requests current API data and reports when the service is unavailable.</div>
+<h2>Run the lab locally</h2>
+<p>Start HELLO OS with the documented Docker Compose setup, then open <code>http://localhost:3000/evolution</code>. The app must be running with a reachable database for data-backed counts and records to load.</p>
+<pre><code>git clone https://github.com/CodesbyFebin/Hello-OS.git
+cd Hello-OS
+docker compose up --build</code></pre>
+<h2>Data sources</h2>
+<ul>
+<li><code>GET /api/stats</code> returns database counts for agents, missions, traces, and memories.</li>
+<li><code>GET /api/evolution/apprenticeships</code> lists stored mentor-apprentice records and their status.</li>
+<li><code>GET /api/evolution/curriculum</code> returns the configured skill tree. Per-agent progress is returned only when an agent identifier is supplied.</li>
+</ul>
+<p>The Evolution Lab page uses these read operations. It does not create, extract, or graduate apprenticeship records. The curriculum endpoint currently defines skills such as Rust ownership, Async Rust, citation discipline, design tokens, and chaos engineering. A node in the tree describes a skill; it does not prove that an agent has learned or passed it.</p>
+<h2>What this view does not do</h2>
+<ul>
+<li>It does not train or mutate model weights, run agent tournaments, or automatically improve agent capability.</li>
+<li>It does not launch Firecracker microVMs or report virtual-machine utilization.</li>
+<li>It does not generate live activity logs or random “fitness” scores.</li>
+<li>It does not write apprenticeship or curriculum-progress records.</li>
+</ul>
+<p>Use the <a href="https://github.com/CodesbyFebin/Hello-OS/tree/main/src/app/ecosystem">Ecosystem dashboard</a> for the broader API-backed workspace view. Check the current source for the exact API behavior and deployment configuration.</p>
+<h2>Implementation links</h2>
+<ul>
+<li><a href="https://github.com/CodesbyFebin/Hello-OS/tree/main/src/app/evolution">Evolution Lab UI source</a></li>
+<li><a href="https://github.com/CodesbyFebin/Hello-OS/tree/main/src/app/api/evolution">Evolution API routes</a></li>
+<li><a href="https://github.com/CodesbyFebin/Hello-OS/blob/main/README.md">README and local setup</a></li>
+<li><a href="../agent-guide/">Agent Guide</a></li>
+</ul>
+<footer><p><a href="../">HELLO OS project guide</a> · <a href="https://github.com/CodesbyFebin/Hello-OS">Source repository</a></p></footer>
+</main></body></html>

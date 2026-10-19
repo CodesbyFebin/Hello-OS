@@ -5,7 +5,7 @@
 //   GET  /              → hello.json handshake manifest (the agent bootstrap)
 //   GET  /tools         → MCP tools/list  (tool registry with input schemas)
 //   POST /tools/call    → MCP tools/call  (invoke a tool, get structured result)
-//   GET  /feed          → SSE stream of recent tool calls (for the observer HUD)
+//   GET  /feed          → JSON snapshot of recent tool calls (for the observer HUD)
 //
 // Every tool call is logged with a SHA-256 receipt. The forge tools run REAL
 // ts-morph AST operations; the cortex tools read/write the shared DB.

@@ -1,11 +1,57 @@
 # HELLO OS
 
-> **HELLO OS is an open-source, local-first agentic operating system prototype for giving AI agents identity, memory, tools, work queues, and an inspectable activity surface.** It combines a Next.js dashboard, SQLite persistence, an MCP-compatible tool service, and an A2A-style agent card and task API.
+> **An open, evolutionary initiative for AI agents.** HELLO OS is a local-first prototype where agents get an identity, memory, tools and a work queue, and where the community helps agents and their skills get *measurably* better over time through evals, head-to-head tournaments and reviewed contributions.
+
+**Status: experimental prototype.** Nothing here is a hosted service, a production system, or a benchmark claim. The table below separates what runs today from what is vision.
 
 [![GitHub repository](https://img.shields.io/badge/GitHub-CodesbyFebin%2FHello--OS-181717?logo=github)](https://github.com/CodesbyFebin/Hello-OS)
 [![Pages guide](https://img.shields.io/badge/Project%20guide-GitHub%20Pages-222?logo=githubpages)](https://codesbyfebin.github.io/Hello-OS/)
 
-**Project guide and download center:** [codesbyfebin.github.io/Hello-OS](https://codesbyfebin.github.io/Hello-OS/) (available after GitHub Pages is enabled with GitHub Actions in repository settings). **Source code:** [github.com/CodesbyFebin/Hello-OS](https://github.com/CodesbyFebin/Hello-OS).
+![HELLO OS dashboard showing the demo snapshot with sample agents](docs/assets/dashboard.png)
+<sub>Dashboard on a fresh local install. With an empty database it shows a labelled **demo snapshot** of sample agents, not live data.</sub>
+
+## 30-second quickstart
+
+Requires Docker with the Compose plugin.
+
+```sh
+git clone https://github.com/CodesbyFebin/Hello-OS.git
+cd Hello-OS
+docker compose up --build
+```
+
+Open <http://localhost:3000> for the dashboard. The MCP endpoint is at <http://localhost:3030/mcp>. To run from source instead (Node 20+; the AML tests need Node 22): `npm install && cp .env.example .env && npx prisma generate && npx prisma db push && npm run dev`.
+
+## Why "evolutionary"?
+
+Most agent frameworks ship a fixed set of behaviours. HELLO OS treats agents, skills and prompts as things that should **compete, be measured and improve in public**:
+
+1. **Evaluate**: replay pinned prompts (golden sets) and record drift, rather than trusting vibes.
+2. **Compete**: pit agent or skill variants against each other on the same task and keep the winner.
+3. **Inherit**: carry a winning procedure, memory or skill forward to the next version of an agent.
+4. **Contribute**: anyone can add a task, an eval, or a better skill through a pull request, and the result is reviewable.
+
+### Vision vs shipped
+
+| Idea | Today in this repo | Vision (proposed, not built) |
+| --- | --- | --- |
+| Agent identity | Ed25519 `did:key` per agent, stored in the local DB (demo keys) | KMS/HSM-backed keys, operator revocation and rotation |
+| Memory | Prisma/SQLite memory records with token-budgeted recall | Consolidation and temporal queries |
+| Evals | Golden-set replay route (`src/app/api/traces/golden-replay`) | Public leaderboard of reproducible eval runs |
+| Evolution | Apprenticeship/curriculum API routes (`src/app/api/evolution`) | Tournaments where variants compete and winners are promoted |
+| Economy | Local prototype credits with daily spend caps and a circuit breaker; **not money** | Operator-approved budgets; no autonomous real-money spending |
+| Protocols | MCP tool service, A2A-style agent card, static AML compiler | Broader conformance tests |
+
+The "HELLO EVOLVE" lab visuals and any fitness, win-rate or generation numbers shown in concept mockups are **simulations**, not measurements of this code.
+
+## How to contribute and help HELLO evolve
+
+- **Add an eval**: a pinned prompt plus its expected output that shows whether a change helps.
+- **Add a task or skill** and include a test proving it works.
+- **Fix a starter issue**: see the `good first issue` label (type errors, lint, test runtime, docs).
+- **Challenge a claim**: if the docs say something the code doesn't do, open an issue.
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.md) first.
 
 ## AML: Agent Machine Language
 
@@ -229,7 +275,7 @@ The current prototype has multiple runtime surfaces and experimental code. Prefe
 
 ## Contributing
 
-Issues and pull requests are welcome. When reporting a bug, include the operating system, runtime versions, deployment mode, the shortest reproduction steps, and relevant redacted logs. Never paste private keys, access tokens, personal data, production database files, or unredacted agent traces into a public issue.
+See [CONTRIBUTING.md](CONTRIBUTING.md). Issues and pull requests are welcome. When reporting a bug, include the operating system, runtime versions, deployment mode, the shortest reproduction steps, and relevant redacted logs. Never paste private keys, access tokens, personal data, production database files, or unredacted agent traces into a public issue.
 
 A useful feature proposal explains the user problem, intended behavior, security boundary, persistence changes, and how the change can be tested. Protocol proposals should link to the relevant specification and state which version and transport are targeted. Documentation changes should distinguish a verified implementation fact from a planned capability.
 
@@ -239,9 +285,11 @@ Before opening a pull request, review the diff, run relevant checks, remove gene
 
 The recommended short repository description and a curated list of 20 GitHub topics are in [repository-metadata.md](repository-metadata.md). The first suggested topic is `github-pages`, as requested. Apply those values through the GitHub repository settings when metadata editing is available. A topic list in a README does not change GitHub repository metadata by itself.
 
-## Roadmap ideas
+## Roadmap (proposed)
 
-The following are ideas for future work, not promises about a release date:
+Everything below is **proposed**. Nothing has a release date or a promise attached:
+
+0. Public, reproducible eval and tournament runs for agent and skill variants (the evolutionary loop).
 
 1. Add a documented, reviewed authentication and authorization model for multi-user deployments.
 2. Move private signing operations to a pluggable KMS or HSM provider with rotation and recovery.

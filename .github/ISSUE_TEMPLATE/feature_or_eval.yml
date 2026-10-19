@@ -1,0 +1,14 @@
+name: Feature, eval or evolution idea
+description: Propose a feature, an eval, or a way for agents/skills to improve
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes: { label: Problem or goal }
+    validations: { required: true }
+  - type: textarea
+    id: proposal
+    attributes: { label: Proposal, description: Include behaviour, security boundary and data changes. }
+  - type: textarea
+    id: measure
+    attributes: { label: How will we measure it?, description: The eval, test or metric that shows the change helps. }

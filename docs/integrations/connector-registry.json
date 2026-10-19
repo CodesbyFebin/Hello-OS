@@ -1,0 +1,807 @@
+{
+  "schema": "hello://integration-registry/v1",
+  "generatedFrom": "user-provided connector proposal catalog",
+  "statusMeaning": "proposal means HELLO OS does not ship or claim this connection; it is an unconnected planning entry.",
+  "connectors": [
+    {
+      "id": 1,
+      "name": "GitHub MCP Server",
+      "category": "Category A · Developer & Code Infrastructure (1–15)",
+      "description": "Repositories, issues, PRs, and actions.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 2,
+      "name": "GitLab MCP Connector",
+      "category": "Category A · Developer & Code Infrastructure (1–15)",
+      "description": "Projects, merge requests, and pipelines.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 3,
+      "name": "Bitbucket Server",
+      "category": "Category A · Developer & Code Infrastructure (1–15)",
+      "description": "Enterprise repository state and webhooks.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 4,
+      "name": "GitHub Enterprise Server",
+      "category": "Category A · Developer & Code Infrastructure (1–15)",
+      "description": "On-premise source control synchronization.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 5,
+      "name": "Gitea / Forgejo Connector",
+      "category": "Category A · Developer & Code Infrastructure (1–15)",
+      "description": "Lightweight self-hosted code hosting integration.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 6,
+      "name": "Vercel Deployment Gateway",
+      "category": "Category A · Developer & Code Infrastructure (1–15)",
+      "description": "Preview environments and serverless runtime logs.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 7,
+      "name": "Netlify Edge Bridge",
+      "category": "Category A · Developer & Code Infrastructure (1–15)",
+      "description": "Static build telemetry and deployment hooks.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 8,
+      "name": "AWS CodePipeline Connector",
+      "category": "Category A · Developer & Code Infrastructure (1–15)",
+      "description": "CI/CD pipeline artifact tracking.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 9,
+      "name": "CircleCI API Gateway",
+      "category": "Category A · Developer & Code Infrastructure (1–15)",
+      "description": "Build failure diagnostics and test receipt ingestion.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 10,
+      "name": "Jenkins CI Bridge",
+      "category": "Category A · Developer & Code Infrastructure (1–15)",
+      "description": "Legacy build server job execution and status hooks.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 11,
+      "name": "Docker Hub / Registry API",
+      "category": "Category A · Developer & Code Infrastructure (1–15)",
+      "description": "Container image metadata and vulnerability inspection.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 12,
+      "name": "Kubernetes API Server (K8s MCP)",
+      "category": "Category A · Developer & Code Infrastructure (1–15)",
+      "description": "Cluster pod health, deployments, and logs.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 13,
+      "name": "Terraform Cloud Connector",
+      "category": "Category A · Developer & Code Infrastructure (1–15)",
+      "description": "Infrastructure-as-Code state inspection.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 14,
+      "name": "Sentry Error Tracking MCP",
+      "category": "Category A · Developer & Code Infrastructure (1–15)",
+      "description": "Real-time production exception logs and stack traces.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 15,
+      "name": "Datadog APM Bridge",
+      "category": "Category A · Developer & Code Infrastructure (1–15)",
+      "description": "Metrics, traces, and application performance alerts.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 16,
+      "name": "PostgreSQL MCP Connector",
+      "category": "Category B · Databases & Data Warehouses (16–30)",
+      "description": "Schema discovery and scoped queries; snapshots require a separately configured database capability.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 17,
+      "name": "MySQL / MariaDB Gateway",
+      "category": "Category B · Databases & Data Warehouses (16–30)",
+      "description": "Legacy relational database telemetry.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 18,
+      "name": "SQLite Local Driver",
+      "category": "Category B · Databases & Data Warehouses (16–30)",
+      "description": "Lightweight embedded storage for agent scratchpads.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 19,
+      "name": "MongoDB Atlas Connector",
+      "category": "Category B · Databases & Data Warehouses (16–30)",
+      "description": "Document store schema profiling and aggregation streams.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 20,
+      "name": "Redis Data Structure Bridge",
+      "category": "Category B · Databases & Data Warehouses (16–30)",
+      "description": "In-memory caching, pub/sub channels, and session RAM.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 21,
+      "name": "Snowflake Data Warehouse",
+      "category": "Category B · Databases & Data Warehouses (16–30)",
+      "description": "Analytical query offloading and massive dataset processing.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 22,
+      "name": "Google BigQuery MCP",
+      "category": "Category B · Databases & Data Warehouses (16–30)",
+      "description": "Enterprise data lake and analytics integration.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 23,
+      "name": "Amazon Redshift Connector",
+      "category": "Category B · Databases & Data Warehouses (16–30)",
+      "description": "Columnar database analytics bridge.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 24,
+      "name": "Supabase Realtime Bridge",
+      "category": "Category B · Databases & Data Warehouses (16–30)",
+      "description": "PostgreSQL backend sync with real-time event hooks.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 25,
+      "name": "PlanetScale Serverless Connector",
+      "category": "Category B · Databases & Data Warehouses (16–30)",
+      "description": "Branching relational database management.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 26,
+      "name": "Neo4j Graph Database",
+      "category": "Category B · Databases & Data Warehouses (16–30)",
+      "description": "Relationship mapping for temporal knowledge graphs.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 27,
+      "name": "Pinecone Vector Database",
+      "category": "Category B · Databases & Data Warehouses (16–30)",
+      "description": "Semantic similarity index and embedding lookups.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 28,
+      "name": "Qdrant Vector Engine",
+      "category": "Category B · Databases & Data Warehouses (16–30)",
+      "description": "High-performance vector memory connector.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 29,
+      "name": "Chroma DB Bridge",
+      "category": "Category B · Databases & Data Warehouses (16–30)",
+      "description": "Local embedding workspace storage.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 30,
+      "name": "Elasticsearch / OpenSearch",
+      "category": "Category B · Databases & Data Warehouses (16–30)",
+      "description": "Full-text search and log analytics bridge.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 31,
+      "name": "Google Drive MCP Server",
+      "category": "Category C · Cloud Storage & Collaboration Workspaces (31–55)",
+      "description": "File search, document reading, and media ingestion.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 32,
+      "name": "Microsoft OneDrive / SharePoint",
+      "category": "Category C · Cloud Storage & Collaboration Workspaces (31–55)",
+      "description": "Enterprise document repository sync.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 33,
+      "name": "Dropbox Enterprise API",
+      "category": "Category C · Cloud Storage & Collaboration Workspaces (31–55)",
+      "description": "Cloud storage artifact retrieval.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 34,
+      "name": "Notion Workspace MCP",
+      "category": "Category C · Cloud Storage & Collaboration Workspaces (31–55)",
+      "description": "Page search, wiki reading, and knowledge base sync.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 35,
+      "name": "Slack MCP Integration",
+      "category": "Category C · Cloud Storage & Collaboration Workspaces (31–55)",
+      "description": "Channel messaging, thread inspection, and canvas sync.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 36,
+      "name": "Microsoft Teams Gateway",
+      "category": "Category C · Cloud Storage & Collaboration Workspaces (31–55)",
+      "description": "Enterprise chat and meeting telemetry.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 37,
+      "name": "Discord Bot / Webhook Gateway",
+      "category": "Category C · Cloud Storage & Collaboration Workspaces (31–55)",
+      "description": "Community event tracking and real-time alerts.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 38,
+      "name": "Linear Issue Tracker",
+      "category": "Category C · Cloud Storage & Collaboration Workspaces (31–55)",
+      "description": "Engineering sprint cycle and issue management.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 39,
+      "name": "Jira Atlassian Rovo MCP",
+      "category": "Category C · Cloud Storage & Collaboration Workspaces (31–55)",
+      "description": "Epic, bug, and project tracking.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 40,
+      "name": "Confluence Knowledge Base",
+      "category": "Category C · Cloud Storage & Collaboration Workspaces (31–55)",
+      "description": "Technical documentation and internal spec ingestion.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 41,
+      "name": "Asana Project Management",
+      "category": "Category C · Cloud Storage & Collaboration Workspaces (31–55)",
+      "description": "Task dependency and milestone tracking.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 42,
+      "name": "Monday.com Work OS Bridge",
+      "category": "Category C · Cloud Storage & Collaboration Workspaces (31–55)",
+      "description": "Multi-project portfolio status boards.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 43,
+      "name": "ClickUp Task Manager",
+      "category": "Category C · Cloud Storage & Collaboration Workspaces (31–55)",
+      "description": "Custom task state and document syncing.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 44,
+      "name": "Notion Calendar / Google Calendar",
+      "category": "Category C · Cloud Storage & Collaboration Workspaces (31–55)",
+      "description": "Temporal event scheduling and deadlines.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 45,
+      "name": "Gmail / Microsoft Outlook MCP",
+      "category": "Category C · Cloud Storage & Collaboration Workspaces (31–55)",
+      "description": "Secure email parsing and notification triggers.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 46,
+      "name": "Intercom Customer Support",
+      "category": "Category C · Cloud Storage & Collaboration Workspaces (31–55)",
+      "description": "Live customer chat thread ingestion.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 47,
+      "name": "Zendesk Support Ticketing",
+      "category": "Category C · Cloud Storage & Collaboration Workspaces (31–55)",
+      "description": "Customer issue state and resolution tracking.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 48,
+      "name": "HubSpot CRM Connector",
+      "category": "Category C · Cloud Storage & Collaboration Workspaces (31–55)",
+      "description": "Customer profile and deal stage mapping.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 49,
+      "name": "Salesforce CRM Bridge",
+      "category": "Category C · Cloud Storage & Collaboration Workspaces (31–55)",
+      "description": "Enterprise account data synchronization.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 50,
+      "name": "Notion Database Connector",
+      "category": "Category C · Cloud Storage & Collaboration Workspaces (31–55)",
+      "description": "Structured tabular record access.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 51,
+      "name": "Airtable Base Gateway",
+      "category": "Category C · Cloud Storage & Collaboration Workspaces (31–55)",
+      "description": "Relational sheet synchronization.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 52,
+      "name": "Coda Doc Connector",
+      "category": "Category C · Cloud Storage & Collaboration Workspaces (31–55)",
+      "description": "Interactive document and table integration.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 53,
+      "name": "Figma Design System MCP",
+      "category": "Category C · Cloud Storage & Collaboration Workspaces (31–55)",
+      "description": "Design frames, component structures, and Code Connect mappings.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 54,
+      "name": "Canva Design Platform",
+      "category": "Category C · Cloud Storage & Collaboration Workspaces (31–55)",
+      "description": "Asset export and visual generation.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 55,
+      "name": "Blender 3D Geometry Connector",
+      "category": "Category C · Cloud Storage & Collaboration Workspaces (31–55)",
+      "description": "Spatial scene analysis and mesh optimization.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 56,
+      "name": "Stripe Billing & Payments API",
+      "category": "Category D · Crypto, Payments & Financial Infrastructure (56–70)",
+      "description": "Subscription event and invoice tracking.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 57,
+      "name": "PayPal Commerce Bridge",
+      "category": "Category D · Crypto, Payments & Financial Infrastructure (56–70)",
+      "description": "Payout status and transaction events; payment writes require explicit authorization and review.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 58,
+      "name": "Etherscan EVM Blockchain MCP",
+      "category": "Category D · Crypto, Payments & Financial Infrastructure (56–70)",
+      "description": "Smart-contract, gas-fee, and wallet lookups across supported EVM networks.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 59,
+      "name": "Solana Web3 RPC Gateway",
+      "category": "Category D · Crypto, Payments & Financial Infrastructure (56–70)",
+      "description": "On-chain program interaction and transaction state.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 60,
+      "name": "Polygon L2 Bridge",
+      "category": "Category D · Crypto, Payments & Financial Infrastructure (56–70)",
+      "description": "Low-cost settlement data streams.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 61,
+      "name": "Circle USDC Treasury Connector",
+      "category": "Category D · Crypto, Payments & Financial Infrastructure (56–70)",
+      "description": "USDC activity and balance lookups; minting and burning require issuer authorization.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 62,
+      "name": "Coinbase Commerce API",
+      "category": "Category D · Crypto, Payments & Financial Infrastructure (56–70)",
+      "description": "Crypto payment gateway integration.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 63,
+      "name": "Uniswap V3 Liquidity Bridge",
+      "category": "Category D · Crypto, Payments & Financial Infrastructure (56–70)",
+      "description": "Read-only pool monitoring; swaps require a separately authorized transaction signer.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 64,
+      "name": "Gnosis Safe Multi-Sig Gateway",
+      "category": "Category D · Crypto, Payments & Financial Infrastructure (56–70)",
+      "description": "Multi-signature treasury governance votes.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 65,
+      "name": "DeFiLlama Yield API",
+      "category": "Category D · Crypto, Payments & Financial Infrastructure (56–70)",
+      "description": "Protocol TVL and interest rate intelligence.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 66,
+      "name": "Plank / Teller Banking API",
+      "category": "Category D · Crypto, Payments & Financial Infrastructure (56–70)",
+      "description": "Corporate fiat account balance checks.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 67,
+      "name": "Wise Cross-Border Payments",
+      "category": "Category D · Crypto, Payments & Financial Infrastructure (56–70)",
+      "description": "International multi-currency payout management.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 68,
+      "name": "QuickBooks Accounting Bridge",
+      "category": "Category D · Crypto, Payments & Financial Infrastructure (56–70)",
+      "description": "Financial ledger and expense categorization.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 69,
+      "name": "Xero Financial Connector",
+      "category": "Category D · Crypto, Payments & Financial Infrastructure (56–70)",
+      "description": "Automated balance sheet reconciliation.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 70,
+      "name": "Plaid Banking Data Bridge",
+      "category": "Category D · Crypto, Payments & Financial Infrastructure (56–70)",
+      "description": "Secure financial institution data ingestion.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 71,
+      "name": "Cloudflare Workers & KV MCP",
+      "category": "Category E · Infrastructure, Security & AI APIs (71–100)",
+      "description": "Worker deployment metadata and scoped KV operations; changes require explicit authorization.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 72,
+      "name": "Vercel AI SDK Gateway",
+      "category": "Category E · Infrastructure, Security & AI APIs (71–100)",
+      "description": "Unified model provider invocation proxy.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 73,
+      "name": "OpenAI API Gateway",
+      "category": "Category E · Infrastructure, Security & AI APIs (71–100)",
+      "description": "GPT model fallback routing.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 74,
+      "name": "Anthropic Claude API Gateway",
+      "category": "Category E · Infrastructure, Security & AI APIs (71–100)",
+      "description": "Claude model integration.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 75,
+      "name": "Google Vertex AI Connector",
+      "category": "Category E · Infrastructure, Security & AI APIs (71–100)",
+      "description": "Enterprise Gemini cloud execution.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 76,
+      "name": "DeepSeek API Gateway",
+      "category": "Category E · Infrastructure, Security & AI APIs (71–100)",
+      "description": "High-performance reasoning model bridge.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 77,
+      "name": "Groq LPU Inference Bridge",
+      "category": "Category E · Infrastructure, Security & AI APIs (71–100)",
+      "description": "Ultra-fast open-weight model serving.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 78,
+      "name": "Ollama Local Model Connector",
+      "category": "Category E · Infrastructure, Security & AI APIs (71–100)",
+      "description": "Zero-egress local hardware execution.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 79,
+      "name": "vLLM Distributed Serving Gateway",
+      "category": "Category E · Infrastructure, Security & AI APIs (71–100)",
+      "description": "High-throughput open model hosting.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 80,
+      "name": "Hugging Face Hub API",
+      "category": "Category E · Infrastructure, Security & AI APIs (71–100)",
+      "description": "Model weight and dataset retrieval.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 81,
+      "name": "Pinecone Serverless Index",
+      "category": "Category E · Infrastructure, Security & AI APIs (71–100)",
+      "description": "Dynamic vector partition management.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 82,
+      "name": "Upstash Redis & Qstash Bridge",
+      "category": "Category E · Infrastructure, Security & AI APIs (71–100)",
+      "description": "Serverless message queues and cron triggers.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 83,
+      "name": "Auth0 / Okta Identity Provider",
+      "category": "Category E · Infrastructure, Security & AI APIs (71–100)",
+      "description": "OAuth token exchange and user claims verification.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 84,
+      "name": "Keycloak IAM Gateway",
+      "category": "Category E · Infrastructure, Security & AI APIs (71–100)",
+      "description": "Open-source identity and access management sync.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 85,
+      "name": "Cloudflare Zero Trust Tunnel",
+      "category": "Category E · Infrastructure, Security & AI APIs (71–100)",
+      "description": "Secure private network ingress for internal tools.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 86,
+      "name": "HashiCorp Vault Connector",
+      "category": "Category E · Infrastructure, Security & AI APIs (71–100)",
+      "description": "Dynamic secret injection and encryption key rotation.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 87,
+      "name": "Postman / OpenAPI Test Runner",
+      "category": "Category E · Infrastructure, Security & AI APIs (71–100)",
+      "description": "API endpoint schema validation.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 88,
+      "name": "Playwright Web Automation MCP",
+      "category": "Category E · Infrastructure, Security & AI APIs (71–100)",
+      "description": "End-to-end browser testing, form filling, and DOM inspection.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 89,
+      "name": "Cypress Test Dashboard",
+      "category": "Category E · Infrastructure, Security & AI APIs (71–100)",
+      "description": "Automated test suite result ingestion.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 90,
+      "name": "Grafana Dashboards API",
+      "category": "Category E · Infrastructure, Security & AI APIs (71–100)",
+      "description": "Metric visualization and alerting state.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 91,
+      "name": "Prometheus Time-Series Scraper",
+      "category": "Category E · Infrastructure, Security & AI APIs (71–100)",
+      "description": "Infrastructure CPU/memory telemetry.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 92,
+      "name": "New Relic APM Bridge",
+      "category": "Category E · Infrastructure, Security & AI APIs (71–100)",
+      "description": "Distributed tracing and error logging.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 93,
+      "name": "PagerDuty Incident Gateway",
+      "category": "Category E · Infrastructure, Security & AI APIs (71–100)",
+      "description": "Critical alert dispatch and escalation tracking.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 94,
+      "name": "Twilio SMS & Voice Gateway",
+      "category": "Category E · Infrastructure, Security & AI APIs (71–100)",
+      "description": "Telephony notification dispatch.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 95,
+      "name": "SendGrid Email Dispatcher",
+      "category": "Category E · Infrastructure, Security & AI APIs (71–100)",
+      "description": "Programmatic transactional email delivery.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 96,
+      "name": "Postmark Transactional Mail",
+      "category": "Category E · Infrastructure, Security & AI APIs (71–100)",
+      "description": "High-deliverability email logging.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 97,
+      "name": "Linear Webhook Relay",
+      "category": "Category E · Infrastructure, Security & AI APIs (71–100)",
+      "description": "Real-time engineering ticket synchronization.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 98,
+      "name": "GitHub Actions Webhook Bridge",
+      "category": "Category E · Infrastructure, Security & AI APIs (71–100)",
+      "description": "CI completion state notification.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 99,
+      "name": "S3-Compatible Object Storage (MinIO/R2)",
+      "category": "Category E · Infrastructure, Security & AI APIs (71–100)",
+      "description": "Unstructured binary blob and dataset storage.",
+      "status": "proposal",
+      "connected": false
+    },
+    {
+      "id": 100,
+      "name": "HELLO OS Native Substrate Bus",
+      "category": "Category E · Infrastructure, Security & AI APIs (71–100)",
+      "description": "Inter-pillar state synchronization (hello://).",
+      "status": "proposal",
+      "connected": false
+    }
+  ]
+}

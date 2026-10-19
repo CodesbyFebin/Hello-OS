@@ -25,6 +25,8 @@ export function EvolutionLabClient() {
   const [saving, setSaving] = React.useState(false);
   const [running, setRunning] = React.useState(false);
   const stopRef = React.useRef(false);
+  const selectedIdRef = React.useRef("");
+  selectedIdRef.current = selectedId;
   const [updatedAt, setUpdatedAt] = React.useState<Date | null>(null);
   const [name, setName] = React.useState("Balanced baseline");
   const [profile, setProfile] = React.useState("balanced");
@@ -57,7 +59,9 @@ export function EvolutionLabClient() {
       });
       const nextRuns = (runResult.runs || []) as EvolutionRun[];
       setRuns(nextRuns);
-      const nextId = preferId || (nextRuns.some((run) => run.id === selectedId) ? selectedId : nextRuns[0]?.id || "");
+      const currentId = selectedIdRef.current;
+      const nextId = preferId || (nextRuns.some((run) => run.id === currentId) ? currentId : nextRuns[0]?.id || "");
+      selectedIdRef.current = nextId;
       setSelectedId(nextId);
       if (nextId) await loadDetail(nextId);
       else setSelected(null);
@@ -67,9 +71,9 @@ export function EvolutionLabClient() {
     } finally {
       setLoading(false);
     }
-  }, [loadDetail, selectedId]);
+  }, [loadDetail]);
 
-  React.useEffect(() => { void refresh(); }, []); // initial live API load
+  React.useEffect(() => { void refresh(); }, [refresh]);
   React.useEffect(() => {
     if (!selectedId) return;
     void loadDetail(selectedId).catch((cause) => setError(cause instanceof Error ? cause.message : "Could not load the selected run."));

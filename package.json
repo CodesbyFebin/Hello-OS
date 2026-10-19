@@ -12,7 +12,8 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:reset": "prisma migrate reset",
-    "test:aml": "node --experimental-strip-types --test tests/aml.test.mjs"
+    "test:aml": "node --experimental-strip-types --test tests/aml.test.mjs",
+    "test:evolution": "node --experimental-strip-types --test tests/evolution.test.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

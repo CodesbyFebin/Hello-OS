@@ -1,0 +1,8 @@
+# Project Pages path-level note:
+# A GitHub Pages project repository cannot set the host-wide /robots.txt.
+# This file is served under /Hello-OS/robots.txt and is informational unless
+# the site is deployed at a host root or custom domain.
+User-agent: *
+Allow: /
+
+Sitemap: https://codesbyfebin.github.io/Hello-OS/sitemap.xml

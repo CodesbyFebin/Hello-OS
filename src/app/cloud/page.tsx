@@ -120,6 +120,8 @@ export default function CloudPage() {
           <div className={`${card} mt-4 p-4`}><div className={kicker}>PROPOSED CLI · DOES NOT EXIST</div><pre className="mt-2 font-mono text-[11px] text-zinc-500">{"# hello cloud deploy ./mission.aml --budget 50   (proposed)\n# Today: git clone the repo, then docker compose up --build"}</pre></div>
         </section>
 
+        <p className="text-sm text-zinc-400">Longer-range research ideas that are not possible today live in the <a href="/frontier" className="text-[#43e6a5] underline">Frontier Lab</a>.</p>
+
         <p className="border-t border-white/[.07] pt-6 text-center text-sm text-zinc-400">Hello is the roof. Agents are the residents. Humans are the guests, and operators hold the keys.</p>
       </div>
     </HubShell>

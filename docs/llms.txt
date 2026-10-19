@@ -7,6 +7,8 @@
 - Project guide: https://codesbyfebin.github.io/Hello-OS/
 - Agent guide: https://codesbyfebin.github.io/Hello-OS/agent-guide/
 - AML Studio guide: https://codesbyfebin.github.io/Hello-OS/aml-studio/
+- Evolution Lab guide: https://codesbyfebin.github.io/Hello-OS/evolution-lab/
+- Local Evolution Lab route: http://localhost:3000/evolution (requires the app and database to be running)
 - Local AML Studio route: http://localhost:3000/aml-studio (available when the app is running)
 - Installation guide: https://codesbyfebin.github.io/Hello-OS/getting-started/
 - Downloads: https://codesbyfebin.github.io/Hello-OS/downloads/

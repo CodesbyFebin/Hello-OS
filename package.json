@@ -14,6 +14,7 @@
     "db:reset": "prisma migrate reset",
     "test:aml": "node --experimental-strip-types --test tests/aml.test.mjs",
     "test:evolution": "node --experimental-strip-types --test tests/evolution.test.mjs",
+    "test:secrets": "prisma db push --skip-generate && node --experimental-strip-types --test tests/secrets.test.mjs",
     "test:gate": "prisma db push --skip-generate && node --experimental-strip-types --import ./tests/register.mjs --test tests/gate.test.mjs"
   },
   "dependencies": {

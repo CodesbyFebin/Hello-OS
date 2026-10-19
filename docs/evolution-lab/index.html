@@ -40,7 +40,7 @@ npm install
 cp .env.example .env
 npm run db:push
 npm run dev</code></pre>
-<p>For Docker Compose, start the app as described in the repository README, then run <code>docker compose exec web npx prisma db push</code> against the same configured database before creating runs.</p>
+<p>For Docker Compose, start the app as described in the repository README, then run <code>docker compose exec mcp bunx prisma db push</code> against the shared database before creating runs. Prisma schema pushes are non-destructive by default; review any warning before choosing a destructive option.</p>
 <h2>Create and evolve a run</h2>
 <ol>
 <li>Choose a run name and one objective: balanced, reasoning, coding, memory, or collaboration.</li>

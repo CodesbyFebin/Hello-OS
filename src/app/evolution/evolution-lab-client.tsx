@@ -25,8 +25,6 @@ export function EvolutionLabClient() {
   const [saving, setSaving] = React.useState(false);
   const [running, setRunning] = React.useState(false);
   const stopRef = React.useRef(false);
-  const selectedIdRef = React.useRef("");
-  selectedIdRef.current = selectedId;
   const [updatedAt, setUpdatedAt] = React.useState<Date | null>(null);
   const [name, setName] = React.useState("Balanced baseline");
   const [profile, setProfile] = React.useState("balanced");
@@ -59,9 +57,7 @@ export function EvolutionLabClient() {
       });
       const nextRuns = (runResult.runs || []) as EvolutionRun[];
       setRuns(nextRuns);
-      const currentId = selectedIdRef.current;
-      const nextId = preferId || (nextRuns.some((run) => run.id === currentId) ? currentId : nextRuns[0]?.id || "");
-      selectedIdRef.current = nextId;
+      const nextId = preferId || nextRuns[0]?.id || "";
       setSelectedId(nextId);
       if (nextId) await loadDetail(nextId);
       else setSelected(null);

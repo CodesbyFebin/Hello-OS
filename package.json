@@ -17,7 +17,8 @@
     "test:secrets": "prisma db push --skip-generate && node --experimental-strip-types --test tests/secrets.test.mjs",
     "test:gate": "prisma db push --skip-generate && node --experimental-strip-types --import ./tests/register.mjs --test tests/gate.test.mjs",
     "test:scheduler": "prisma db push --skip-generate && node --experimental-strip-types --import ./tests/register.mjs --test tests/scheduler-delegation.test.mjs",
-    "test:connectors": "node --experimental-strip-types --experimental-sqlite --test tests/connectors.test.mjs"
+    "test:connectors": "node --experimental-strip-types --experimental-sqlite --test tests/connectors.test.mjs",
+    "test:snapshots": "prisma db push --skip-generate && node --experimental-strip-types --import ./tests/register.mjs --test tests/snapshots-failures.test.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -102,4 +103,4 @@
     "tw-animate-css": "^1.3.5",
     "typescript": "^5"
   }
-}\n
+}

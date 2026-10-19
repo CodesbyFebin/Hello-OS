@@ -1,0 +1,1 @@
+{ "title": "Failure library", "summary": "Build/test errors parsed into a dead-end registry, with similar-failure retrieval and recorded fixes.", "order": 5 }

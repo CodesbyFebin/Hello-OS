@@ -7,7 +7,7 @@ AML currently has a **static parser and validator**. Compilation produces an AST
 ```aml
 mission optimize_sql {
   input: $query_id
-  budget: 0.42 USDC
+  budget: 0.42 credits
   deadline: 5m
 
   steps {

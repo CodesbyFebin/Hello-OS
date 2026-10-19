@@ -44,6 +44,31 @@ Most agent frameworks ship a fixed set of behaviours. HELLO OS treats agents, sk
 | Economy | Local prototype credits with daily spend caps and a circuit breaker; **not money** | Operator-approved budgets; no autonomous real-money spending |
 | Protocols | MCP tool service, A2A-style agent card, static AML compiler | Broader conformance tests |
 
+### Feature status
+
+Status: **shipped** = on `main` · **PR #N** = open pull request (available once it merges) · **planned** · **vision**. Details are in [docs/](docs/README.md).
+
+| Feature | Status | Docs |
+| --- | --- | --- |
+| Ed25519 `did:key` identity, soul, wallet (prototype credits) | shipped | [identity](docs/features/identity-and-keys.md) |
+| API never returns `privateKeyHex` | PR #4 | [identity](docs/features/identity-and-keys.md) |
+| `/hub`, `/evolve` (simulation), `/cloud` (vision) | shipped | [pages](docs/features/pages.md) |
+| Approval gate, risk tiers, operator kill switch, audit log | PR #5 | [approvals](docs/features/approvals.md) |
+| Heartbeat scheduler (cron-driven ticks), delegation tree with credit caps | PR #6 | [scheduler](docs/features/scheduler-delegation.md) |
+| Integrations registry, 6 read-only MCP connector tools, webhook bridge | PR #7 | [integrations](docs/features/integrations-mcp.md) |
+| `/frontier` Frontier Lab (vision ideas, labelled simulations) | PR #8 | [pages](docs/features/pages.md) |
+| Seven-layer card + AML compile preview with signed demo receipts | PR #9 | [pages](docs/features/pages.md) |
+| `/runtime` pillar status (live checks) | PR #10, wired in PR #16 | [pages](docs/features/pages.md) |
+| Checkpoint/resume snapshots, failure library | PR #11 | [snapshots](docs/features/snapshots-failures.md) |
+| Semantic cache (measured hit rate), RBAC knowledge index | PR #12 | [cache](docs/features/cache-knowledge.md) |
+| Reputation-weighted debate, gated treasury reallocation | PR #13 | [consensus](docs/features/consensus-treasury.md) |
+| QuickJS-on-Wasm snippet sandbox | PR #14 | [sandbox](docs/features/sandbox.md) |
+| `/roadmap` (evidence-backed statuses) | PR #15 | [pages](docs/features/pages.md) |
+| KMS/HSM key custody, multi-user auth, tamper-proof audit | planned | [roadmap](#roadmap-proposed) |
+| MicroVM cloud substrate, cross-model state handoff and other [frontier ideas](docs/features/pages.md) | vision | |
+
+Operators: see the [operator guide](docs/operator-guide.md) (approvals, kill switch, cron ticks) and [merge order](docs/merge-order.md). After merging schema changes, run `npx prisma db push`.
+
 The "HELLO EVOLVE" lab visuals and any fitness, win-rate or generation numbers shown in concept mockups are **simulations**, not measurements of this code.
 
 ## The Vision
@@ -353,7 +378,7 @@ In the Docker deployment, SQLite data is stored in the named `hello-data` volume
 
 ### Does it store private keys?
 
-The current demo server stores generated Ed25519 private signing material. That is a prototype boundary. Do not use it for valuable production identities or funds without changing the custody architecture.
+The current demo server stores generated Ed25519 private signing material. That is a prototype boundary. Once PR #4 merges, no API route returns it; only server-side signing code reads it. Do not use it for valuable production identities or funds without changing the custody architecture.
 
 ### Does agent identity guarantee trust?
 

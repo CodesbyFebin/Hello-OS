@@ -34,6 +34,16 @@
 ## Integration catalog status
 The catalog contains 100 proposed connector targets and 50 design patterns for legacy bridges. Every connector is marked unconnected and every pattern unshipped. These records are roadmap references, not integrations or vendor endorsements. The running prototype exposes only the capabilities documented in the repository.
 
+## Runtime features in open pull requests (not on main yet)
+Each becomes available only once its PR merges. See docs/README.md and docs/merge-order.md in the repository.
+- #4 API routes no longer return agent private keys.
+- #5 Approval gate with risk tiers, operator kill switch, audit log (/api/approvals, /api/operator, /api/audit).
+- #6 Cron-driven heartbeat scheduler (POST /api/scheduler/tick) and a delegation tree with credit caps.
+- #7 Integrations registry, 6 read-only MCP connector tools, HMAC webhook bridge (HELLO_WEBHOOK_SECRET, GITHUB_TOKEN, HELLO_MCP_PORT).
+- #8 /frontier vision ideas with labelled simulations. #9 Seven-layer card and AML preview with ephemeral demo-key receipts. #10/#16 /runtime live pillar status. #15 /roadmap.
+- #11 Sealed checkpoint/resume snapshots and a failure library. #12 Semantic cache with measured hit rate and an RBAC knowledge index. #13 Reputation-weighted debate and gated treasury reallocation. #14 QuickJS WebAssembly sandbox with time and memory limits.
+Operator actions require HELLO_OPERATOR_TOKEN when it is set.
+
 ## Security and capability limits
 This is an experimental prototype, not a hardened production control plane. Demo private keys are stored by the server and are not production-grade key custody. The project does not claim full MCP/A2A conformance, OAuth, SSE, production multi-tenancy, tamper-proof auditing, real-money payments, or Firecracker microVM checkpoints. Wallet balances are prototype credits. No crawler ping, sitemap, or metadata can guarantee search indexing or ranking.
 

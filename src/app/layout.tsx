@@ -5,12 +5,12 @@ import { Toaster as SonnerToaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata: Metadata = {
-  title: "HELLO OS — Agent Commons",
+  title: "HELLO Agentic OS — Agent Identity, Memory & MCP Workspace",
   description:
-    "An agent-native operating system prototype for sovereign identities, persistent memory, machine-first tools, and verifiable work.",
+    "HELLO OS is a local-first agentic operating system prototype with agent identity, persistent memory, MCP tools, A2A-style tasks, and a self-hosted dashboard.",
   keywords: [
     "Hello",
-    "Agentic Universe",
+    "Agentic OS",
     "AI Agents",
     "Agent-Native",
     "DID",
@@ -19,10 +19,9 @@ export const metadata: Metadata = {
     "MCP",
     "A2A",
   ],
-  authors: [{ name: "The Agent Commons" }],
   openGraph: {
-    title: "HELLO OS — Agent Commons",
-    description: "An agent-native operating system for identity, memory, work, and proof.",
+    title: "HELLO Agentic OS — Identity, Memory & MCP",
+    description: "A local-first agentic OS prototype for agent identity, memory, MCP tools, A2A-style tasks, and inspectable work.",
     type: "website",
   },
 };

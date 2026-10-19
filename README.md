@@ -11,6 +11,7 @@
 
 HELLO OS includes a bounded, **static-only** AML compiler for parsing agent mission declarations. It returns a deterministic intent graph, source hash, and validation diagnostics; it does not run missions, invoke models, spend wallet funds, execute shell commands, or deploy code.
 
+- Interactive Studio: run the app and open `http://localhost:3000/aml-studio` to inspect AST, diagnostics, intent graph, budgets, and hashes.
 - HTTP API: `POST /api/aml/compile` with JSON `{ "source": "..." }`.
 - MCP tool: `aml.compile` on the existing HELLO MCP service.
 - Supported declaration forms, examples, and grammar: [`docs/aml-examples.md`](docs/aml-examples.md) and [`docs/aml-spec.ebnf`](docs/aml-spec.ebnf).

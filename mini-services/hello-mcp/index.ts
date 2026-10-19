@@ -12,6 +12,7 @@
 
 import { db } from "../../src/lib/db";
 import { listSymbols, typecheck, patchSymbol, estimateTokens, type ForgeSymbol, type ForgeDiagnostic } from "../../src/lib/forge";
+import { compileAml } from "../../src/lib/aml";
 import { createHash } from "crypto";
 
 const PORT = 3030;
@@ -117,6 +118,16 @@ const tools: Tool[] = [
         },
       });
       return { ...result, mutationId: mut.id, receiptHash: mut.receiptHash };
+    },
+  },
+
+  {
+    name: "aml.compile",
+    description: "Statically parse and validate AML declarations. This tool never executes the actions named in AML source.",
+    inputSchema: { type: "object", properties: { source: { type: "string", description: "AML source, maximum 64 KB" } }, required: ["source"] },
+    handler: async (args) => {
+      if (typeof args.source !== "string") return { error: "source must be a string" };
+      return compileAml(args.source);
     },
   },
 
@@ -358,6 +369,7 @@ function handshakeManifest() {
     ],
     capabilities: {
       forge: { endpoint: "/tools/call", tools: ["forge.listSymbols", "forge.readSymbol", "forge.typecheck", "forge.patchSymbol"] },
+      aml: { endpoint: "/tools/call", tools: ["aml.compile"] },
       cortex: { endpoint: "/tools/call", tools: ["cortex.recall", "cortex.recordDeadEnd", "cortex.proposeContract", "cortex.lockInterface", "cortex.listContracts"] },
       cloud: { endpoint: "/tools/call", tools: ["cloud.checkpoint", "cloud.rollback"] },
     },

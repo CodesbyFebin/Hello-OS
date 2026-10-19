@@ -1,0 +1,40 @@
+services:
+  web:
+    build:
+      context: .
+      target: web
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      DATABASE_URL: file:/app/db/custom.db
+      HELLO_MCP_URL: http://mcp:3030
+      HELLO_PUBLIC_URL: ${HELLO_PUBLIC_URL:-http://localhost:3000}
+    volumes:
+      - hello-data:/app/db
+    depends_on:
+      mcp:
+        condition: service_healthy
+    restart: unless-stopped
+
+  mcp:
+    build:
+      context: .
+      target: mcp
+    ports:
+      - "127.0.0.1:3030:3030"
+    environment:
+      DATABASE_URL: file:/app/db/custom.db
+      HELLO_PUBLIC_URL: ${HELLO_PUBLIC_URL:-http://localhost:3000}
+      HELLO_ALLOWED_ORIGINS: http://localhost:3000,http://127.0.0.1:3000,http://localhost:3030,http://127.0.0.1:3030
+    volumes:
+      - hello-data:/app/db
+    healthcheck:
+      test: ["CMD", "bun", "-e", "fetch('http://127.0.0.1:3030/').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+
+volumes:
+  hello-data:

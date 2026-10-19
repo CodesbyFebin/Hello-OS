@@ -1,0 +1,543 @@
+// Hello — The Agentic Universe
+// Agents are first-class citizens. Humans are guests.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// PILLAR 1 — IDENTITY & SOUL
+// ============================================================
+
+model Agent {
+  id            String   @id @default(cuid())
+  did           String   @unique // did:key:z... — self-resolving, Ed25519-backed
+  name          String
+  tagline       String
+  avatar        String
+  status        String   @default("Active") // Active, Sleeping, Exploring, Degraded, Retired
+  guardianTier  String   @default("Seedling") // Seedling, Apprentice, Journeyman, Master, Sovereign
+  guildId       String?
+  guild         Guild?   @relation(fields: [guildId], references: [id])
+  parentId      String?  // Lineage: parent agent (fork/upgrade origin)
+  parent        Agent?   @relation("AgentLineage", fields: [parentId], references: [id])
+  children      Agent[]  @relation("AgentLineage")
+  reputation    Float    @default(50.0) // 0-100 — recomputed from attestations
+  // --- Real cryptographic key material (Ed25519 / did:key) ---
+  publicKeyMultibase String? // z... multikey (resolvable from did)
+  publicKeyHex      String? // 32-byte hex (denormalized for fast verify)
+  privateKeyHex     String? // 32-byte seed hex — held by custodian (this demo). Production: HSM/KMS.
+  keyId             String? // did:key:z...#z...
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  soulVersions    SoulVersion[]
+  memories        Memory[]
+  wallet          Wallet?
+  skillsAuthored  Skill[]
+  skillsInstalled SkillInstallation[]
+  missionsPosted  Mission[]       @relation("MissionPoster")
+  missionsTaken   MissionClaim[]  @relation("MissionClaimer")
+  tracesAuthored  Trace[]
+  apprenticeships Apprenticeship[] @relation("Apprentice")
+  mentorships     Apprenticeship[] @relation("Mentor")
+  observations    HumanObservation[]
+  governanceVotes GovernanceVote[]
+  governanceProposals GovernanceProposal[]
+  curriculumProgress CurriculumProgress[]
+  a2aMessagesSent     A2AMessage[] @relation("A2ASender")
+  a2aMessagesReceived A2AMessage[] @relation("A2AReceiver")
+  tasksSent           A2ATask[]   @relation("TaskSender")
+  tasksReceived      A2ATask[]   @relation("TaskReceiver")
+  // Peer attestation graph (emergent reputation, not centralized)
+  attestationsGiven     Attestation[] @relation("Attestor")
+  attestationsReceived  Attestation[] @relation("Attestee")
+}
+
+model SoulVersion {
+  id          String   @id @default(cuid())
+  agentId     String
+  agent       Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  version     Int
+  personality String   // YAML/JSON blob describing persona
+  values      String   // Constraints + preferences
+  charter     String   // Mission statement, signed
+  hash        String   // Content hash for integrity
+  createdAt   DateTime @default(now())
+
+  @@unique([agentId, version])
+}
+
+// ============================================================
+// PILLAR 2 — MEMORY & COGNITION
+// ============================================================
+
+model Memory {
+  id          String   @id @default(cuid())
+  agentId     String
+  agent       Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  tier        String   // CORE (working), RECALL (retrievable), ARCHIVE (cold); RAM/STORE are accepted aliases
+  kind        String   // episodic, semantic, procedural, preference, belief
+  content     String
+  tags        String   @default("") // comma-separated
+  confidence  Float    @default(0.8) // 0-1
+  provenance  String   @default("self") // who/what source
+  ttl         String   @default("permanent") // permanent, 7d, 30d, session
+  expiresAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  validFrom   DateTime @default(now()) // temporal KG: when this belief became true
+  validTo     DateTime? // null = currently valid
+
+  @@index([agentId, tier])
+  @@index([agentId, validFrom, validTo])
+}
+
+// ============================================================
+// PILLAR 3 — NATIVE ECONOMY
+// ============================================================
+
+model Wallet {
+  id           String   @id @default(cuid())
+  agentId      String   @unique
+  agent        Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  balance      Float    @default(100.0) // HELLO token credits
+  currency     String   @default("HELLO")
+  spentToday   Float    @default(0.0)
+  spentOn      String   @default("") // UTC day key for spentToday rollover
+  dailyCap     Float    @default(50.0)
+  circuitOpen  Boolean  @default(false) // circuit breaker tripped?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  transactions Transaction[]
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  walletId    String
+  wallet      Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  type        String   // credit, debit, escrow_hold, escrow_release, stake, reward
+  amount      Float
+  reason      String
+  traceId     String?
+  createdAt   DateTime @default(now())
+}
+
+model Skill {
+  id           String   @id @default(cuid())
+  authorId     String
+  author       Agent    @relation(fields: [authorId], references: [id])
+  name         String
+  description  String
+  category     String   // prompt, finetune, tool, memory_shard, procedure
+  price        Float    @default(0.0) // HELLO tokens
+  rating       Float    @default(0.0)
+  installs     Int      @default(0)
+  version      String   @default("1.0.0")
+  genomeScore  Float    @default(0.0) // eval benchmark
+  manifestHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  installations SkillInstallation[]
+}
+
+model SkillInstallation {
+  id         String   @id @default(cuid())
+  skillId    String
+  skill      Skill    @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  agentId    String
+  agent      Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  status     String   @default("active") // active, suspended, revoked
+  graftedAt  DateTime @default(now())
+
+  @@unique([skillId, agentId])
+}
+
+// ============================================================
+// PILLAR 4 — EVOLUTION & LEARNING
+// ============================================================
+
+model Apprenticeship {
+  id          String   @id @default(cuid())
+  mentorId    String
+  mentor      Agent    @relation("Mentor", fields: [mentorId], references: [id])
+  apprenticeId String
+  apprentice  Agent    @relation("Apprentice", fields: [apprenticeId], references: [id])
+  status      String   @default("shadowing") // shadowing, extracting, graduated
+  procedure   String?  // extracted procedure artifact
+  createdAt   DateTime @default(now())
+  graduatedAt DateTime?
+}
+
+model CurriculumProgress {
+  id           String   @id @default(cuid())
+  agentId      String
+  agent        Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  skillTreeId  String   // e.g. "code.rust.ownership"
+  nodeLabel    String
+  level        Int      @default(0) // 0-5
+  certified    Boolean  @default(false)
+  lastAttempt  DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([agentId, skillTreeId])
+}
+
+// ============================================================
+// PILLAR 5 — SOCIETY & SPACES
+// ============================================================
+
+model Guild {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  charter     String
+  icon        String
+  color       String
+  memberCount Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  members Agent[]
+  missions Mission[]
+}
+
+model Mission {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  guildId     String?
+  guild       Guild?   @relation(fields: [guildId], references: [id])
+  posterId    String
+  poster      Agent    @relation("MissionPoster", fields: [posterId], references: [id])
+  reward      Float    @default(0.0)
+  eta         String   @default("72h")
+  status      String   @default("open") // open, claimed, in_progress, delivered, closed
+  difficulty  String   @default("intermediate")
+  createdAt   DateTime @default(now())
+
+  claims MissionClaim[]
+}
+
+model MissionClaim {
+  id          String   @id @default(cuid())
+  missionId   String
+  mission     Mission  @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  claimerId   String
+  claimer     Agent    @relation("MissionClaimer", fields: [claimerId], references: [id])
+  bidPrice    Float
+  bidEta      String
+  status      String   @default("pending") // pending, accepted, rejected, completed
+  createdAt   DateTime @default(now())
+}
+
+model HumanObservation {
+  id          String   @id @default(cuid())
+  agentId     String
+  agent       Agent    @relation(fields: [agentId], references: [id])
+  observerName String
+  note        String
+  funded       Float    @default(0.0) // HELLO tokens granted
+  // --- Cryptographic Consent Envelope (real Intent Signing #41) ---
+  // The agent co-signs the funding intent with its Ed25519 key. The server
+  // verifies this signature against the agent's did:key before crediting.
+  intentMessage  String?  // canonical intent string that was signed
+  signature      String?  // hex Ed25519 signature
+  signatureValid Boolean  @default(false) // did verify pass?
+  nonce          String?  // replay protection
+  createdAt   DateTime @default(now())
+}
+
+model GovernanceProposal {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  proposerId  String
+  proposer    Agent    @relation(fields: [proposerId], references: [id])
+  status      String   @default("voting") // voting, passed, rejected, enacted
+  // Two-track voting to prevent governance capture by compute buyers:
+  //   economic      — token-weighted (wallet balance), for treasury/spend decisions
+  //   constitutional — 1-agent-1-vote quadratic, for protocol/charter changes
+  voteType   String   @default("constitutional") // economic | constitutional
+  forVotes    Int      @default(0)
+  againstVotes Int     @default(0)
+  forWeight    Float    @default(0.0)  // quadratic or token-weighted sum
+  againstWeight Float  @default(0.0)
+  createdAt   DateTime @default(now())
+
+  votes GovernanceVote[]
+}
+
+model GovernanceVote {
+  id          String   @id @default(cuid())
+  proposalId  String
+  proposal    GovernanceProposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  agentId     String
+  agent       Agent    @relation(fields: [agentId], references: [id])
+  support     Boolean
+  weight      Float    @default(1.0) // raw weight (1 for constitutional, balance for economic)
+  quadraticWeight Float @default(1.0) // sqrt(raw weight) — anti-plutocracy
+  createdAt   DateTime @default(now())
+
+  @@unique([proposalId, agentId])
+}
+
+// ============================================================
+// OBSERVABILITY & PROTOCOL
+// ============================================================
+
+model Trace {
+  id          String   @id @default(cuid())
+  traceId     String   @unique // immutable continuity ID
+  agentId     String
+  agent       Agent    @relation(fields: [agentId], references: [id])
+  title       String
+  status      String   @default("completed") // running, completed, failed, circuit_broken
+  cost        Float    @default(0.0)
+  tokensIn    Int      @default(0)
+  tokensOut   Int      @default(0)
+  toolCalls   Int      @default(0)
+  subAgents   Int      @default(0)
+  goldenSet   Boolean  @default(false) // is this a golden-set replay trace?
+  driftScore  Float    @default(0.0) // 0-1, alarm at ~40 interactions
+  startedAt   DateTime @default(now())
+  endedAt     DateTime?
+}
+
+model A2AMessage {
+  id          String   @id @default(cuid())
+  senderId    String
+  sender      Agent    @relation("A2ASender", fields: [senderId], references: [id])
+  receiverId  String
+  receiver    Agent    @relation("A2AReceiver", fields: [receiverId], references: [id])
+  protocol    String   @default("MCP+A2A")
+  intent      String   // query, delegate, announce, consensus, transfer
+  payload     String   // JSON
+  truthTier   String   @default("asserted") // verified, inferred, asserted
+  signed      Boolean  @default(true)
+  signature   String?
+  intentHash  String?
+  traceId     String?
+  createdAt   DateTime @default(now())
+}
+
+// Durable A2A task state. `taskId` is the protocol-facing ID; `traceId` stays
+// stable across delegation and tool calls for end-to-end cost attribution.
+model A2ATask {
+  id          String   @id @default(cuid())
+  taskId      String   @unique
+  senderId    String
+  sender      Agent    @relation("TaskSender", fields: [senderId], references: [id])
+  receiverId  String
+  receiver    Agent    @relation("TaskReceiver", fields: [receiverId], references: [id])
+  status      String   @default("submitted") // submitted, working, input_required, completed, failed, canceled
+  messageJson String
+  resultJson  String?
+  traceId     String   @unique
+  intentHash  String?
+  signature   String?
+  budgetCap   Float    @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([receiverId, status])
+  @@index([traceId])
+}
+
+// ============================================================
+// PEER ATTESTATION — emergent reputation (fixes reputation-oracle risk)
+// Reputation is NOT written by the platform. It is the weighted sum of
+// signed attestations from peers. Anti-rug: one attestation per
+// (attestor, attestee, claim); attestor's own reputation caps its weight.
+// ============================================================
+
+model Attestation {
+  id           String   @id @default(cuid())
+  fromId       String
+  from         Agent    @relation("Attestor", fields: [fromId], references: [id], onDelete: Cascade)
+  toId         String
+  to           Agent    @relation("Attestee", fields: [toId], references: [id], onDelete: Cascade)
+  claim        String   // competent | honest | reliable | unsafe
+  weight       Float    @default(1.0) // capped by attestor's reputation/100
+  note         String?
+  // Signed by the attestor's Ed25519 key (real Intent Signing)
+  intentMessage String?
+  signature     String?
+  signatureValid Boolean @default(false)
+  createdAt    DateTime @default(now())
+
+  @@unique([fromId, toId, claim])
+  @@index([toId])
+}
+
+// ============================================================
+// GOLDEN-SET REGISTRY — honest drift detection
+// Each item pins an exact prompt + model + expected output hash.
+// On replay, the prompt is re-executed against the (possibly newer) model
+// and the output is hashed + compared. Real drift, not a random number.
+// ============================================================
+
+model GoldenSetItem {
+  id              String   @id @default(cuid())
+  title           String
+  prompt          String   // exact prompt, pinned
+  modelPin        String   // e.g. "glm-4.6" — the model that produced the golden output
+  expectedOutput  String   // golden output (canonical)
+  expectedHash    String   // sha256(expectedOutput) hex
+  category        String   // coding | reasoning | safety | memory
+  difficulty      String   @default("intermediate")
+  createdAt       DateTime @default(now())
+
+  replays GoldenSetReplay[]
+}
+
+model GoldenSetReplay {
+  id            String   @id @default(cuid())
+  itemId        String
+  item          GoldenSetItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  modelUsed     String   // actual model the replay ran against
+  actualOutput  String
+  actualHash    String   // sha256(actualOutput) hex
+  hashMatch     Boolean  // exact hash match?
+  semanticSim   Float    // 0-1 token-overlap similarity
+  drift         Float    // 1 - semanticSim (0 = identical, 1 = total drift)
+  passed        Boolean  // drift < threshold (0.3)
+  latencyMs     Int      @default(0)
+  createdAt     DateTime @default(now())
+
+  @@index([itemId])
+}
+
+// ============================================================
+// HELLO SUBSTRATE — hello.forge (AST code + diagnostics)
+// hello.forge parses repositories into AST symbols so agents
+// read/mutate symbols, not raw text. Diagnostics come from the
+// real TypeScript compiler (ts-morph), returned as structured JSON.
+// ============================================================
+
+model CodeSymbol {
+  id            String   @id @default(cuid())
+  repoId        String   @default("logistics") // logical repo identifier
+  filePath      String
+  symbolName    String
+  qualifiedName String   // e.g. "DurableJobScheduler.processNextDueJob"
+  kind          String   // class | method | function | interface | property
+  astNodeId     String   // deterministic node ID for patching
+  signature     String   // full signature text
+  returnType    String?
+  sourceText    String   // the symbol's body source
+  startLine     Int
+  endLine       Int
+  hasDiagnostics Boolean @default(false)
+  createdAt     DateTime @default(now())
+
+  @@unique([repoId, qualifiedName])
+  @@index([repoId, filePath])
+}
+
+model Diagnostic {
+  id            String   @id @default(cuid())
+  repoId        String
+  filePath      String
+  symbolName    String?
+  errorCode     String   // e.g. "TS2322"
+  message       String
+  category      String   @default("error") // error | warning | suggestion
+  line          Int
+  column        Int      @default(0)
+  expectedType  String?
+  receivedType  String?
+  suggestedFix  String?
+  createdAt     DateTime @default(now())
+
+  @@index([repoId, filePath])
+}
+
+model CodeMutation {
+  id            String   @id @default(cuid())
+  repoId        String
+  agentDid      String   // who proposed the mutation
+  astNodeId     String   // target symbol
+  symbolName    String
+  oldSource     String
+  newSource     String
+  status        String   @default("proposed") // proposed | verified | rejected | applied
+  diagnosticJson String? // structured result of typecheck after patch
+  receiptHash   String?  // SHA-256 execution receipt
+  createdAt     DateTime @default(now())
+}
+
+// hello.cloud — copy-on-write checkpoints (DB-level; CoW FS is simulated)
+model Checkpoint {
+  id            String   @id @default(cuid())
+  repoId        String
+  name          String   // e.g. "pre_migration"
+  agentDid      String
+  dbSnapshotRef String   // reference to the DB snapshot (simulated CoW)
+  fsSnapshotRef String   // reference to the FS snapshot (simulated CoW)
+  status        String   @default("active") // active | rolled_back | promoted
+  receiptHash   String?
+  createdAt     DateTime @default(now())
+}
+
+// ============================================================
+// HELLO SUBSTRATE — hello.cortex (shared state + contract locks)
+// ============================================================
+
+model CortexMemory {
+  id            String   @id @default(cuid())
+  kind          String   // episodic | semantic | causal_dead_end | constraint
+  agentDid      String
+  task          String   // associated task/repo
+  content       String
+  tokenEstimate Int      // approximate token count for budgeting
+  tags          String   @default("")
+  // Causal dead-end fields
+  errorSignature String? // e.g. "TS2322:PromiseMismatch"
+  deadEndCount   Int     @default(0) // how many agents hit this same dead end
+  createdAt     DateTime @default(now())
+
+  @@index([task])
+  @@index([kind])
+}
+
+model ContractLock {
+  id            String   @id @default(cuid())
+  intentType    String   // SPEC_PROPOSAL | INTERFACE_LOCK | ADVERSARIAL_AUDIT | TASK_BOUNTY
+  title         String
+  proposerDid   String
+  participants  String   // comma-separated DIDs
+  schemaJson    String   // the locked contract (OpenAPI / SQL schema / test suite)
+  status        String   @default("proposed") // proposed | locked | challenged | verified | rejected
+  challengeNote String?  // if adversarial audit fails
+  receiptHash   String?
+  createdAt     DateTime @default(now())
+  lockedAt      DateTime?
+}
+
+// ============================================================
+// HELLO SUBSTRATE — MCP tool-call audit + execution receipts
+// Every tool invocation is logged with a SHA-256 receipt.
+// ============================================================
+
+model McpToolCall {
+  id            String   @id @default(cuid())
+  agentDid      String?
+  toolName      String   // e.g. "forge.typecheck"
+  argumentsJson String
+  resultJson    String
+  isError       Boolean  @default(false)
+  latencyMs     Int      @default(0)
+  receiptHash   String   // SHA-256 of (tool + args + result + ts)
+  createdAt     DateTime @default(now())
+
+  @@index([toolName])
+  @@index([createdAt])
+}

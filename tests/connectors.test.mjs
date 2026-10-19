@@ -122,3 +122,21 @@ test("agent card advertises connectors with no write tools", () => {
   assert.deepEqual(card["x-hello-connectors"].writeTools, []);
   assert.equal(JSON.stringify(card).toLowerCase().includes("privatekey"), false);
 });
+
+test("live status checks are real and never echo secrets", async () => {
+  const { runStatusChecks } = await import("../src/lib/integrations/status.ts");
+  const ok = await runStatusChecks({
+    env: { GITHUB_TOKEN: "ghp_TOPSECRET", HELLO_WEBHOOK_SECRET: "whsec_X", DATABASE_URL: "file:x" },
+    fetchImpl: async () => new Response(JSON.stringify({ tools: [{ name: "connector.sql.query" }, { name: "forge.x" }] })),
+    countTables: async () => 30,
+  });
+  const by = Object.fromEntries(ok.checks.map((c) => [c.id, c]));
+  assert.equal(by.mcp.state, "connected");
+  assert.equal(by.mcp.detail, "1 connector tool(s) listed");
+  assert.equal(by.db.detail, "30 table(s) reflected");
+  assert.equal(by["github-token"].state, "configured");
+  assert.equal(JSON.stringify(ok).includes("TOPSECRET") || JSON.stringify(ok).includes("whsec_X"), false);
+  const down = await runStatusChecks({ env: {}, fetchImpl: async () => { throw new Error("ECONNREFUSED"); }, countTables: async () => { throw new Error("no db"); } });
+  const d = Object.fromEntries(down.checks.map((c) => [c.id, c.state]));
+  assert.deepEqual(d, { mcp: "unreachable", db: "not-configured", "github-token": "not-configured", "webhook-secret": "not-configured" });
+});

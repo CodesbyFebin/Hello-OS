@@ -267,6 +267,10 @@ The OpenAI crawler family includes OAI-SearchBot for search experiences and GPTB
 
 GitHub itself controls access to GitHub repository pages and its own robots policy. A project-repository `robots.txt` file does not control crawler policy for `github.com`. On GitHub Pages project sites, a robots file served under `/Hello-OS/robots.txt` is beneath the host root; it does not automatically become the host-wide `/robots.txt`. If you later attach a custom domain or publish a user/organization Pages site, configure the host-root robots file there and verify the final response.
 
+## Integration catalog
+
+The [HELLO OS integration catalog](https://codesbyfebin.github.io/Hello-OS/integrations/) documents 100 proposed connector targets and 50 legacy bridge patterns. It is a planning reference only: all connectors are marked unconnected and all patterns unshipped. See the [machine-readable connector registry](docs/integrations/connector-registry.json), [bridge patterns](docs/integrations/bridge-patterns.json), and [safety notes](docs/integrations/README.md). No vendor integration is activated by these catalog entries.
+
 ## Machine-readable project guidance
 
 - **[`AGENTS.md`](AGENTS.md)** gives coding agents repository-specific development and safety instructions.

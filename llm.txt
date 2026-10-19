@@ -29,3 +29,5 @@ This is an experimental prototype. It does not claim full MCP/A2A conformance, O
 
 ## Vision claims not verified as implemented
 A broader concept brief mentions hello.id, hello.cortex, hello.ledger, hello.mesh, hello.forge, hello.cloud, and hello.nexus. Treat these as vision labels, not deployed services. USDC, paid marketplace/escrow, verifiable credentials, lineage chains, temporal graph and sleep-cycle memory, Firecracker execution, database forks, swarms, governance, and evolutionary tournaments are not shipped by this codebase. The brief's performance figures, agent counts, case studies, release checksums, external URLs, and claimed license are unverified and must not be repeated as facts. No native APK, EXE/PEXE, DEB, AppImage, DMG, IPA, AAB, standalone binary, or SDK archive is published. The repository currently has no LICENSE file.
+
+- Static AML compiler API (`POST /api/aml/compile`) and MCP `aml.compile` validate intent declarations without executing them. See `docs/aml-examples.md` and `docs/aml-spec.ebnf`.

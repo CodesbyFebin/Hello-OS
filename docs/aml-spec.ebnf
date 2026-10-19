@@ -1,0 +1,29 @@
+(* HELLO OS AML static subset, version aml-static-v1.
+   This grammar describes syntax accepted by src/lib/aml.ts. It does not
+   authorize or execute the operations named by a program. *)
+
+program          = { newline | declaration } ;
+declaration      = construct, header, "{", newline, { body-item }, "}" ;
+construct        = "intent" | "capability" | "mission" | "memory"
+                 | "wallet" | "swarm" | "governance" | "agent"
+                 | "model_matrix" | "bridge" ;
+header           = { token } ;
+body-item        = newline | statement, newline
+                 | block, [ newline ] ;
+block            = { token }, "{", newline, { body-item }, "}" ;
+statement        = { token } ;
+token            = identifier | variable | string | number | symbol ;
+identifier       = letter, { letter | digit | "_" | "-" | "." } ;
+variable         = "$", identifier ;
+string           = '"', { character | escape }, '"'
+                 | "'", { character | escape }, "'" ;
+number           = digit, { digit | "." } ;
+symbol           = "→" | "←" | "->" | "<-" | "{" | "}" | "(" | ")"
+                 | "[" | "]" | ":" | "," | "." | "<" | ">"
+                 | "<=" | ">=" | "==" | "!=" | "+" | "-" | "*"
+                 | "/" | "=" | "!" | "@" | ";" ;
+letter           = ? Unicode or ASCII letter, or underscore ? ;
+digit            = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+escape           = "\\", ? any character ? ;
+character        = ? any character except quote, backslash, or newline ? ;
+newline          = ? line feed ? ;

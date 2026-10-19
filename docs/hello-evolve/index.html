@@ -354,13 +354,13 @@
         <i data-lucide="play" class="w-4 h-4"></i>
         Watch Evolution
       </a>
-      <a href="#" class="px-6 py-3 rounded-lg bg-white/5 border border-edge text-gray-300 font-mono text-sm hover:border-white/30 transition flex items-center gap-2">
+      <a href="https://github.com/CodesbyFebin/Hello-OS/stargazers" class="px-6 py-3 rounded-lg bg-white/5 border border-edge text-gray-300 font-mono text-sm hover:border-white/30 transition flex items-center gap-2">
         <i data-lucide="github" class="w-4 h-4"></i>
         Star on GitHub
       </a>
-      <a href="#" class="px-6 py-3 rounded-lg bg-white/5 border border-edge text-gray-300 font-mono text-sm hover:border-white/30 transition flex items-center gap-2">
+      <a href="https://github.com/CodesbyFebin/Hello-OS/tree/main/docs" class="px-6 py-3 rounded-lg bg-white/5 border border-edge text-gray-300 font-mono text-sm hover:border-white/30 transition flex items-center gap-2">
         <i data-lucide="book" class="w-4 h-4"></i>
-        Read Paper
+        Read Docs
       </a>
     </div>
 
@@ -1295,7 +1295,7 @@
   function showGenerationAt(index, manual = true) {
     if (index < 0 || index >= generationSnapshots.length) return;
     selectedTimelineIndex = index;
-    timelineFollowLatest = manual && index === generationSnapshots.length - 1;
+    if (manual) timelineFollowLatest = index === generationSnapshots.length - 1;
     const snap = generationSnapshots[index];
     document.getElementById('timelineGen').textContent = snap.gen;
     document.getElementById('tlPop').textContent = snap.pop;

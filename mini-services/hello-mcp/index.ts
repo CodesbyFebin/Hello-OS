@@ -14,8 +14,9 @@ import { db } from "../../src/lib/db";
 import { listSymbols, typecheck, patchSymbol, estimateTokens, type ForgeSymbol, type ForgeDiagnostic } from "../../src/lib/forge";
 import { compileAml } from "../../src/lib/aml";
 import { createHash } from "crypto";
+import { connectorTools } from "../../src/lib/mcp/connectors";
 
-const PORT = 3030;
+const PORT = Number(process.env.HELLO_MCP_PORT || 3030);
 const MCP_PROTOCOL_VERSION = "2026-07-28";
 
 // ─── MCP tool registry ───────────────────────────────────────────
@@ -352,6 +353,8 @@ const tools: Tool[] = [
       return { checkpointId: cp.id, status: "rolled_back", restoredTo: cp.name };
     },
   },
+  // ── connectors (read-only adapters; see docs/bridges.md) ──
+  ...connectorTools(db as any),
 ];
 
 // ─── hello.json handshake manifest ────────────────────────────────
@@ -372,6 +375,7 @@ function handshakeManifest() {
       aml: { endpoint: "/tools/call", tools: ["aml.compile"] },
       cortex: { endpoint: "/tools/call", tools: ["cortex.recall", "cortex.recordDeadEnd", "cortex.proposeContract", "cortex.lockInterface", "cortex.listContracts"] },
       cloud: { endpoint: "/tools/call", tools: ["cloud.checkpoint", "cloud.rollback"] },
+      connectors: { endpoint: "/tools/call", tools: tools.filter((t) => t.name.startsWith("connector.")).map((t) => t.name), readOnly: true },
     },
     toolCount: tools.length,
     mcpProtocol: `MCP Streamable HTTP ${MCP_PROTOCOL_VERSION}; JSON-RPC endpoint: /mcp. Compatibility routes: GET /tools and POST /tools/call.`,

@@ -17,5 +17,12 @@ export function createAgentCard(baseUrl = process.env.HELLO_PUBLIC_URL || "http:
       inputModes: ["text/plain", "application/json"],
       outputModes: ["text/plain", "application/json"],
     }],
+    // Read-only connector tools served by the hello-mcp service (see /integrations).
+    "x-hello-connectors": {
+      mcpTools: ["connector.sql.query", "connector.sql.schema", "connector.sql.fingerprint", "connector.github.read", "connector.openapi.reflect", "connector.webhook.transpile"],
+      webhookIntake: `${url}/api/integrations/webhook`,
+      writeTools: [],
+      note: "Discovery metadata only; it grants no authorization.",
+    },
   };
 }

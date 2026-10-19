@@ -15,6 +15,16 @@ The prototype brings several concepts into one local-first application. An opera
 
 The intended audience includes developers prototyping AI agents, researchers exploring agent identity and memory, builders evaluating MCP integrations, and operators who want a small self-hostable agent workspace. The app is designed to be inspected and adapted. It does not assume that an agent should receive unrestricted access to files, credentials, networks, funds, or production systems.
 
+## Product vision versus shipped functionality
+
+A supplied concept brief uses names such as `hello.id`, `hello.cortex`, `hello.ledger`, `hello.mesh`, `hello.forge`, `hello.cloud`, and `hello.nexus`. These names can help describe a longer-term product direction, but they are not separate production services in this repository. The actual implementation boundaries are the web application, Prisma/SQLite persistence, the MCP service, selected REST APIs, and the A2A-style discovery/task methods described above.
+
+The brief imagines a broader agent-native environment: portable identities and lineage, richer cognition and consolidation, a native economy, protocol-first delegation, isolated compute, swarm coordination, and evaluation-driven learning. These ideas are useful design prompts. Treat each as a proposal until it has code, tests, operational controls, and documentation in this repo.
+
+In particular, this repository does not currently ship a USDC wallet, token metering, skill marketplace, escrow, task futures, reputation collateral, verifiable credentials, W3C DID compliance certification, cryptographic lineage chains, a temporal knowledge graph, sleep consolidation, Firecracker execution, copy-on-write database forks, speculative swarm runtime, autonomous governance, or an evolutionary tournament system. Existing wallet records and daily spending controls are local prototype data, not payments or a native economy. Existing memory tiers are not an unlimited temporal cognition system. Existing checkpoint records do not launch isolated virtual machines.
+
+The concept brief also contains example agents-online counts, transactions per second, success percentages, latency targets, token-savings percentages, case studies, release names, checksums, hosted URLs, and a claimed license. None of those values or artifacts have been verified in this repository. They must not be cited as HELLO OS benchmarks, live service status, official downloads, security guarantees, or licensing terms. The repo currently has no published APK, EXE/PEXE, DEB, AppImage, DMG, IPA, AAB, standalone binary, or SDK archive. It also has no `LICENSE` file. Use the Download section above for what can actually be installed today.
+
 ## At a glance
 
 | Area | Current implementation |

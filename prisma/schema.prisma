@@ -512,6 +512,33 @@ model CodeMutation {
 }
 
 // hello.cloud — copy-on-write checkpoints (DB-level; CoW FS is simulated)
+// --- Agent snapshots (checkpoint & resume) ---
+model AgentSnapshot {
+  id        String    @id @default(cuid())
+  agentId   String
+  label     String    @default("")
+  json      String    // portable snapshot document
+  sha256    String
+  resumedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([agentId])
+}
+
+// --- Failure library / dead-end registry ---
+model FailureRecord {
+  id         String   @id @default(cuid())
+  source     String   // build | test | runtime
+  signature  String   @unique // sha256 of normalised message
+  message    String
+  location   String   @default("")
+  count      Int      @default(1)
+  deadEnd    Boolean  @default(true) // true until a resolution is recorded
+  resolution String   @default("")
+  firstSeen  DateTime @default(now())
+  lastSeen   DateTime @default(now())
+}
+
 model Checkpoint {
   id            String   @id @default(cuid())
   repoId        String

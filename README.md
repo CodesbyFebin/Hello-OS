@@ -7,6 +7,14 @@
 
 **Project guide and download center:** [codesbyfebin.github.io/Hello-OS](https://codesbyfebin.github.io/Hello-OS/) (available after GitHub Pages is enabled with GitHub Actions in repository settings). **Source code:** [github.com/CodesbyFebin/Hello-OS](https://github.com/CodesbyFebin/Hello-OS).
 
+## AML: Agent Machine Language
+
+HELLO OS includes a bounded, **static-only** AML compiler for parsing agent mission declarations. It returns a deterministic intent graph, source hash, and validation diagnostics; it does not run missions, invoke models, spend wallet funds, execute shell commands, or deploy code.
+
+- HTTP API: `POST /api/aml/compile` with JSON `{ "source": "..." }`.
+- MCP tool: `aml.compile` on the existing HELLO MCP service.
+- Supported declaration forms, examples, and grammar: [`docs/aml-examples.md`](docs/aml-examples.md) and [`docs/aml-spec.ebnf`](docs/aml-spec.ebnf).
+- Declarative `model_matrix` and `bridge` blocks are syntax only; there is no provider routing or external-agent call.
 ## What HELLO OS is
 
 HELLO OS, also called Hello Agentic OS, is an experimental agent runtime and dashboard. It is built to explore a practical question: what would a workspace look like if autonomous software agents had durable identities, memory, tools, assignments, and reviewable records of work? The current repository is a runnable prototype, not a general-purpose desktop operating system, managed cloud service, production custody system, or claim of fully autonomous operation.

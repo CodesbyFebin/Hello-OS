@@ -4,6 +4,7 @@ import { compileAml } from "@/lib/aml";
 const MAX_BODY_BYTES = 64_000;
 
 export async function POST(request: Request) {
+  const startedAt = performance.now();
   const contentLength = Number(request.headers.get("content-length") || 0);
   if (contentLength > MAX_BODY_BYTES) {
     return NextResponse.json({ error: "AML source exceeds the 64 KB request limit." }, { status: 413 });
@@ -46,5 +47,12 @@ export async function POST(request: Request) {
 
   const source = (body as { source: string }).source;
   const compilation = compileAml(source);
-  return NextResponse.json(compilation, { status: compilation.ok ? 200 : 422 });
+  return NextResponse.json({
+    ...compilation,
+    version: "aml://v1.0.0",
+    programHash: `0x${compilation.sourceSha256}`,
+    tokenMetrics: compilation.tokenMetrics,
+    receiptSchema: { $schema: "hello://aml/receipt-schema/v1", stepCount: compilation.graph.length },
+    compileTimeMs: Number((performance.now() - startedAt).toFixed(2)),
+  }, { status: compilation.ok ? 200 : 422 });
 }

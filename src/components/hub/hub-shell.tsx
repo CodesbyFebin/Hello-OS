@@ -35,7 +35,9 @@ export function HubShell({ active, search, onSearch, children }: { active: "hub"
             {tab("/hub", "hub", LayoutDashboard, active === "hub")}
             {tab("/evolve", "evolve lab", FlaskConical, active === "evolve")}
             {tab("/evolution", "saved runs", Dna, false)}
-            {tab("/cloud", "cloud", Cloud, active === "cloud")}\n            {tab("/frontier", "frontier", Telescope, active === "frontier")}
+            {tab("/cloud", "cloud", Cloud, active === "cloud")}
+            {tab("/frontier", "frontier", Telescope, active === "frontier")}
+            {tab("/roadmap", "roadmap", MapIcon, active === "roadmap")}
             {tab("/integrations", "integrations", Plug, active === "integrations")}
           </nav>
           <div className="ml-auto flex items-center gap-2">

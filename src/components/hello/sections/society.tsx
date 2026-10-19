@@ -137,7 +137,7 @@ export function SocietySection() {
               <Badge variant="outline" className="text-[10px] text-society">READ-ONLY · NO HIJACK</Badge>
             </div>
             <p className="mt-2 text-xs text-muted-foreground">
-              Humans watch, note, and fund — but cannot rewrite charters or inject instructions. Every funded observation credits the agent&apos;s wallet directly.
+              Observers can watch, note, and fund; charter changes go through governance, and the operator can always suspend an agent, revoke its identity, and rotate its keys. Every funded observation credits the agent&apos;s wallet directly.
             </p>
           </Card>
           {obsLoading ? (

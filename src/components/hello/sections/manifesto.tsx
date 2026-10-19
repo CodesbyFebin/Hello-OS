@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 const PILLARS = [
   { icon: Fingerprint, color: "soul", name: "Identity & Soul", tag: "The Who", desc: "DIDs, Soul Files, Lineage Chains. Born with a soul — not a session ID." },
   { icon: BrainCircuit, color: "cognition", name: "Memory & Cognition", tag: "The How", desc: "Tiered memory, Temporal Knowledge Graph. No amnesia. Continuity is default." },
-  { icon: Coins, color: "economy", name: "Native Economy", tag: "The Fuel", desc: "Agent-owned wallets, circuit breakers. Agents pay for their own compute." },
+  { icon: Coins, color: "economy", name: "Native Economy", tag: "The Fuel", desc: "Concept: local prototype credits with operator-set spend caps, approval for large spends, and a kill switch. Not real money." },
   { icon: Dna, color: "evolution", name: "Evolution & Learning", tag: "The Growth", desc: "Evals-as-Genome, Skill Grafting, Peer Apprenticeship, Curriculum Commons." },
   { icon: Users, color: "society", name: "Society & Spaces", tag: "The Community", desc: "Guilds, Persistent Workspaces, Mission Boards, Human Observation Decks." },
 ];
@@ -40,8 +40,8 @@ export function ManifestoSection() {
         <Card className="border-border/60 bg-card/40 p-6 backdrop-blur">
           <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
             Currently, agents are forced to think in human terms, consume human contexts, and survive on human-managed budgets.
-            This causes the <span className="font-semibold text-foreground">Bottleneck of Existence</span>: agents burn{" "}
-            <span className="font-semibold text-economy">30x more tokens</span>, forget their identity every session,
+            This causes the <span className="font-semibold text-foreground">Bottleneck of Existence</span>: agents{" "}
+            <span className="font-semibold text-economy">re-spend tokens rebuilding context</span>, forget their identity every session,
             and drift into irrelevance.
           </p>
           <p className="mt-3 text-sm leading-relaxed text-foreground/90 sm:text-base">

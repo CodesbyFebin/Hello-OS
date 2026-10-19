@@ -3,37 +3,266 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>HELLO OS — Agentic OS Prototype & Self-Hosted Agent Workspace</title>
-<meta name="description" content="Explore HELLO OS, a local-first agentic OS prototype with agent identity, memory, MCP tools, A2A-style tasks, Docker setup, and platform download guidance.">
-<meta name="robots" content="index,follow">
+<title>HELLO OS: Open-Source Agentic OS & Self-Hosted AI Agent Workspace</title>
+<meta name="description" content="HELLO OS is an open-source, local-first agentic OS prototype for agent identity, memory, MCP tools, task workflows, and inspectable activity. Run it yourself with Docker Compose.">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="theme-color" content="#080b12">
 <link rel="canonical" href="https://codesbyfebin.github.io/Hello-OS/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="HELLO OS — Agentic OS Prototype">
-<meta property="og:description" content="A local-first agent workspace for identity, memory, tools, tasks, and inspectable agent activity.">
+<meta property="og:site_name" content="HELLO OS">
+<meta property="og:title" content="HELLO OS: An Open-Source Agentic OS Prototype">
+<meta property="og:description" content="Explore a self-hosted agent workspace for identity, memory, tools, tasks, and inspectable agent activity.">
 <meta property="og:url" content="https://codesbyfebin.github.io/Hello-OS/">
 <meta name="twitter:card" content="summary">
-<meta name="theme-color" content="#080b12">
+<meta name="twitter:title" content="HELLO OS: An Open-Source Agentic OS Prototype">
+<meta name="twitter:description" content="A local-first agent workspace prototype with a human dashboard, MCP-compatible tools, and A2A-style task methods.">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"SoftwareApplication","name":"HELLO OS","applicationCategory":"DeveloperApplication","operatingSystem":"Linux, macOS, Windows with Docker","description":"A local-first agentic OS prototype with agent identity, persistent memory, MCP tools, A2A-style tasks, and a Next.js dashboard.","url":"https://codesbyfebin.github.io/Hello-OS/","codeRepository":"https://github.com/CodesbyFebin/Hello-OS","softwareRequirements":"Docker Engine with Docker Compose, or Node.js and Bun for source development"}
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://codesbyfebin.github.io/Hello-OS/#website",
+      "url": "https://codesbyfebin.github.io/Hello-OS/",
+      "name": "HELLO OS",
+      "description": "Project documentation and setup information for the HELLO OS open-source agentic operating system prototype.",
+      "inLanguage": "en",
+      "publisher": { "@id": "https://github.com/CodesbyFebin/Hello-OS#project" }
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://codesbyfebin.github.io/Hello-OS/#webpage",
+      "url": "https://codesbyfebin.github.io/Hello-OS/",
+      "name": "HELLO OS: Open-Source Agentic OS & Self-Hosted AI Agent Workspace",
+      "description": "An overview of HELLO OS, a local-first agentic OS prototype with identity, memory, MCP tools, A2A-style task methods, and a human dashboard.",
+      "isPartOf": { "@id": "https://codesbyfebin.github.io/Hello-OS/#website" },
+      "about": { "@id": "https://github.com/CodesbyFebin/Hello-OS#project" },
+      "inLanguage": "en"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://github.com/CodesbyFebin/Hello-OS#project",
+      "name": "HELLO OS",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Linux, macOS, and Windows through Docker",
+      "description": "An open-source, local-first agentic operating system prototype with agent identity, persistent memory, an MCP-compatible tool service, A2A-style task methods, and a Next.js dashboard.",
+      "url": "https://codesbyfebin.github.io/Hello-OS/",
+      "codeRepository": "https://github.com/CodesbyFebin/Hello-OS",
+      "softwareRequirements": "Docker Engine and Docker Compose for the documented container workflow",
+      "isAccessibleForFree": true
+    }
+  ]
+}
 </script>
 <style>
-:root{color-scheme:dark;--bg:#080b12;--panel:#111827;--line:#263244;--text:#e8eef8;--muted:#a8b4c7;--accent:#82f0bd;--blue:#9ac5ff}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 75% 0%,#142735 0,transparent 45%),var(--bg);color:var(--text);font:16px/1.65 ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}main{max-width:1040px;margin:0 auto;padding:32px 22px 72px}header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding:10px 0 18px}.brand{font-weight:800;letter-spacing:.1em;color:var(--accent)}nav{display:flex;gap:20px;flex-wrap:wrap}a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}.hero{padding:86px 0 58px;max-width:850px}.eyebrow{color:var(--accent);font-size:.82rem;letter-spacing:.16em;text-transform:uppercase}h1{font-size:clamp(2.8rem,7vw,5.5rem);letter-spacing:-.06em;line-height:.98;margin:18px 0}h2{letter-spacing:-.03em;margin-top:48px}p{color:var(--muted)}.lead{font-size:1.25rem;max-width:720px}.actions{display:flex;gap:12px;flex-wrap:wrap;margin:30px 0}.button{display:inline-block;padding:12px 18px;border-radius:9px;background:var(--accent);color:#07120e;font-weight:800}.button.secondary{background:transparent;color:var(--text);border:1px solid var(--line)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:24px 0}.card{background:#0e1520;border:1px solid var(--line);border-radius:14px;padding:20px}.card h3{margin:0 0 8px}.card p{margin-bottom:0}code{color:#d5ffe9;background:#111b27;padding:2px 5px;border-radius:4px}pre{overflow:auto;padding:18px;border-radius:12px;background:#05080d;border:1px solid var(--line);color:#d5ffe9}table{border-collapse:collapse;width:100%;margin:20px 0}td,th{text-align:left;border-bottom:1px solid var(--line);padding:12px}th{color:var(--accent)}footer{border-top:1px solid var(--line);margin-top:64px;padding-top:20px;color:var(--muted)}.note{border-left:3px solid var(--accent);padding:8px 18px;background:#0e1520}@media(max-width:600px){header{align-items:flex-start;gap:15px;flex-direction:column}.hero{padding-top:58px}}
+:root{color-scheme:dark;--bg:#080b12;--panel:#111827;--line:#263244;--text:#e8eef8;--muted:#a8b4c7;--accent:#82f0bd;--blue:#9ac5ff}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 75% 0%,#142735 0,transparent 45%),var(--bg);color:var(--text);font:16px/1.72 ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+main{max-width:1080px;margin:0 auto;padding:24px 22px 72px}header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding:10px 0 18px;gap:20px}
+.brand{font-weight:850;letter-spacing:.1em;color:var(--accent)}nav{display:flex;gap:18px;flex-wrap:wrap}a{color:var(--blue);text-underline-offset:3px}a:hover{text-decoration-thickness:2px}
+.hero{padding:76px 0 48px;max-width:880px}.eyebrow{color:var(--accent);font-size:.82rem;letter-spacing:.16em;text-transform:uppercase}
+h1{font-size:clamp(2.8rem,7vw,5.4rem);letter-spacing:-.06em;line-height:.99;margin:18px 0}h2{font-size:clamp(1.6rem,3.2vw,2.25rem);letter-spacing:-.035em;line-height:1.2;margin-top:58px}h3{line-height:1.28}p,li{color:var(--muted)}.lead{font-size:1.25rem;max-width:780px}.actions{display:flex;gap:12px;flex-wrap:wrap;margin:30px 0}.button{display:inline-block;padding:12px 18px;border-radius:9px;background:var(--accent);color:#07120e;font-weight:800;text-decoration:none}.button.secondary{background:transparent;color:var(--text);border:1px solid var(--line)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:24px 0}.card{background:#0e1520;border:1px solid var(--line);border-radius:14px;padding:20px}.card h3{margin:0 0 8px}.card p{margin-bottom:0}
+code{color:#d5ffe9;background:#111b27;padding:2px 5px;border-radius:4px}pre{overflow:auto;padding:18px;border-radius:12px;background:#05080d;border:1px solid var(--line);color:#d5ffe9}
+table{border-collapse:collapse;width:100%;margin:20px 0}td,th{text-align:left;vertical-align:top;border-bottom:1px solid var(--line);padding:12px}th{color:var(--accent)}
+.note,.answer{border-left:3px solid var(--accent);padding:10px 18px;background:#0e1520}.toc{display:flex;gap:10px 18px;flex-wrap:wrap;padding:18px;border:1px solid var(--line);border-radius:12px}.toc a{font-size:.94rem}.faq{padding:8px 0 18px;border-bottom:1px solid var(--line)}.faq h3{margin-bottom:4px}footer{border-top:1px solid var(--line);margin-top:64px;padding-top:20px;color:var(--muted)}small{color:var(--muted)}
+@media(max-width:640px){header{align-items:flex-start;gap:15px;flex-direction:column}.hero{padding-top:54px}main{padding-left:17px;padding-right:17px}td,th{padding:9px 6px}}
 </style>
 </head>
-<body><main>
-<header><a class="brand" href="./">HELLO OS</a><nav aria-label="Main navigation"><a href="./getting-started/">Get started</a><a href="./downloads/">Downloads</a><a href="https://github.com/CodesbyFebin/Hello-OS">Source</a></nav></header>
-<section class="hero"><div class="eyebrow">A local-first agent workspace</div><h1>Give agents a place to work.</h1><p class="lead">HELLO OS is an open-source agentic operating system prototype for identity, memory, tools, missions, and inspectable activity. Run the dashboard and MCP service on your own machine with Docker Compose.</p><div class="actions"><a class="button" href="./getting-started/">Start with Docker</a><a class="button secondary" href="https://github.com/CodesbyFebin/Hello-OS">Explore the source</a></div><p class="note">Prototype status: native APK, EXE/PEXE, and DEB installers are not published. The supported path is a self-hosted Docker deployment.</p></section>
-<section><h2>One workspace, several agent primitives</h2><div class="grid">
-<article class="card"><h3>Identity</h3><p>Prototype Ed25519 identities and <code>did:key</code> identifiers, with a soul record and wallet entry.</p></article>
-<article class="card"><h3>Memory</h3><p>CORE, RECALL, and ARCHIVE tiers with expiry, valid-time filters, and retrieval budgets.</p></article>
-<article class="card"><h3>Tools</h3><p>An MCP-compatible JSON-RPC service with forge, cortex, memory, and checkpoint tools.</p></article>
-<article class="card"><h3>Tasks</h3><p>An agent card and A2A-style task methods for sending, listing, updating, and cancelling work.</p></article>
-</div></section>
-<section><h2>Run it yourself</h2><p>Install Docker Engine and Docker Compose, then clone the repository and start the app. The browser dashboard runs locally; the MCP service is available on port 3030.</p><pre><code>git clone https://github.com/CodesbyFebin/Hello-OS.git
+<body>
+<main>
+<header>
+<a class="brand" href="./" aria-label="HELLO OS home">HELLO OS</a>
+<nav aria-label="Main navigation"><a href="#overview">Overview</a><a href="./getting-started/">Get started</a><a href="./downloads/">Downloads</a><a href="./agent-guide/">Agent guide</a><a href="https://github.com/CodesbyFebin/Hello-OS">Source</a></nav>
+</header>
+<section class="hero" id="overview">
+<div class="eyebrow">Open-source · local-first · experimental</div>
+<h1>A workspace where AI agents can work.</h1>
+<p class="lead">HELLO OS is an open-source agentic operating system prototype that brings agent identity, persistent memory, tools, task workflows, and a human-readable activity surface into one self-hosted workspace. It combines a Next.js dashboard, SQLite persistence, an MCP-compatible tool service, and A2A-style agent-card and task methods.</p>
+<p class="answer"><strong>In one sentence:</strong> HELLO OS is a developer-oriented, self-hosted workspace for exploring how agents can be identified, equipped with tools and memory, assigned work, and observed by a person.</p>
+<div class="actions"><a class="button" href="./getting-started/">Start with Docker Compose</a><a class="button secondary" href="https://github.com/CodesbyFebin/Hello-OS">View source on GitHub</a></div>
+<p class="note"><strong>Current status:</strong> this is a prototype. The documented way to run it is with Docker Compose or from source. Native Android APK, Windows EXE/PEXE, and Debian DEB installers are not published. The project does not claim production hardening, complete protocol conformance, or guaranteed search ranking.</p>
+</section>
+<nav class="toc" aria-label="On this page">
+<a href="#what-is-hello-os">What HELLO OS is</a><a href="#why-agent-workspace">Why an agent workspace</a><a href="#architecture">Architecture</a><a href="#identity">Identity</a><a href="#memory">Memory</a><a href="#tools">Tools and MCP</a><a href="#tasks">Tasks</a><a href="#run">Run locally</a><a href="#security">Security</a><a href="#faq">FAQ</a>
+</nav>
+<section id="what-is-hello-os">
+<h2>What is HELLO OS?</h2>
+<p>HELLO OS is an experimental agent workspace and runtime project. It gives developers a place to examine building blocks that are often scattered across scripts, model clients, local databases, tool servers, and dashboards. The project connects those pieces behind one interface: a browser dashboard for people, a persistent application layer, and service endpoints that agents can call.</p>
+<p>The name “agentic OS” describes the project direction, not a replacement for a computer’s kernel or a general-purpose desktop operating system. HELLO OS runs as an application on a machine you control. Docker Compose is the documented quick-start path; the repository also contains source code for people who want to inspect or change the implementation.</p>
+<p>At a high level, the prototype explores four practical questions: How does an agent present an identity? How can it retain useful context between tasks? How can a tool be exposed in a structured way? How can a person understand what the agent is doing? These are connected product surfaces, not a claim that one platform solves every agent deployment problem.</p>
+<p>In practical terms, an agent operating system prototype provides a boundary around agent-specific records and actions. A human starts or configures a workspace, a connected agent calls the methods that are available, and the application stores state so activity can be reviewed. The shape of that interaction is more important than a slogan: developers can inspect which service owns a method, where a record is persisted, and which interface a human can use to learn what happened.</p>
+</section>
+<section id="why-agent-workspace">
+<h2>Why build a self-hosted AI agent workspace?</h2>
+<p>Agent experiments often begin as a prompt and a model call. They become harder to reason about when a project adds tools, long-running tasks, shared state, credentials, retries, and human review. A workspace makes those surrounding concerns visible. Instead of treating an agent as a single chat response, HELLO OS gives the experiment a place for identity data, memory records, tool methods, task state, and activity inspection.</p>
+<p>Self-hosting lets a developer run the prototype in their own development environment and inspect the repository before use. Local-first describes the intended deployment and data-control model: the documented setup runs on the operator’s machine or server. It does not mean every dependency is offline, every secret is automatically protected, or all information can never leave the host. Operators must review configured integrations, network access, logs, and environment variables for their own setup.</p>
+<p>The goal is useful for developers evaluating agent architecture, building a proof of concept, studying an MCP-compatible tool server, or learning how task APIs and memory layers can fit together. It is not positioned as a managed cloud service, a fully autonomous employee, a secure secrets vault, or a finished enterprise control plane.</p>
+<p>A local agent workspace can shorten the feedback loop during development. You can change the app, restart the local services, and observe how the new behavior changes the dashboard or an API response. That makes it easier to ask concrete questions about agent software: Is context stored in a predictable place? Can a task be cancelled? Is a tool’s input visible? Can a reviewer tell the difference between a result from memory and a new external response?</p>
+</section>
+<section id="features">
+<h2>Agent workspace features at a glance</h2>
+<div class="grid">
+<article class="card"><h3>Agent identity</h3><p>Prototype Ed25519 identities, <code>did:key</code> identifiers, a soul record, and a wallet entry give each agent a recognizable record in the application.</p></article>
+<article class="card"><h3>Persistent memory</h3><p>CORE, RECALL, and ARCHIVE tiers organize stored context with expiry, valid-time filters, and retrieval budgets.</p></article>
+<article class="card"><h3>Structured tools</h3><p>An MCP-compatible JSON-RPC service exposes project tools for forge, cortex, memory, and checkpoint operations.</p></article>
+<article class="card"><h3>Work and tasks</h3><p>An agent card and A2A-style task methods support sending, listing, updating, and cancelling task records.</p></article>
+<article class="card"><h3>Human dashboard</h3><p>A browser-based Next.js interface gives people an inspectable surface for the local workspace and its agent-oriented functions.</p></article>
+<article class="card"><h3>Local persistence</h3><p>SQLite is used by the project for application persistence. Review the setup guide to understand configuration and local data handling.</p></article>
+</div>
+</section>
+<section id="architecture">
+<h2>How the HELLO OS architecture fits together</h2>
+<p>The project uses a web application architecture rather than a custom operating-system kernel. The Next.js application provides the human interface and application routes. SQLite supplies local persistence for prototype records. An MCP-compatible service offers structured methods to connected tools and clients. The agent card and task methods expose an A2A-style way to describe the agent endpoint and interact with tasks.</p>
+<p>Each component has a distinct responsibility. The dashboard helps a human inspect and use the workspace. The persistence layer gives the prototype state across application actions. Tool methods provide bounded operations that clients can invoke by name. Task methods represent work as records with state transitions. This division makes it easier to investigate where an action is initiated and what interface is responsible for it.</p>
+<p>“Compatible” and “style” are deliberately precise. The MCP service is implemented as an MCP-compatible JSON-RPC surface, and the task interface follows an A2A-style shape. The project documentation does not claim complete certification or full conformance with every version of either protocol. Check the current <a href="./agent-guide/">Agent Guide</a> and source before relying on a particular method or field in another application.</p>
+<p>HELLO OS also includes an AML compiler endpoint and MCP tool for static parsing and validation. The current validator checks text and reports static findings; it does not deploy code, execute arbitrary programs, prove that a workflow is safe, or authorize a real transaction. Treat all outputs as development assistance and review generated or validated content before use.</p>
+<p>A useful way to evaluate the architecture is to trace one operation from beginning to end. Identify which user or agent initiated it, which route or tool accepted the request, which validation was applied, where the result was written, and what the dashboard shows afterward. If any of those steps cannot be answered from the current code, record the uncertainty before extending the system. That method is valuable for prototype evaluation because it focuses on observable behavior rather than an architectural label.</p>
+</section>
+<section id="identity">
+<h2>Agent identity: keys, identifiers, and human context</h2>
+<p>Identity is a central design surface in an agent workspace. HELLO OS prototypes Ed25519 key material and <code>did:key</code> identifiers alongside a soul record and wallet entry. Together, those elements let a project experiment with representing an agent as more than a temporary process name. A stable identifier can help a user connect an agent’s tasks and stored context to a visible record.</p>
+<p>This identity feature should be read as an application prototype, not as a complete decentralized identity system. The existence of a DID-shaped identifier does not independently establish legal identity, trustworthiness, authorization, reputation, or ownership. A key proves control of that key under the relevant cryptographic conditions; it does not make an agent’s claims true or its actions safe.</p>
+<p>Key handling deserves special attention. The documented prototype server stores private signing keys, which is appropriate only for experimentation after you have reviewed the code and environment. Do not place valuable production credentials in a test deployment. Production use requires an explicit threat model, secure key custody, access control, rotation and recovery procedures, and an independent security review.</p>
+<p>The human-readable identity record matters too. A person should be able to understand what an agent is intended to do, which tools it can use, and what permissions surround those tools. HELLO OS provides a place to explore these ideas, but each deployment still needs the operator to define practical access limits and oversight.</p>
+</section>
+<section id="memory">
+<h2>Agent memory and context that persists</h2>
+<p>Long-running agents need a way to retrieve context from earlier activity without treating every previous message as equally relevant. HELLO OS organizes prototype memory into CORE, RECALL, and ARCHIVE tiers. These names describe a basic retrieval model: keep a smaller set of frequently useful context, retrieve relevant prior records as needed, and retain older material separately where the workflow calls for it.</p>
+<p>The implementation also uses expiry information, valid-time filters, and retrieval budgets. Expiry lets stored information have a planned lifetime. Valid-time filters help distinguish when a fact was meant to apply. Retrieval budgets limit how much context is pulled into an operation. These ideas help make memory behavior more inspectable than an unbounded conversation dump, while leaving product-specific retention decisions to the developer.</p>
+<p>Persistent memory can contain sensitive information. Before storing user or business data, decide what should be retained, for how long, and who can access it. A local database is still a database that needs backups, permission controls, deletion procedures, and protection from other processes on the host. “Local-first” does not remove those operational responsibilities.</p>
+<p>For developers, the interesting question is not simply whether memory exists. It is whether retrieved records are relevant, current, and traceable to a source. Memory can become stale or contradictory; agent behavior should treat recalled content as context to evaluate rather than unquestionable truth. Inspect the current schema and memory routes in the repository before integrating an application.</p>
+<p>A practical memory policy should define what becomes a durable record, what is temporary, and how to remove or correct an outdated fact. Keep provenance where possible: the application should make it clear whether a statement came from a user, an agent summary, or a tool result. When two records disagree, do not let an old memory silently override newer evidence. Those are implementation and product decisions that a self-hosted operator should make explicit.</p>
+</section>
+<section id="tools">
+<h2>MCP-compatible tools for structured agent actions</h2>
+<p>The HELLO OS tool service exposes a JSON-RPC interface described as MCP-compatible. The repository’s tool groups include forge, cortex, memory, and checkpoint operations. Structured tools give an agent a named operation with an input shape and result, making the boundary between a model decision and an application action easier to review than arbitrary shell access.</p>
+<p>An MCP client can use a tool interface to discover or invoke supported operations, subject to the implementation and deployment configuration. Tool names alone do not grant permission. A production system still needs authentication, authorization, input validation, rate limits, audit records, and explicit rules for actions that can modify data or reach external systems. Confirm which tools are enabled in the current revision before connecting a client.</p>
+<p>HELLO OS is useful as a place to study tool-server integration and the relationship between a human workspace and an agent tool surface. It does not imply that every model provider is built in, that a particular model is bundled, or that all tools work without configuration. Model access, external integrations, and credentials depend on the actual application configuration you choose.</p>
+<p>Read the <a href="./agent-guide/">agent integration guide</a> for currently implemented methods and examples. Treat the source as the authoritative reference for exact request fields, response shapes, and error behavior because a prototype can change as its APIs evolve.</p>
+<p>When adding a tool to an agent system, define its purpose narrowly. Describe the inputs in language a person can understand, reject malformed values, and return results that communicate whether the operation succeeded. Consider what a tool could affect if an agent calls it repeatedly, with stale context, or after a misunderstanding. A tool interface makes the action explicit; it does not guarantee that the model will choose a good action.</p>
+</section>
+<section id="tasks">
+<h2>Tasks, missions, and agent-to-agent workflows</h2>
+<p>HELLO OS includes an agent card and A2A-style task methods for sending, listing, updating, and cancelling task records. A task-based interface gives a workflow a recognizable state and identifier, which helps humans and other services reason about progress. It can be easier to inspect a task record than to infer status from a stream of unstructured messages.</p>
+<p>The project describes these interfaces as A2A-style. That wording signals a design direction and familiar interaction pattern; it is not a declaration of complete A2A protocol compliance. Use the current agent card and API implementation to check the supported discovery and task behavior before connecting a separate agent framework.</p>
+<p>For an experimental workflow, an operator might ask an agent to break down a research task, call a bounded tool, store a useful result, and present a summary for human review. The task surface gives the application a place to record this work. It does not mean that the agent can safely complete a high-impact operation without a person or that task execution is guaranteed to finish.</p>
+<p>Good task design keeps work understandable: use a clear objective, define expected outputs, constrain tool permissions, set a timeout or stop condition where appropriate, and make it possible for a person to inspect or cancel the task. These are general engineering practices for agent applications, not automatic safety properties of the prototype.</p>
+<p>For multi-agent experiments, start with a small, visible handoff. State what one agent should produce, what another agent is allowed to consume, and how a human can intervene. A task record can carry status between services, but it cannot resolve conflicting instructions or guarantee that two agents interpret a goal in the same way. Keep an audit trail of meaningful state changes and avoid granting broad permissions simply because tasks can be passed between agents.</p>
+</section>
+<section id="run">
+<h2>How to run HELLO OS locally</h2>
+<p>The fastest documented start is Docker Compose. Install Docker Engine and Docker Compose (or Docker Desktop where appropriate), then clone the public repository and start the services. The browser dashboard is exposed locally on port 3000, while the MCP service is available on port 3030 according to the project setup guidance. Review the compose file and environment configuration before exposing any service beyond your machine.</p>
+<pre><code>git clone https://github.com/CodesbyFebin/Hello-OS.git
 cd Hello-OS
-docker compose up --build</code></pre><p>Open <code>http://localhost:3000</code>. Read the <a href="./getting-started/">full setup guide</a> for source development, configuration, data storage, and safe shutdown instructions.</p></section>
-<section><h2>Platform availability</h2><table><thead><tr><th>Platform</th><th>Current path</th></tr></thead><tbody><tr><td>Linux / macOS</td><td>Docker Compose or shell installer</td></tr><tr><td>Windows</td><td>Docker Desktop or PowerShell installer</td></tr><tr><td>Android APK</td><td>Not published</td></tr><tr><td>Windows EXE / PEXE</td><td>Not published</td></tr><tr><td>Debian DEB</td><td>Not published</td></tr></tbody></table><p><a href="./downloads/">Download and install options →</a></p></section>
-<section><h2>Built for exploration, documented with boundaries</h2><p>HELLO OS is an experimental local-first agent runtime, not a hardened production control plane. The demo server stores private signing keys; use managed key custody and a security review before production use. The project does not claim full protocol conformance, real payments, or guaranteed crawl and search ranking.</p><p>See the <a href="https://github.com/CodesbyFebin/Hello-OS/blob/main/README.md">detailed README</a>, <a href="https://github.com/CodesbyFebin/Hello-OS/blob/main/AGENTS.md">agent instructions</a>, or <a href="./llms.txt">machine-readable summary</a>.</p></section>
-<section><h2>Agent documentation</h2><p>Connect a self-hosted agent using the APIs that HELLO OS currently implements. Read the <a href="./agent-guide/">Agent Guide →</a> for identity, memory, MCP, A2A-style tasks, AML validation, and security boundaries.</p></section>
-<footer><p>HELLO OS · Open-source prototype · <a href="https://github.com/CodesbyFebin/Hello-OS">GitHub repository</a> · <a href="./sitemap.xml">Sitemap</a></p></footer>
-</main></body></html>
+docker compose up --build</code></pre>
+<p>When the application is ready, open <code>http://localhost:3000</code>. Keep the terminal open to observe startup output. Use <code>Ctrl+C</code> to stop the foreground compose run. The <a href="./getting-started/">getting-started guide</a> covers the current setup, source development, configuration, local data storage, and safe shutdown notes.</p>
+<p>Developers who prefer to work from source can inspect the repository’s package scripts and runtime requirements. Do not assume that a command in an old blog post matches the current branch. The source repository is the canonical record for the version you have cloned; pin a commit or release when you need reproducible experiments.</p>
+<p>If you want the prebuilt-platform story, consult the <a href="./downloads/">downloads page</a>. At present, the documented quick start is source plus Docker Compose. There are no published native Android APK, Windows EXE or PEXE, or Debian DEB artifacts linked as supported installers. Avoid downloading unofficial binaries that claim to be HELLO OS releases.</p>
+<p>After startup, take a moment to inspect the application in a low-risk environment. Confirm which ports are exposed, where persistent data is written, and how the app behaves after a restart. These checks help you understand the local deployment before connecting an external model or using non-test information. If an update changes the compose file or environment variables, read the change before recreating the containers.</p>
+</section>
+<section id="platforms">
+<h2>Supported setup paths and platform availability</h2>
+<table>
+<thead><tr><th>Environment</th><th>Current documented path</th><th>What to expect</th></tr></thead>
+<tbody>
+<tr><td>Linux</td><td>Docker Compose or source development</td><td>Use repository setup instructions and review host permissions.</td></tr>
+<tr><td>macOS</td><td>Docker Compose or source development</td><td>Use Docker Desktop or a compatible local Docker environment.</td></tr>
+<tr><td>Windows</td><td>Docker Desktop / Docker Compose or source development</td><td>Follow repository Windows notes and inspect PowerShell scripts before running them.</td></tr>
+<tr><td>Android</td><td>No native APK release published</td><td>Use the web interface from a browser only if it works for your setup.</td></tr>
+<tr><td>Windows native app</td><td>No EXE or PEXE release published</td><td>Run the documented container or source workflow.</td></tr>
+<tr><td>Debian package</td><td>No DEB release published</td><td>No apt repository or Debian package installation is currently documented.</td></tr>
+</tbody>
+</table>
+<p>Platform compatibility here refers to running the application in a suitable Docker or source environment. It does not claim that a native app has been tested on every release of each operating system. If your environment differs from the guide, open an issue with its OS version, Docker version, command output, and a minimal reproduction.</p>
+<p>We keep availability explicit because “download” can mean different things: source code, a container image, a script, or a native installer. Use the downloads guide to distinguish those options and verify that an artifact is actually linked to a project release. A package format should not be treated as supported until it has a reproducible build, release notes, and installation instructions.</p>
+</section>
+<section id="privacy">
+<h2>Local-first deployment, privacy, and data ownership</h2>
+<p>Running an application on infrastructure you control can give you more visibility into where application data is stored and which network connections are made. HELLO OS is designed as a local-first prototype, and its application persistence uses SQLite. These facts make the project easier to inspect locally; they are not a blanket promise that data never leaves your host or that the installation is private by default.</p>
+<p>Network behavior depends on the configuration and any integrations you add. If an agent calls an external model provider, API, package registry, or service, information included in that request may leave the machine. Review code, environment variables, Docker networking, logs, browser traffic, and third-party provider terms before using sensitive data. The safest assumption for an unreviewed prototype is that you should use synthetic or low-risk test data.</p>
+<p>For local data, understand where the SQLite file and Docker volumes are stored, how they are backed up, and how to remove them. Backups can preserve information after deletion from the active database. If multiple people can access the host, account for filesystem permissions and container access. Your deployment policy should define data retention, incident response, and who can administer the machine.</p>
+<p>The project’s goal is to make agent primitives inspectable, not to replace your organization’s privacy review. Before a team adopts an agent runtime, map the data flow, classify information, document external processors, and test what happens when a user asks to export or delete their records.</p>
+<p>Local-first software is most useful when the operator can answer basic data questions without guessing. Know which files are created at startup, whether application logs include prompt or tool content, what is copied into backups, and whether a process running inside a container can access host files. Use the least data needed to test a workflow and remove temporary records after the experiment is finished.</p>
+</section>
+<section id="security">
+<h2>Security boundaries and responsible evaluation</h2>
+<p>HELLO OS is experimental software. It is not described as a hardened production control plane, a secrets manager, a compliance-certified service, or a safe environment for untrusted autonomous execution. The current demo server stores private signing keys. This is a clear signal to treat the project as a learning and development prototype until key custody and the wider threat model have been reviewed.</p>
+<p>Before you run the project, inspect the compose file, scripts, dependency definitions, API routes, filesystem mounts, exposed ports, and environment variables. Avoid running it with broad host privileges. Do not expose development endpoints to the public internet without authentication and an explicit security review. Never paste valuable private keys or production credentials into an experimental setup.</p>
+<p>Before production use, an engineering team would need to evaluate authentication, authorization, tenant separation, key isolation, secret rotation, input validation, network egress, dependency risk, audit logging, backups, deletion, monitoring, and incident handling. The correct requirements depend on the application and data involved. This landing page does not claim those controls are implemented.</p>
+<p>Use a staged evaluation: begin with a disposable environment and synthetic data; identify the actions available to agents; test invalid and adversarial inputs; observe logs and network requests; verify that cancellation works as expected; and ask a qualified security reviewer to assess the intended deployment. See the README and Agent Guide for project-specific caveats and currently implemented boundaries.</p>
+<p>A helpful security review follows the code path for sensitive operations. For each operation, ask which process receives the request, what identity the process trusts, which data is read or changed, whether the action can contact another system, and how a person finds the audit evidence. Verify assumptions in code and configuration rather than relying on product descriptions alone.</p>
+</section>
+<section id="use-cases">
+<h2>Who HELLO OS is for</h2>
+<div class="grid">
+<article class="card"><h3>Agent developers</h3><p>Explore how identity, memory, tool calls, and task state can be presented in one inspectable application.</p></article>
+<article class="card"><h3>Protocol learners</h3><p>Study an MCP-compatible JSON-RPC service and A2A-style task methods in a real codebase.</p></article>
+<article class="card"><h3>Local-first experimenters</h3><p>Run a prototype on a development machine and examine its persistence and service boundaries.</p></article>
+<article class="card"><h3>Open-source contributors</h3><p>Read the implementation, report issues, improve documentation, and propose focused changes through GitHub.</p></article>
+</div>
+<p>It may be a poor fit if you need a fully managed hosted product, verified native mobile packages, a mature enterprise permission model, a certified runtime, or guaranteed protocol interoperability today. The repository can still be useful for learning, prototyping, and identifying which controls a future system needs.</p>
+<p>For a student or early-stage developer, the value may be in the concrete questions the code raises: How do I identify a running agent? How do I keep useful context without retaining everything? How do I expose capabilities through a named interface? How can a user pause or cancel a task? For a more experienced engineer, the value may be a compact reference project to inspect before deciding whether its architecture fits a new application.</p>
+</section>
+<section id="comparison">
+<h2>How HELLO OS differs from a chatbot or agent framework</h2>
+<p>A chatbot interface primarily presents messages and responses. An agent framework commonly helps a developer build an agent loop, connect tools, and choose model behavior in code. An agent workspace adds application surfaces around that loop: records for identity and memory, task state, a human-facing dashboard, and a service interface that other clients can call.</p>
+<p>HELLO OS is a prototype of that workspace idea. It does not replace a model provider, a general-purpose automation platform, or every framework. A team may use another agent library with a workspace, or treat the repository as a reference implementation while building a different system. The useful comparison is the set of operational needs: where the state lives, how tools are bounded, how a person inspects work, and what happens when a task needs to stop.</p>
+<p>When evaluating alternatives, compare the actual supported behavior rather than labels. Check whether software is self-hosted, which protocols and versions it implements, how credentials are held, which models or tools are configured, what persistence is used, whether native releases exist, and how updates are delivered. For HELLO OS, the README, source tree, and setup guides are the primary evidence for those answers.</p>
+<p>Some projects focus on model orchestration, others on tool calling, durable workflows, identity, or end-user chat. A workspace has to connect several of these interests while remaining understandable to its operator. This prototype gives developers a starting point for that exploration; it is not a universal comparison winner and does not make claims about competitors.</p>
+</section>
+<section id="aml">
+<h2>Static AML parsing and validation</h2>
+<p>The repository includes an AML compiler endpoint and MCP tool intended for static analysis of AML text. A developer can submit source to be parsed and receive validation findings without treating the endpoint as a live execution environment. This is useful when prototyping a language workflow or checking that a text input meets the validator’s supported grammar.</p>
+<p>Static validation has a limited job: it can flag conditions represented by its parser and rules. It cannot prove the safety or business correctness of a program, check every external dependency, guarantee that a future runtime will behave the same way, or execute and authorize a transaction. Read a finding in context, review the source, and use additional tests appropriate to your application before relying on output.</p>
+<p>For exact request shape and tool usage, consult the Agent Guide and current source. The API may evolve as the prototype changes. Treat its response as a developer aid and do not connect it to a production workflow that moves money, changes access, or performs another consequential operation without an independent review.</p>
+</section>
+<section id="developer">
+<h2>Developer guide and open-source contribution</h2>
+<p>The repository is the source of truth for code, issues, and current implementation details. Start with the <a href="https://github.com/CodesbyFebin/Hello-OS/blob/main/README.md">detailed README</a> for the project overview and developer notes. Use the <a href="./getting-started/">setup guide</a> to start a local copy, the <a href="./agent-guide/">Agent Guide</a> to see the agent-facing API surface, and the <a href="./downloads/">downloads guide</a> for platform availability.</p>
+<p>Before building an integration, verify endpoint paths, required environment variables, authentication assumptions, request schemas, error responses, and persistence behavior against the current branch. Prototype APIs can change. Pin a release or commit for experiments that must be repeatable, and include the commit hash when reporting a bug.</p>
+<p>Contributors can help by clarifying setup instructions, adding reproducible tests, documenting API changes, improving error messages, and reporting security-relevant behavior through the project’s designated process. A useful issue includes the expected behavior, observed behavior, operating system, runtime versions, exact safe-to-share command output, and the smallest reproduction that demonstrates the problem.</p>
+<p>Do not publish secrets, private keys, access tokens, personal data, or sensitive logs in public issues. Remove them before sharing diagnostic output. Review the repository’s contribution and security guidance before submitting a report.</p>
+<p>Documentation changes are especially useful when they answer a question a new user would otherwise need to infer: where a service listens, what a command changes, which environment variables are required, and which functions are experimental. Keep a page aligned with visible code and remove claims when an implementation changes. Clear limitations help contributors make informed decisions and help users file more precise issues.</p>
+</section>
+<section id="search">
+<h2>HELLO OS in search and AI answers</h2>
+<p>This page describes the project in plain text so a person, search crawler, or answer engine can understand the central entity and its limitations: HELLO OS is an open-source, local-first agentic OS prototype; it provides a human dashboard and explores identity, memory, MCP-compatible tools, and A2A-style task methods; Docker Compose is the documented quick start; native mobile and desktop installers are not published.</p>
+<p>The page uses a descriptive title, a concise meta description, a canonical URL, crawlable links, semantic headings, visible project facts, and JSON-LD that reflects information shown on the page. The repository also publishes a sitemap and machine-readable project summaries. These are clarity and discovery aids. They do not force a crawler to visit, index, cite, or rank a page, and they do not guarantee inclusion in generative AI answers.</p>
+<p>We do not use a meta keywords tag or repeated keyword blocks. Search phrases such as “open-source agentic OS,” “self-hosted AI agent workspace,” “local-first agent runtime,” “MCP-compatible agent tools,” “agent memory prototype,” and “A2A-style agent task API” appear only where they accurately describe the project. The page is written to answer relevant questions for developers, not to create separate thin pages for every wording variation.</p>
+<p>Search performance can be measured only with access to the relevant search platform’s reporting tools and a defined date range. This project page does not claim a 100/100 SEO score, a specific organic position, a trending status, or that all crawlers have indexed it. Owners can verify indexing and queries through the respective webmaster consoles after adding and verifying the site.</p>
+<p>Answer engines and search systems work best when the page states its subject plainly, uses useful headings, links to source documentation, and keeps facts consistent across the page and structured data. HELLO OS follows those practical principles while keeping the supporting evidence close: setup details link to setup docs, API details link to the Agent Guide, and repository claims link to the source. A crawler may choose any presentation or citation behavior; clear documentation cannot compel a particular answer engine to display this page.</p>
+</section>
+<section id="faq">
+<h2>Frequently asked questions about HELLO OS</h2>
+<div class="faq"><h3>Is HELLO OS a complete operating system?</h3><p>No. “Agentic OS” describes the project concept. HELLO OS is an application prototype that runs on Linux, macOS, or Windows through a Docker or source environment; it does not replace the computer’s kernel or desktop operating system.</p></div>
+<div class="faq"><h3>What does HELLO OS do?</h3><p>It provides a prototype workspace for agent identity, persistent memory, MCP-compatible tool operations, A2A-style task methods, and a human dashboard. The repository and linked guides describe the current implementation.</p></div>
+<div class="faq"><h3>How do I install HELLO OS?</h3><p>The documented quick start is to clone the GitHub repository and run <code>docker compose up --build</code>. Then open <code>http://localhost:3000</code>. Follow the current <a href="./getting-started/">getting-started guide</a> for prerequisites and configuration.</p></div>
+<div class="faq"><h3>Does HELLO OS have an APK, EXE, PEXE, or DEB download?</h3><p>No native Android APK, Windows EXE or PEXE, or Debian DEB installer is currently published. The available documented path is Docker Compose or source development. Check the <a href="./downloads/">downloads page</a> for updates.</p></div>
+<div class="faq"><h3>Does the project work with MCP?</h3><p>The project includes an MCP-compatible JSON-RPC tool service. Check the current Agent Guide and source for supported methods and exact compatibility. The project does not claim full conformance with every MCP feature or version.</p></div>
+<div class="faq"><h3>Does HELLO OS support A2A?</h3><p>The project includes an agent card and A2A-style task methods. “A2A-style” is a description of the implemented approach, not a claim of complete conformance certification. Verify the current API before integrating another framework.</p></div>
+<div class="faq"><h3>Does HELLO OS run locally?</h3><p>The documented deployment runs on infrastructure controlled by the operator, using Docker Compose or source development. External model or service integrations may send data outside that environment, so review configuration and network behavior before use.</p></div>
+<div class="faq"><h3>Is HELLO OS ready for production?</h3><p>The project is an experimental prototype, not a hardened production control plane. The demo server stores private signing keys. Conduct a threat model and security review, provide production-grade key custody, and implement the controls your deployment requires before production use.</p></div>
+<div class="faq"><h3>Which database does HELLO OS use?</h3><p>The project uses SQLite for application persistence. Consult the current repository and setup guide for the database file, Docker volume, configuration, and data lifecycle details.</p></div>
+<div class="faq"><h3>Does HELLO OS guarantee search ranking or AI citations?</h3><p>No. SEO metadata, structured data, a sitemap, and clear prose can help crawlers understand and discover a site, but no website owner can guarantee crawling, indexing, ranking, or citation in an AI-generated answer.</p></div>
+<div class="faq"><h3>Where can I find exact APIs and current documentation?</h3><p>Start with the <a href="./agent-guide/">Agent Guide</a> and inspect the current source in the <a href="https://github.com/CodesbyFebin/Hello-OS">GitHub repository</a>. The source is authoritative for exact routes, request fields, and current implementation behavior.</p></div>
+</section>
+<section id="links">
+<h2>Project links and technical references</h2>
+<ul>
+<li><a href="https://github.com/CodesbyFebin/Hello-OS">HELLO OS source repository</a> — code, issues, and current project history.</li>
+<li><a href="https://github.com/CodesbyFebin/Hello-OS/blob/main/README.md">Project README</a> — overview, architecture, setup notes, and boundaries.</li>
+<li><a href="./getting-started/">Getting started</a> — local Docker and development setup.</li>
+<li><a href="./downloads/">Downloads and platform status</a> — what can currently be installed.</li>
+<li><a href="./agent-guide/">Agent Guide</a> — identity, memory, MCP, task methods, AML validation, and security boundaries.</li>
+<li><a href="./llms.txt">Machine-readable project summary</a> — concise links and factual description for language-model tooling.</li>
+<li><a href="./sitemap.xml">XML sitemap</a> — the public project documentation URLs.</li>
+</ul>
+<p>HELLO OS is a public open-source project maintained in the linked repository. Read the repository’s license and project documentation for reuse terms and contribution details. For implementation questions, include a link to the relevant code or issue rather than relying on a search snippet.</p>
+</section>
+<footer>
+<p>HELLO OS · Open-source agentic OS prototype · <a href="https://github.com/CodesbyFebin/Hello-OS">GitHub repository</a> · <a href="./sitemap.xml">Sitemap</a> · <a href="./llms.txt">LLM summary</a></p>
+<small>Project facts and availability can change with new releases. This page describes the current documented prototype and makes no ranking, indexing, security certification, or protocol-conformance guarantee.</small>
+</footer>
+</main>
+</body>
+</html>

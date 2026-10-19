@@ -1,7 +1,16 @@
+# HELLO OS permits search crawlers to discover public project pages.
 User-agent: Googlebot
 Allow: /
 
 User-agent: Bingbot
+Allow: /
+
+# OpenAI search crawler; separate from model-training crawlers.
+User-agent: OAI-SearchBot
+Allow: /
+
+# User-requested fetches in ChatGPT.
+User-agent: ChatGPT-User
 Allow: /
 
 User-agent: Twitterbot

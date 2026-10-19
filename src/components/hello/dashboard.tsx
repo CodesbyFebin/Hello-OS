@@ -129,6 +129,7 @@ export function HelloDashboard() {
         <a className="sidebar-bottom" href="/hub"><span>GitAgentHUB</span><ExternalLink size={14}/></a>
         <a className="sidebar-bottom" href="/evolve"><span>Evolve Lab (simulation)</span><ExternalLink size={14}/></a>
         <a className="sidebar-bottom" href="/cloud"><span>HELLO Cloud (vision)</span><ExternalLink size={14}/></a>
+        <a className="sidebar-bottom" href="/runtime"><span>Runtime: 10 pillars</span><ExternalLink size={14}/></a>
         <a className="sidebar-bottom" href="/ecosystem"><span>Open ecosystem map</span><ExternalLink size={14}/></a>
         <div className="sidebar-user"><div className="user-avatar">WO</div><div><b>Workspace Owner</b><small>Workspace owner</small></div><MoreHorizontal size={17}/></div>
       </aside>

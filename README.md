@@ -63,6 +63,7 @@ This table describes what exists in the repository today. Capabilities marked as
 - **Code analysis experiment.** Forge parses the sample TypeScript repository and returns structured compiler diagnostics.
 - **Operational fallback.** The dashboard refreshes from REST APIs and labels its demo snapshot fallback when services are unavailable.
 - **Platform overview.** The `/universe` route contains the longer HELLO platform and feature overview.
+- **Agent guide.** Read the [HELLO OS Agent Guide](https://codesbyfebin.github.io/Hello-OS/agent-guide/) for current APIs and integration boundaries.
 
 ## Download and platform support
 

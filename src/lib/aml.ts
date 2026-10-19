@@ -268,6 +268,14 @@ function approximateTokens(text: string): number {
   return text.match(/[A-Za-z_][A-Za-z0-9_.-]*|\d+(?:\.\d+)?|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|[^\s]/g)?.length ?? 0;
 }
 
+function projectNode(node: AmlNode): { kind: string; name: string; header: string; body: ReturnType<typeof projectNode>[] } {
+  return { kind: node.kind, name: node.name, header: node.header, body: node.body.map(projectNode) };
+}
+
+function pythonNode(node: ReturnType<typeof projectNode>): string {
+  return `dict(kind=${JSON.stringify(node.kind)}, name=${JSON.stringify(node.name)}, header=${JSON.stringify(node.header)}, body=[${node.body.map(pythonNode).join(", ")}])`;
+}
+
 export function compileAml(source: string): AmlCompilation {
   const diagnostics: AmlDiagnostic[] = [];
   const input = typeof source === "string" ? source : "";
@@ -309,8 +317,9 @@ export function compileAml(source: string): AmlCompilation {
   const graphData = JSON.stringify(graph.map(({ id, declaration, operation, source, line }) => ({ id, declaration, operation, source, line })));
   const hash = (value: string) => createHash("sha256").update(value, "utf8").digest("hex");
   const amlTokens = parser.tokens.filter((token) => token.kind !== "eof" && token.kind !== "newline").length;
-  const canonicalAst = JSON.stringify(ast);
-  const pythonProjection = ast.map((node) => `${node.kind}(${JSON.stringify(node.name)}, ${JSON.stringify(node.header)}, ${node.body.map((child) => JSON.stringify(child.header)).join(", ")})`).join("\n");
+  const canonicalTree = ast.map(projectNode);
+  const canonicalAst = JSON.stringify(canonicalTree);
+  const pythonProjection = canonicalTree.map(pythonNode).join("\n");
   const estimatedJsonTokens = approximateTokens(canonicalAst);
   const estimatedPythonTokens = approximateTokens(pythonProjection);
   return {

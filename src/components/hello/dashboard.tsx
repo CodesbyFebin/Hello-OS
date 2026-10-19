@@ -126,6 +126,7 @@ export function HelloDashboard() {
         <div className="system-list"><div><span className="system-led green"/>hello.id <small>VERIFIED</small></div><div><span className="system-led green"/>hello.cortex <small>READY</small></div><div><span className="system-led amber"/>hello.forge <small>2 CHECKS</small></div><div><span className="system-led muted"/>hello.cloud <small>SIMULATED</small></div><div><span className="system-led green"/>hello.mesh <small>CONNECTED</small></div></div>
         <div className="sidebar-spacer" />
         <div className="observer-card"><div className="observer-icon"><ShieldCheck size={16}/></div><div><b>Observer mode</b><small>Read-only human access</small></div><span className="observer-dot" /></div>
+        <a className="sidebar-bottom" href="/ops"><span>Ops console</span><ExternalLink size={14}/></a>
         <a className="sidebar-bottom" href="/hub"><span>GitAgentHUB</span><ExternalLink size={14}/></a>
         <a className="sidebar-bottom" href="/evolve"><span>Evolve Lab (simulation)</span><ExternalLink size={14}/></a>
         <a className="sidebar-bottom" href="/cloud"><span>HELLO Cloud (vision)</span><ExternalLink size={14}/></a>

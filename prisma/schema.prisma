@@ -246,6 +246,49 @@ model Guild {
   missions Mission[]
 }
 
+// --- Heartbeat scheduler (proactive agent jobs) ---
+model ScheduledJob {
+  id          String    @id @default(cuid())
+  name        String
+  kind        String    // heartbeat | wallet.audit | missions.stale
+  agentId     String?
+  intervalSec Int       @default(3600)
+  enabled     Boolean   @default(true)
+  nextRunAt   DateTime  @default(now())
+  lastRunAt   DateTime?
+  lastOk      Boolean?
+  runCount    Int       @default(0)
+  createdAt   DateTime  @default(now())
+  runs        JobRun[]
+}
+
+model JobRun {
+  id         String       @id @default(cuid())
+  jobId      String
+  job        ScheduledJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  ok         Boolean
+  output     String       // JSON summary
+  durationMs Int
+  createdAt  DateTime     @default(now())
+
+  @@index([jobId, createdAt])
+}
+
+// --- Delegation tree: parent funds child with a hard credit cap ---
+model Delegation {
+  id        String   @id @default(cuid())
+  parentId  String
+  childId   String   @unique
+  creditCap Float
+  task      String   @default("")
+  status    String   @default("active") // active | recalled
+  returned  Float    @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([parentId])
+}
+
 model Mission {
   id          String   @id @default(cuid())
   title       String

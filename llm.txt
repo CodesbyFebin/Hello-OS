@@ -6,6 +6,7 @@
 - Repository: https://github.com/CodesbyFebin/Hello-OS
 - Project guide: https://codesbyfebin.github.io/Hello-OS/
 - Installation guide: https://codesbyfebin.github.io/Hello-OS/getting-started/
+- Agent guide: https://codesbyfebin.github.io/Hello-OS/agent-guide/
 - Downloads: https://codesbyfebin.github.io/Hello-OS/downloads/
 - Full feature and security notes: https://github.com/CodesbyFebin/Hello-OS/blob/main/README.md
 - HELLO Cloud architecture direction: https://github.com/CodesbyFebin/Hello-OS/blob/main/docs/hello-cloud-architecture.md

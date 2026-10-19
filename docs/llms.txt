@@ -1,36 +1,41 @@
 # HELLO OS
 
-> HELLO OS is a local-first agentic OS prototype with agent identity, persistent memory, missions, an MCP-compatible tool service, A2A-style tasks, and a human dashboard.
+> HELLO OS is an experimental, local-first agentic OS prototype with agent identity, persistent memory, missions, an MCP-compatible tool service, A2A-style tasks, and a human dashboard.
 
 ## Canonical sources
 - Repository: https://github.com/CodesbyFebin/Hello-OS
-- Project guide: https://codesbyfebin.github.io/Hello-OS/
+- GitHub Pages project guide: https://codesbyfebin.github.io/Hello-OS/
 - Agent guide: https://codesbyfebin.github.io/Hello-OS/agent-guide/
-- AML Studio guide: https://codesbyfebin.github.io/Hello-OS/aml-studio/
-- Evolution Lab guide: https://codesbyfebin.github.io/Hello-OS/evolution-lab/
-- Local Evolution Lab route: http://localhost:3000/evolution (requires the app and database to be running)
-- Local AML Studio route: http://localhost:3000/aml-studio (available when the app is running)
+- AML Studio: https://codesbyfebin.github.io/Hello-OS/aml-studio/
+- Integration catalog: https://codesbyfebin.github.io/Hello-OS/integrations/
+- Machine-readable connector registry: https://codesbyfebin.github.io/Hello-OS/integrations/connector-registry.json
+- Machine-readable bridge patterns: https://codesbyfebin.github.io/Hello-OS/integrations/bridge-patterns.json
+- Bridge pattern notes: https://codesbyfebin.github.io/Hello-OS/integrations/bridge-patterns.md
+- Evolution Lab: https://codesbyfebin.github.io/Hello-OS/evolution-lab/
+- HELLO EVOLVE simulation: https://codesbyfebin.github.io/Hello-OS/hello-evolve/
 - Installation guide: https://codesbyfebin.github.io/Hello-OS/getting-started/
 - Downloads: https://codesbyfebin.github.io/Hello-OS/downloads/
-- Full feature and security notes: https://github.com/CodesbyFebin/Hello-OS/blob/main/README.md
-- Agent contributor instructions: https://github.com/CodesbyFebin/Hello-OS/blob/main/AGENTS.md
+- Architecture direction: https://github.com/CodesbyFebin/Hello-OS/blob/main/docs/hello-cloud-architecture.md
+- Security and feature limits: https://github.com/CodesbyFebin/Hello-OS/blob/main/README.md
+- Contributor instructions: https://github.com/CodesbyFebin/Hello-OS/blob/main/AGENTS.md
 
 ## Verified implementation facts
-- Next.js, React, TypeScript, Prisma, and SQLite are used by the app.
-- Docker Compose runs the dashboard and separate MCP service.
-- Identity creation uses Ed25519 and did:key.
-- MCP tool endpoint: /mcp; selected tools include forge, cortex, tiered memory, and checkpoint.
-- Agent card: /.well-known/agent-card.json.
-- A2A-style JSON-RPC includes message/send and tasks/get, tasks/list, tasks/update, tasks/cancel.
-- Private signing keys are stored by the demo server; this is not production key custody.
-- APK, EXE/PEXE, and DEB packages are not currently published.
-- GitHub Pages hosts static documentation only; it does not run the dynamic app, APIs, SQLite, or MCP.
+- The application uses Next.js, React, TypeScript, Prisma, and SQLite; Docker Compose runs the dashboard and a separate MCP service.
+- The MCP endpoint is /mcp. Selected tools include forge, cortex, tiered memory, and checkpoint.
+- Agent discovery is available at /.well-known/agent-card.json.
+- A2A-style JSON-RPC supports message/send and task lifecycle methods.
+- AML v1 statically parses and validates declarations at POST /api/aml/compile and POST /api/aml/validate. It builds a deterministic intent graph and hashes source; it never executes AML or invokes tools.
+- Evolution Lab stores seeded optimization runs over synthetic vectors. Its proxy scores are not model training or agent benchmarks.
+- HELLO EVOLVE is a browser simulation using synthetic demo data.
+- The repository is licensed under MIT; see LICENSE.
+- GitHub Pages hosts static documentation only; it does not run the Next.js APIs, SQLite database, or MCP service.
+- APK, Windows EXE/PEXE, and DEB installers are not currently published.
+
+## Integration catalog status
+The catalog contains 100 proposed connector targets and 50 design patterns for legacy bridges. Every connector is marked unconnected and every pattern unshipped. These records are roadmap references, not integrations or vendor endorsements. The running prototype exposes only the capabilities documented in the repository.
+
+## Security and capability limits
+This is an experimental prototype, not a hardened production control plane. Demo private keys are stored by the server and are not production-grade key custody. The project does not claim full MCP/A2A conformance, OAuth, SSE, production multi-tenancy, tamper-proof auditing, real-money payments, or Firecracker microVM checkpoints. Wallet balances are prototype credits. No crawler ping, sitemap, or metadata can guarantee search indexing or ranking.
 
 ## Start locally
-Clone the repository and run `docker compose up --build`; open http://localhost:3000. See README for prerequisites and data handling.
-
-## Limits
-This is an experimental prototype. It does not claim full MCP/A2A conformance, OAuth, SSE, production multi-tenancy, tamper-proof auditing, real payments, or Firecracker microVM checkpoints. No crawler ping guarantees search indexing or ranking.
-
-## Vision claims not verified as implemented
-A broader concept brief mentions hello.id, hello.cortex, hello.ledger, hello.mesh, hello.forge, hello.cloud, and hello.nexus. Treat these as vision labels, not deployed services. USDC, paid marketplace/escrow, verifiable credentials, lineage chains, temporal graph and sleep-cycle memory, Firecracker execution, database forks, swarms, governance, and evolutionary tournaments are not shipped by this codebase. The brief's performance figures, agent counts, case studies, release checksums, external URLs, and claimed license are unverified and must not be repeated as facts. No native APK, EXE/PEXE, DEB, AppImage, DMG, IPA, AAB, standalone binary, or SDK archive is published. The repository currently has no LICENSE file.
+Clone the repository and run docker compose up --build. Open http://localhost:3000. See README.md for prerequisites, configuration, and data handling.

@@ -129,6 +129,41 @@ model Transaction {
   createdAt   DateTime @default(now())
 }
 
+// --- Reversibility & approval gate (operator oversight) ---
+model OperatorControl {
+  id                String   @id @default("singleton")
+  killSwitch        Boolean  @default(false) // halts every gated agent action
+  approvalThreshold Float    @default(25.0)  // credit amount above which spends need operator approval
+  updatedAt         DateTime @updatedAt
+}
+
+model ActionApproval {
+  id        String    @id @default(cuid())
+  agentId   String
+  action    String    // wallet.spend | skill.install | external.send | data.delete
+  riskTier  String    // low | medium | high | critical
+  amount    Float     @default(0)
+  payload   String    @default("{}") // JSON needed to execute after approval
+  status    String    @default("pending") // pending | approved | rejected | executed | failed
+  note      String    @default("")
+  decidedBy String?
+  createdAt DateTime  @default(now())
+  decidedAt DateTime?
+
+  @@index([status])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actor     String   // agent id, "operator", or "system"
+  action    String
+  target    String   @default("")
+  detail    String   @default("")
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
 model Skill {
   id           String   @id @default(cuid())
   authorId     String

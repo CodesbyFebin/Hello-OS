@@ -54,7 +54,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "cannot attest yourself (anti-sybil)" }, { status: 400 });
   }
 
-  const from = await db.agent.findUnique({ where: { id: fromId } });
+  const from = await db.agent.findUnique({ where: { id: fromId }, omit: { privateKeyHex: false } });
   const to = await db.agent.findUnique({ where: { id: toId } });
   if (!from || !to) return NextResponse.json({ error: "agent not found" }, { status: 404 });
   if (!from.privateKeyHex) return NextResponse.json({ error: "attestor has no key material" }, { status: 400 });

@@ -1,13 +1,18 @@
 import { PrismaClient } from '@prisma/client'
 
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined
+// Secret key material is never returned by default. Code that must sign
+// has to opt in explicitly with `omit: { privateKeyHex: false }`.
+function createClient() {
+  return new PrismaClient({
+    log: ['error', 'warn'],
+    omit: { agent: { privateKeyHex: true } },
+  })
 }
 
-export const db =
-  globalForPrisma.prisma ??
-  new PrismaClient({
-    log: ['error', 'warn'],
-  })
+const globalForPrisma = globalThis as unknown as {
+  prisma: ReturnType<typeof createClient> | undefined
+}
+
+export const db = globalForPrisma.prisma ?? createClient()
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = db

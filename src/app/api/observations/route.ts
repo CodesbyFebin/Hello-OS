@@ -31,7 +31,7 @@ export async function POST(req: Request) {
   const amt = Number(funded);
   if (!amt || amt <= 0) return NextResponse.json({ error: "funded must be > 0" }, { status: 400 });
 
-  const agent = await db.agent.findUnique({ where: { id: agentId } });
+  const agent = await db.agent.findUnique({ where: { id: agentId }, omit: { privateKeyHex: false } });
   if (!agent) return NextResponse.json({ error: "agent not found" }, { status: 404 });
   if (!agent.privateKeyHex) return NextResponse.json({ error: "agent has no key material" }, { status: 400 });
 

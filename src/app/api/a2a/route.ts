@@ -23,7 +23,7 @@ async function sendTask(params: any) {
   const receiverId = String(params.receiverId || params.metadata?.receiverId || "");
   if (!senderId || !receiverId || !params.message) throw new Error("message/send requires senderId, receiverId, and message");
   const [sender, receiver] = await Promise.all([
-    db.agent.findUnique({ where: { id: senderId } }),
+    db.agent.findUnique({ where: { id: senderId }, omit: { privateKeyHex: false } }),
     db.agent.findUnique({ where: { id: receiverId } }),
   ]);
   if (!sender || !receiver) throw new Error("sender or receiver agent not found");

@@ -83,7 +83,7 @@ table{border-collapse:collapse;width:100%;margin:20px 0}td,th{text-align:left;ve
 <p class="note"><strong>Current status:</strong> this is a prototype. The documented way to run it is with Docker Compose or from source. Native Android APK, Windows EXE/PEXE, and Debian DEB installers are not published. The project does not claim production hardening, complete protocol conformance, or guaranteed search ranking.</p>
 </section>
 <nav class="toc" aria-label="On this page">
-<a href="#what-is-hello-os">What HELLO OS is</a><a href="#why-agent-workspace">Why an agent workspace</a><a href="#architecture">Architecture</a><a href="#identity">Identity</a><a href="#memory">Memory</a><a href="#tools">Tools and MCP</a><a href="#tasks">Tasks</a><a href="#aml-studio">AML Studio</a><a href="#run">Run locally</a><a href="#security">Security</a><a href="#faq">FAQ</a>
+<a href="#what-is-hello-os">What HELLO OS is</a><a href="#why-agent-workspace">Why an agent workspace</a><a href="#architecture">Architecture</a><a href="#identity">Identity</a><a href="#memory">Memory</a><a href="#tools">Tools and MCP</a><a href="#tasks">Tasks</a><a href="#aml-studio">AML Studio</a><a href="#evolution-lab">Evolution Lab</a><a href="#run">Run locally</a><a href="#security">Security</a><a href="#faq">FAQ</a>
 </nav>
 <section id="what-is-hello-os">
 <h2>What is HELLO OS?</h2>
@@ -216,6 +216,11 @@ docker compose up --build</code></pre>
 <p>Static validation has a limited job: it can flag conditions represented by its parser and rules. It cannot prove the safety or business correctness of a program, check every external dependency, guarantee that a future runtime will behave the same way, or execute and authorize a transaction. Read a finding in context, review the source, and use additional tests appropriate to your application before relying on output.</p>
 <p>For exact request shape and tool usage, consult the Agent Guide and current source. The API may evolve as the prototype changes. Treat its response as a developer aid and do not connect it to a production workflow that moves money, changes access, or performs another consequential operation without an independent review.</p>
 </section>
+<section id="evolution-lab">
+<h2>Inspect agent learning records</h2>
+<p>The HELLO OS Evolution Lab is a read-only app view at <code>http://localhost:3000/evolution</code> when the app is running. It loads agent and mission counts, apprenticeship records, and the configured curriculum from application APIs. It does not simulate training, generate fitness scores, or spawn microVMs.</p>
+<p>Read the <a href="./evolution-lab/">Evolution Lab guide</a> for its data sources and boundaries. A skill listed in the curriculum is a definition, not a certification or proof of agent learning.</p>
+</section>
 <section id="aml-studio">
 <h2>Explore AML Studio</h2>
 <p>The HELLO OS app includes an interactive AML Studio route for static parsing and validation. Run the application locally, then open <code>http://localhost:3000/aml-studio</code> to inspect parsed declarations, diagnostics, intent graph nodes, and content hashes. The compiler does not execute AML or create digital signatures.</p>
@@ -260,6 +265,7 @@ docker compose up --build</code></pre>
 <li><a href="./downloads/">Downloads and platform status</a> — what can currently be installed.</li>
 <li><a href="./agent-guide/">Agent Guide</a> — identity, memory, MCP, task methods, AML validation, and security boundaries.</li>
 <li><a href="./aml-studio/">AML Studio guide</a> — run and use the static AML validator locally.</li>
+<li><a href="./evolution-lab/">Evolution Lab guide</a> — inspect agent, apprenticeship, and curriculum data.</li>
 <li><a href="./llms.txt">Machine-readable project summary</a> — concise links and factual description for language-model tooling.</li>
 <li><a href="./sitemap.xml">XML sitemap</a> — the public project documentation URLs.</li>
 </ul>

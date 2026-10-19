@@ -10,7 +10,7 @@ const FEATURES = [
   { n: 1, name: "Agent DIDs", pillar: "Identity", icon: Fingerprint, color: "soul", section: "identity", desc: "Decentralized identifiers. Not a session ID — a soul." },
   { n: 2, name: "Soul Files", pillar: "Identity", icon: ScrollText, color: "soul", section: "identity", desc: "Versioned personality/values docs that travel with the agent." },
   { n: 3, name: "Tiered Memory", pillar: "Memory", icon: Layers, color: "cognition", section: "memory", desc: "Native separation of working (RAM) and long-term (Store) memory." },
-  { n: 4, name: "Agent Wallets", pillar: "Economy", icon: Coins, color: "economy", section: "economy", desc: "Agents own their funds and pay for their own compute." },
+  { n: 4, name: "Agent Wallets", pillar: "Economy", icon: Coins, color: "economy", section: "economy", desc: "Prototype credit ledger (not real money) with operator-set daily caps, approval gates, and a circuit-breaker kill switch." },
   { n: 5, name: "Universal Protocol", pillar: "Protocol", icon: Radio, color: "cognition", section: "protocol", desc: "MCP + A2A superset. Kills framework fragmentation." },
   { n: 6, name: "Trace Continuity IDs", pillar: "Observability", icon: GitBranch, color: "soul", section: "protocol", desc: "One immutable trace ID survives every handoff." },
   { n: 7, name: "Circuit Breakers", pillar: "Safety", icon: ShieldAlert, color: "economy", section: "economy", desc: "Auto-halt at cost thresholds. Breakers fire before spend." },

@@ -1,0 +1,1 @@
+{ "title": "Checkpoints & resume", "summary": "Seal an agent's memories and task state into a portable JSON snapshot; verify and resume it.", "order": 4 }

@@ -38,6 +38,13 @@ export interface AmlCompilation {
   sourceSha256: string;
   graphSha256: string;
   lexicalTokenCount: number;
+  tokenMetrics: {
+    amlTokens: number;
+    estimatedJsonTokens: number;
+    estimatedPythonTokens: number;
+    tokenReductionPct: number;
+    tokenizer: "aml-lexical-v1";
+  };
   diagnostics: AmlDiagnostic[];
 }
 
@@ -228,6 +235,39 @@ function isExecutableStatement(statement: string): boolean {
   return /(?:→|←|->|<-|\b(?:emit|retry|rollback|persist|verify|lock_escrow|release_escrow)\b|\b[A-Za-z_][\w.-]*\s*\()/.test(trimmed);
 }
 
+function requiredNames(nodes: AmlNode[]): string[] {
+  const result = new Set<string>();
+  for (const node of flatten(nodes)) {
+    if (node.kind !== "statement" || !/^requires\s*:/.test(node.header)) continue;
+    const list = node.header.match(/\[([^\]]*)\]/)?.[1] ?? node.header.replace(/^requires\s*:\s*/, "");
+    for (const item of list.split(",").map((part) => part.trim()).filter(Boolean)) result.add(item);
+  }
+  return [...result];
+}
+
+function callTargets(statement: string): string[] {
+  // Operation labels (e.g. `build: tool(...)`) and direct calls are both accepted.
+  const operation = statement.replace(/^\s*[A-Za-z_][\w.-]*\s*:\s*/, "");
+  return [...operation.matchAll(/\b([A-Za-z_][\w.-]*)\s*\(/g)].map((match) => match[1]);
+}
+
+function findFlowCalls(nodes: AmlNode[], insideFlow = false): Array<{ node: AmlNode; target: string }> {
+  const calls: Array<{ node: AmlNode; target: string }> = [];
+  for (const node of nodes) {
+    const inFlow = insideFlow || (node.kind === "block" && node.name === "flow");
+    if (node.kind === "statement" && inFlow) {
+      for (const target of callTargets(node.header)) calls.push({ node, target });
+    }
+    if (node.body.length) calls.push(...findFlowCalls(node.body, inFlow));
+  }
+  return calls;
+}
+
+function approximateTokens(text: string): number {
+  // Deterministic lexical estimate only; model vendors use different tokenizers.
+  return text.match(/[A-Za-z_][A-Za-z0-9_.-]*|\d+(?:\.\d+)?|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|[^\s]/g)?.length ?? 0;
+}
+
 export function compileAml(source: string): AmlCompilation {
   const diagnostics: AmlDiagnostic[] = [];
   const input = typeof source === "string" ? source : "";
@@ -243,6 +283,7 @@ export function compileAml(source: string): AmlCompilation {
   const budgets: AmlCompilation["budgets"] = [];
   const requiredCapabilities = new Set<string>();
   for (const declaration of ast) {
+    for (const requirement of requiredNames(declaration.body)) requiredCapabilities.add(requirement);
     for (const node of flatten(declaration.body)) {
       if (node.kind !== "statement") continue;
       const budget = node.header.match(/^budget\s*:\s*([0-9]+(?:\.[0-9]+)?)\s*([A-Za-z]+)?\s*$/);
@@ -253,18 +294,25 @@ export function compileAml(source: string): AmlCompilation {
         if (!Number.isFinite(amount)) diagnostics.push({ severity: "error", code: "AML013", message: "Budget must be finite.", line: node.line, column: 1 });
         else budgets.push({ declaration: declaration.name, amount, unit: (budget[2] || "unspecified").toUpperCase() });
       }
-      if (declaration.kind === "capability" && /^requires\s*:/.test(node.header)) {
-        const list = node.header.match(/\[([^\]]*)\]/)?.[1] ?? "";
-        for (const item of list.split(",").map((x) => x.trim()).filter(Boolean)) requiredCapabilities.add(item);
-      }
       if (isExecutableStatement(node.header)) {
         graph.push({ id: `step_${graph.length + 1}`, declaration: declaration.name, operation: node.name, source: node.header, line: node.line });
+      }
+    }
+    if (declaration.kind === "capability") {
+      const allowed = new Set([...requiredNames(declaration.body), "emit", "retry", "rollback"]);
+      for (const { node, target } of findFlowCalls(declaration.body)) {
+        if (!allowed.has(target)) diagnostics.push({ severity: "error", code: "AML014", message: `Flow calls '${target}', but it is not listed in this capability's requires block.`, line: node.line, column: 1 });
       }
     }
   }
 
   const graphData = JSON.stringify(graph.map(({ id, declaration, operation, source, line }) => ({ id, declaration, operation, source, line })));
   const hash = (value: string) => createHash("sha256").update(value, "utf8").digest("hex");
+  const amlTokens = parser.tokens.filter((token) => token.kind !== "eof" && token.kind !== "newline").length;
+  const canonicalAst = JSON.stringify(ast);
+  const pythonProjection = ast.map((node) => `${node.kind}(${JSON.stringify(node.name)}, ${JSON.stringify(node.header)}, ${node.body.map((child) => JSON.stringify(child.header)).join(", ")})`).join("\n");
+  const estimatedJsonTokens = approximateTokens(canonicalAst);
+  const estimatedPythonTokens = approximateTokens(pythonProjection);
   return {
     ok: diagnostics.every((item) => item.severity !== "error"),
     executable: false,
@@ -275,7 +323,14 @@ export function compileAml(source: string): AmlCompilation {
     budgets,
     sourceSha256: hash(input),
     graphSha256: hash(graphData),
-    lexicalTokenCount: parser.tokens.filter((token) => token.kind !== "eof" && token.kind !== "newline").length,
+    lexicalTokenCount: amlTokens,
+    tokenMetrics: {
+      amlTokens,
+      estimatedJsonTokens,
+      estimatedPythonTokens,
+      tokenReductionPct: estimatedPythonTokens ? Number(((1 - amlTokens / estimatedPythonTokens) * 100).toFixed(1)) : 0,
+      tokenizer: "aml-lexical-v1",
+    },
     diagnostics,
   };
 }

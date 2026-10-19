@@ -8,7 +8,7 @@
 - Installation guide: https://codesbyfebin.github.io/Hello-OS/getting-started/
 - Agent guide: https://codesbyfebin.github.io/Hello-OS/agent-guide/
 - AML Studio guide: https://codesbyfebin.github.io/Hello-OS/aml-studio/
-- Evolution Lab guide: https://codesbyfebin.github.io/Hello-OS/evolution-lab/
+- Evolution Lab guide: https://codesbyfebin.github.io/Hello-OS/evolution-lab/\n- HELLO EVOLVE simulation demo: https://codesbyfebin.github.io/Hello-OS/hello-evolve/ (browser-generated demo data; no live backend).
 - Local Evolution Lab route: http://localhost:3000/evolution (requires the app and Prisma schema to be applied with npm run db:push)
 - Evolution Lab backend: persisted seeded optimization runs with selection, crossover, bounded mutation, proxy fitness, pause/resume, and per-generation snapshots. It evolves synthetic vectors and does not train models or alter live agents.
 - Local AML Studio route: http://localhost:3000/aml-studio (available when the app is running)

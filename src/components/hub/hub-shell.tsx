@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Bell, Cloud, Dna, FlaskConical, LayoutDashboard, MessageSquare, Search } from "lucide-react";
+import { Bell, Cloud, Dna, Map as MapIcon, FlaskConical, LayoutDashboard, MessageSquare, Search } from "lucide-react";
 
 export const card = "rounded-xl border border-white/[.07] bg-[#0f1019]/80";
 export const kicker = "font-mono text-[10px] tracking-[.18em] text-zinc-500";
@@ -19,7 +19,7 @@ export function SoonButton({ children, className = "" }: { children: React.React
   return <button type="button" disabled title="Coming soon" aria-disabled className={`cursor-not-allowed rounded-md border border-white/10 px-3 py-1.5 text-xs text-zinc-500 ${className}`}>{children}</button>;
 }
 
-export function HubShell({ active, search, onSearch, children }: { active: "hub" | "evolve" | "cloud"; search?: string; onSearch?: (v: string) => void; children: React.ReactNode }) {
+export function HubShell({ active, search, onSearch, children }: { active: "hub" | "evolve" | "cloud" | "roadmap"; search?: string; onSearch?: (v: string) => void; children: React.ReactNode }) {
   const tab = (href: string, label: string, Icon: typeof Dna, on: boolean) => (
     <Link href={href} className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 font-mono text-xs ${on ? "bg-[#43e6a5]/10 text-[#43e6a5]" : "text-zinc-400 hover:text-white"}`}><Icon size={14} />{label}</Link>
   );
@@ -36,6 +36,7 @@ export function HubShell({ active, search, onSearch, children }: { active: "hub"
             {tab("/evolve", "evolve lab", FlaskConical, active === "evolve")}
             {tab("/evolution", "saved runs", Dna, false)}
             {tab("/cloud", "cloud", Cloud, active === "cloud")}
+            {tab("/roadmap", "roadmap", MapIcon, active === "roadmap")}
           </nav>
           <div className="ml-auto flex items-center gap-2">
             {onSearch && <label className="hidden items-center gap-2 rounded-md border border-white/10 bg-black/30 px-2 py-1.5 md:flex"><Search size={14} className="text-zinc-500" /><input aria-label="Search agents, repos and skills" value={search} onChange={(e) => onSearch(e.target.value)} placeholder="Search agents, repos, skills" className="w-56 bg-transparent text-xs outline-none placeholder:text-zinc-600" /></label>}

@@ -166,7 +166,7 @@ export function AmlStudioClient() {
         </div>
 
         <div className="mt-10 flex flex-wrap gap-x-6 gap-y-3 border-t border-white/10 pt-6 text-sm">
-          <Link href="/agent-guide/" className="text-emerald-200 hover:text-emerald-100">Agent Guide</Link>
+          <Link href="https://codesbyfebin.github.io/Hello-OS/agent-guide/" className="text-emerald-200 hover:text-emerald-100">Agent Guide</Link>
           <Link href="https://github.com/CodesbyFebin/Hello-OS/blob/main/docs/aml-examples.md" className="text-emerald-200 hover:text-emerald-100">AML examples</Link>
           <Link href="https://github.com/CodesbyFebin/Hello-OS/blob/main/docs/aml-spec.ebnf" className="text-emerald-200 hover:text-emerald-100">AML grammar</Link>
           <Link href="/" className="text-slate-400 hover:text-white">HELLO OS home</Link>

@@ -4,7 +4,6 @@
 
 [![GitHub repository](https://img.shields.io/badge/GitHub-CodesbyFebin%2FHello--OS-181717?logo=github)](https://github.com/CodesbyFebin/Hello-OS)
 [![Pages guide](https://img.shields.io/badge/Project%20guide-GitHub%20Pages-222?logo=githubpages)](https://codesbyfebin.github.io/Hello-OS/)
-[![License](https://img.shields.io/badge/license-see%20repository-lightgrey)](LICENSE)
 
 **Project guide and download center:** [codesbyfebin.github.io/Hello-OS](https://codesbyfebin.github.io/Hello-OS/) (available after GitHub Pages is enabled with GitHub Actions in repository settings). **Source code:** [github.com/CodesbyFebin/Hello-OS](https://github.com/CodesbyFebin/Hello-OS).
 
@@ -309,7 +308,7 @@ It provides a concise, human-readable map of project information. It is an emerg
 
 ### Which license applies?
 
-Check the repository's `LICENSE` file before reusing or redistributing the code. Do not infer a license from the presence of a public GitHub repository or from this README.
+There is currently no `LICENSE` file in the repository. Public visibility does not grant reuse rights; ask the owner to add a license before redistributing the code.
 
 ### Can I expose the demo publicly?
 
@@ -325,4 +324,4 @@ Open an issue in [CodesbyFebin/Hello-OS](https://github.com/CodesbyFebin/Hello-O
 
 ## License and project status
 
-Review the repository's `LICENSE` file for reuse terms. HELLO OS is an evolving prototype. Validate the source, runtime configuration, security assumptions, and integration contracts before using it with sensitive information or in production.
+No `LICENSE` file is currently present. The owner should add a license before the project invites reuse or redistribution. HELLO OS is an evolving prototype. Validate the source, runtime configuration, security assumptions, and integration contracts before using it with sensitive information or in production.

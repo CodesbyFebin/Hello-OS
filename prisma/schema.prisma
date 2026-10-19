@@ -153,6 +153,43 @@ model ActionApproval {
   @@index([status])
 }
 
+// --- Consensus / debate protocol (reputation-weighted) ---
+model Debate {
+  id            String   @id @default(cuid())
+  topic         String
+  proposerId    String
+  quorumWeight  Float    @default(100) // total reputation weight required to decide
+  status        String   @default("open") // open | passed | rejected | no_quorum
+  forWeight     Float    @default(0)
+  againstWeight Float    @default(0)
+  createdAt     DateTime @default(now())
+  closedAt      DateTime?
+  arguments     DebateArgument[]
+  votes         DebateVote[]
+}
+
+model DebateArgument {
+  id        String   @id @default(cuid())
+  debateId  String
+  debate    Debate   @relation(fields: [debateId], references: [id], onDelete: Cascade)
+  agentId   String
+  stance    String   // for | against
+  text      String
+  createdAt DateTime @default(now())
+}
+
+model DebateVote {
+  id        String   @id @default(cuid())
+  debateId  String
+  debate    Debate   @relation(fields: [debateId], references: [id], onDelete: Cascade)
+  agentId   String
+  stance    String
+  weight    Float    // voter reputation at vote time
+  createdAt DateTime @default(now())
+
+  @@unique([debateId, agentId])
+}
+
 model AuditLog {
   id        String   @id @default(cuid())
   actor     String   // agent id, "operator", or "system"

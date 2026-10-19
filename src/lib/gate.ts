@@ -4,13 +4,13 @@
 import { db } from "@/lib/db";
 
 export type RiskTier = "low" | "medium" | "high" | "critical";
-export type GatedAction = "data.read" | "wallet.spend" | "skill.install" | "external.send" | "data.delete";
+export type GatedAction = "data.read" | "wallet.spend" | "skill.install" | "external.send" | "data.delete" | "treasury.reallocate";
 export type GateDecision =
   | { decision: "allow"; tier: RiskTier }
   | { decision: "pending"; tier: RiskTier; approvalId: string }
   | { decision: "blocked"; tier: RiskTier; reason: string };
 
-export const ACTIONS: GatedAction[] = ["data.read", "wallet.spend", "skill.install", "external.send", "data.delete"];
+export const ACTIONS: GatedAction[] = ["data.read", "wallet.spend", "skill.install", "external.send", "data.delete", "treasury.reallocate"];
 
 /** Pure risk classification. Reversible, internal actions are low; spends are
  * medium until they cross the operator threshold; irreversible or externally
@@ -81,6 +81,10 @@ export async function decide(approvalId: string, decision: "approve" | "reject",
     outcome = r.ok ? { ok: true } : { ok: false, error: r.error };
   } else if (a.action === "skill.install") {
     const r = await installSkill(String(p.agentId), String(p.skillId));
+    outcome = r.ok ? { ok: true } : { ok: false, error: r.error };
+  } else if (a.action === "treasury.reallocate") {
+    const { executeReallocation } = await import("@/lib/treasury");
+    const r = await executeReallocation(String(p.fromAgentId), String(p.toAgentId), Number(p.amount), String(p.reason ?? ""));
     outcome = r.ok ? { ok: true } : { ok: false, error: r.error };
   } else {
     outcome = { ok: false, error: "no executor wired for this action in the prototype; recorded only" };

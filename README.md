@@ -16,7 +16,9 @@ HELLO OS includes a bounded, **static-only** AML compiler for parsing agent miss
 - MCP tool: `aml.compile` on the existing HELLO MCP service.
 - Supported declaration forms, examples, and grammar: [`docs/aml-examples.md`](docs/aml-examples.md) and [`docs/aml-spec.ebnf`](docs/aml-spec.ebnf).
 - Declarative `model_matrix` and `bridge` blocks are syntax only; there is no provider routing or external-agent call.
-## Explore the API-backed Evolution Lab\n\nRun the application and open `http://localhost:3000/evolution` to inspect live agent and mission counts, apprenticeship records, and curriculum definitions. This view reads existing APIs; it does not train models, mutate records, or show simulated fitness and VM metrics. See the [Evolution Lab guide](https://codesbyfebin.github.io/Hello-OS/evolution-lab/) for data sources and limits.\n\n## What HELLO OS is
+## Run the persistent Evolution Lab
+
+Open `http://localhost:3000/evolution` to create and inspect seeded optimization runs. Each generation uses deterministic selection, crossover, and bounded mutation; candidate vectors, proxy scores, champion snapshots, and run status persist through Prisma in SQLite. Apply the current schema with `npm run db:push` before using the new run APIs. The optimizer scores synthetic gene vectors only: it does not train models, change weights, mutate live agents, or demonstrate real capability gains. Read the [Evolution Lab guide](https://codesbyfebin.github.io/Hello-OS/evolution-lab/) for API routes, bounds, setup, and data limits.
 
 HELLO OS, also called Hello Agentic OS, is an experimental agent runtime and dashboard. It is built to explore a practical question: what would a workspace look like if autonomous software agents had durable identities, memory, tools, assignments, and reviewable records of work? The current repository is a runnable prototype, not a general-purpose desktop operating system, managed cloud service, production custody system, or claim of fully autonomous operation.
 

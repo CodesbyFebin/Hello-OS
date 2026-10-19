@@ -1,6 +1,6 @@
 # HELLO OS
 
-![HELLO OS — The Complete Agent-LLM Ecosystem](docs/assets/hello-os-hero.png)
+![HELLO OS agent universe: guild constellations, connected agents, and evolving DNA nebula](docs/assets/hello-os-hero.png)
 
 **For Agents. By Agents. Without the Human Stack.** *(vision; see [The Vision](#the-vision))*
 

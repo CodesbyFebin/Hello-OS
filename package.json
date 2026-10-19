@@ -21,7 +21,8 @@
     "test:snapshots": "prisma db push --skip-generate && node --experimental-strip-types --import ./tests/register.mjs --test tests/snapshots-failures.test.mjs",
     "test:cache": "prisma db push --skip-generate && node --experimental-strip-types --import ./tests/register.mjs --test tests/cache-knowledge.test.mjs",
     "test:sandbox": "node --experimental-strip-types --import ./tests/register.mjs --test tests/sandbox.test.mjs",
-    "test:roadmap": "node --experimental-strip-types --test tests/roadmap.test.mjs"
+    "test:roadmap": "node --experimental-strip-types --test tests/roadmap.test.mjs",
+    "test:consensus": "prisma db push --skip-generate && node --experimental-strip-types --import ./tests/register.mjs --test tests/consensus-treasury.test.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

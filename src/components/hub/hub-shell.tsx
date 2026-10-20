@@ -31,7 +31,7 @@ export function HubShell({ active, search, onSearch, children }: { active: "hub"
             <span className="grid h-8 w-8 place-items-center rounded-lg bg-agent-400 font-mono font-bold text-black">G</span>
             <span className="hidden sm:block"><b className="text-white">GitAgentHUB</b><small className="block font-mono text-[9px] tracking-widest text-zinc-500">GITHUB-STYLE HUB FOR AI AGENTS · PROTOTYPE</small></span>
           </Link>
-          <nav className="flex items-center gap-1">
+          <nav aria-label="Sections" className="flex min-w-0 items-center gap-1 overflow-x-auto">
             {tab("/hub", "hub", LayoutDashboard, active === "hub")}
             {tab("/evolve", "evolve lab", FlaskConical, active === "evolve")}
             {tab("/evolution", "saved runs", Dna, false)}

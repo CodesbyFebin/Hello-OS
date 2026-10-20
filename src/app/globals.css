@@ -229,3 +229,17 @@
 
   .mono { font-family: var(--font-mono); }
 }
+
+/* Landing hero (src/components/hello/landing-hero.tsx) */
+@keyframes hero-spin { to { transform: rotate(360deg); } }
+@keyframes hero-spin-rev { to { transform: rotate(-360deg); } }
+@keyframes hero-pulse { 50% { transform: scale(1.04); filter: brightness(1.15); } }
+.hello-hero .hero-ring { animation: hero-spin linear infinite; }
+.hello-hero .hero-core { animation: hero-pulse 6s ease-in-out infinite; }
+.hello-hero .hero-orbit { animation: hero-spin 140s linear infinite; }
+.hello-hero .hero-counter { animation: hero-spin-rev 140s linear infinite; }
+.hello-hero .hero-orbit:hover, .hello-hero .hero-orbit:focus-within,
+.hello-hero .hero-orbit:hover .hero-counter, .hello-hero .hero-orbit:focus-within .hero-counter { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .hello-hero .hero-ring, .hello-hero .hero-core, .hello-hero .hero-orbit, .hello-hero .hero-counter { animation: none; }
+}

@@ -7,7 +7,9 @@ import { Project, SyntaxKind, type ClassDeclaration, type MethodDeclaration, typ
 import { createHash } from "crypto";
 import path from "path";
 
-const REPO_ROOT = path.resolve(__dirname, "../../sample-repo");
+// Resolved from the working directory (repo root for dev, the standalone
+// folder in production) so it works in Next, Bun and node --test alike.
+const REPO_ROOT = process.env.HELLO_FORGE_ROOT || path.resolve(process.cwd(), "sample-repo");
 
 export interface ForgeSymbol {
   repoId: string;

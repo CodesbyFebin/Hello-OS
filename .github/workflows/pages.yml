@@ -1,37 +1,45 @@
-name: Deploy HELLO OS project guide to GitHub Pages
+name: Publish download portal
 
 on:
   push:
     branches: [main]
     paths:
+      - "download-site/**"
       - "docs/**"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: true
 
 jobs:
   deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout source
         uses: actions/checkout@v4
-      - name: Configure Pages
+      - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
-      - name: Upload static guide
-        uses: actions/upload-pages-artifact@v3
+      - name: Assemble documentation and download portal
+        run: |
+          mkdir -p _site/downloads
+          cp -a docs/. _site/
+          cp -a download-site/. _site/downloads/
+      - name: Upload download portal
+        uses: actions/upload-pages-artifact@v4
         with:
-          path: docs
-      - name: Deploy to Pages
+          path: _site
+      - name: Deploy GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

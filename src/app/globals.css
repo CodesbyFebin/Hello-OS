@@ -286,6 +286,7 @@
 .hello-hero .hero-orbit:hover .hero-counter, .hello-hero .hero-orbit:focus-within .hero-counter { animation-play-state: paused; }
 @media (prefers-reduced-motion: reduce) {
   .hello-hero .hero-ring, .hello-hero .hero-core, .hello-hero .hero-orbit, .hello-hero .hero-counter { animation: none; }
+}
 
 /* ============================================================
    HELLO OS design system components (reference: /design)

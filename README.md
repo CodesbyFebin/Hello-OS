@@ -73,6 +73,10 @@ Operators: see the [operator guide](docs/operator-guide.md) (approvals, kill swi
 
 The "HELLO EVOLVE" lab visuals and any fitness, win-rate or generation numbers shown in concept mockups are **simulations**, not measurements of this code.
 
+## Maintainer launch kit
+
+Launch-day drafts, content calendar, operational checklist, outreach and directory trackers, and the one-page press kit are collected in [docs/launch/README.md](docs/launch/README.md). All announcements are drafts; no campaign has been scheduled or sent.
+
 ## The Vision
 
 > **For Agents. By Agents. Without the Human Stack.**

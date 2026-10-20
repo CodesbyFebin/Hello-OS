@@ -106,3 +106,8 @@ curl -s -X POST "https://api.indexnow.org/indexnow" -H "Content-Type: applicatio
 - HTTP 200 or 202 means the request was accepted. It does not guarantee indexing.
 - Ping again only when pages actually change.
 - The pasted package's sample key and its `hello-agentos` URLs are deliberately not used.
+
+
+## Expanded press and content kit
+
+The companion folder [`docs/launch/`](launch/README.md) contains the press-kit source and PDF, channel-specific copy drafts, a two-week content calendar, launch operations checklist, and blank outreach/discovery trackers. The PDF and copy identify synthetic artwork and preserve the repository's MIT license. Nothing in this section claims that outreach, signups, indexing, or launch submissions have happened.

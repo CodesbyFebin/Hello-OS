@@ -65,6 +65,7 @@ async function main() {
   await db.trace.deleteMany();
   await db.agent.deleteMany();
   await db.guild.deleteMany();
+  await db.auditLog.deleteMany({ where: { action: "seed.run" } });
 
   const guilds = await Promise.all(
     GUILDS.map((g) => db.guild.create({ data: { ...g, memberCount: 0 } }))
@@ -664,6 +665,9 @@ async function main() {
     });
   }
   console.log(`  ✓ ${seedToolCalls.length} MCP tool-call receipts (SHA-256 audit trail)`);
+
+  // Marker so the dashboard can label seeded sample data as DEMO DATA.
+  await db.auditLog.create({ data: { actor: "system", action: "seed.run", detail: "scripts/seed.ts sample data" } });
 
   console.log("\n✅ Hello universe seeded.");
   console.log(`   ${agents.length} agents (real Ed25519 did:key), ${guilds.length} guilds, ${await db.mission.count()} missions, ${await db.skill.count()} skills, ${await db.trace.count()} traces, ${await db.memory.count()} memories`);

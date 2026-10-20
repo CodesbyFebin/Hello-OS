@@ -23,7 +23,9 @@
     "test:sandbox": "node --experimental-strip-types --import ./tests/register.mjs --test tests/sandbox.test.mjs",
     "test:roadmap": "node --experimental-strip-types --test tests/roadmap.test.mjs",
     "test:consensus": "prisma db push --skip-generate && node --experimental-strip-types --import ./tests/register.mjs --test tests/consensus-treasury.test.mjs",
-    "test:sync": "prisma db push --skip-generate && node --experimental-strip-types --import ./tests/register.mjs --test tests/sync.test.mjs"
+    "test:sync": "prisma db push --skip-generate && node --experimental-strip-types --import ./tests/register.mjs --test tests/sync.test.mjs",
+    "test:docs": "prisma db push --skip-generate && node --experimental-strip-types --import ./tests/register.mjs --test tests/docs.test.mjs",
+    "routes:manifest": "node scripts/gen-route-manifest.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

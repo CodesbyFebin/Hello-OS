@@ -14,7 +14,7 @@ offline test, a documented disable path, and adds no dependency to the base inst
 
 | Catalog area (examples) | HELLO OS requirement it would serve | Current HELLO code that covers it | Verdict | Reason |
 | --- | --- | --- | --- | --- |
-| Local models (Ollama; also llama.cpp server, LocalAI, llamafile) | Local-first AI with no cloud account or key | `src/lib/ai/provider.ts` (OpenAI-compatible `chat`) | **Adopt: `ollama` provider profile** | It's one entry in `PROVIDERS` plus "key optional, model required". No new dependency, off unless `HELLO_AI_PROVIDER=ollama`, offline test in `tests/local-profile.test.mjs`. Other OpenAI-compatible local servers work through `custom`. |
+| Local models (Ollama; also llama.cpp server, LocalAI, llamafile) | Local-first AI with no cloud account or key | `src/lib/ai/provider.ts` (OpenAI-compatible `chat`) | **Adopt: `ollama` provider profile** | It's one entry in `PROVIDERS` plus "key optional, model required". No new dependency, off unless `HELLO_AI_PROVIDER=ollama`, offline test in `tests/ollama-gateway-profile.test.mjs`. Other OpenAI-compatible local servers work through `custom`. |
 | Gateways (LiteLLM, Bifrost, Portkey) | Routing/fallback across providers behind one endpoint | `custom` provider + `HELLO_AI_BASE_URL`; retries and 429 handling in `chat()` | **Adopt: docs + test only** | It already works through `custom`. The test proves bearer forwarding and that the key stays out of `aiStatus`. No code or dependency added. |
 | Gateways (FreeLLMAPI, OpenCode Free Router, Trylon) | Same as above | Same | Defer | Free-tier aggregators route to third parties with unclear data handling. Trylon is BUSL-1.1. If needed, they're usable through `custom`, but not recommended. |
 | Eval / observability (promptfoo, DeepEval, Langfuse, Phoenix) | Promotion based on measured task results; traces | `src/lib/eval/*` (PR #34), `Trace` and `AuditLog` models, `ai.call` audit rows | Defer | HELLO's own eval loop is the source of truth and runs offline. A Langfuse/Phoenix export adapter needs a redaction design and a fake-collector test first. Revisit once suites grow. |
@@ -65,7 +65,7 @@ Unset `HELLO_AI_PROVIDER`. AI routes then return `503 NO_AI_PROVIDER`. Nothing e
 
 ### Tests
 
-`tests/local-profile.test.mjs` runs against a local mock server with no network:
+`tests/ollama-gateway-profile.test.mjs` runs against a local mock server with no network:
 - disabled by default
 - Ollama URL, optional key and required model
 - no auth header without a key

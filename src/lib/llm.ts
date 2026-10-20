@@ -1,44 +1,14 @@
 // Hello — LLM execution + drift measurement utilities.
 // Used by the honest Golden-Set Replay: re-execute pinned prompts against
 // the live model and measure real drift (not a random number).
-import ZAI from "z-ai-web-dev-sdk";
 import { createHash } from "crypto";
+import { meteredChat } from "@/lib/ai/metered";
+export { NoAIProviderError, aiProviderConfigured } from "@/lib/ai/provider";
 
-/** Thrown when no AI provider is configured. Callers must surface it, never fake output. */
-export class NoAIProviderError extends Error {
-  constructor(detail?: string) {
-    super(`no AI provider configured${detail ? `: ${detail}` : ""}. Set HELLO_AI_PROVIDER=z-ai and configure the z-ai SDK to run replays.`);
-    this.name = "NoAIProviderError";
-  }
-}
-
-export function aiProviderConfigured(): boolean {
-  return process.env.HELLO_AI_PROVIDER === "z-ai";
-}
-
-let _zai: any = null;
-async function getZai() {
-  if (!aiProviderConfigured()) throw new NoAIProviderError();
-  if (!_zai) {
-    try {
-      _zai = await ZAI.create();
-    } catch (e: any) {
-      throw new NoAIProviderError(e?.message ?? "SDK initialisation failed");
-    }
-  }
-  return _zai;
-}
-
-export async function runCompletion(prompt: string): Promise<{ output: string; latencyMs: number }> {
-  const zai = await getZai();
-  const t0 = Date.now();
-  const response = await zai.chat.completions.create({
-    messages: [{ role: "user", content: prompt }],
-    stream: false,
-    thinking: { type: "disabled" },
-  });
-  const output = response.choices?.[0]?.message?.content ?? "";
-  return { output, latencyMs: Date.now() - t0 };
+/** One metered completion through the configured OpenAI-compatible provider. */
+export async function runCompletion(prompt: string, ctx: { purpose?: string; agentId?: string } = {}) {
+  const r = await meteredChat([{ role: "user", content: prompt }], { purpose: ctx.purpose ?? "completion", agentId: ctx.agentId });
+  return { output: r.output, latencyMs: r.latencyMs, model: r.model, receipt: r.receipt, credits: r.credits };
 }
 
 export function sha256(s: string): string {

@@ -10,6 +10,8 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { runCompletion, sha256, computeDrift, aiProviderConfigured, NoAIProviderError } from "@/lib/llm";
+import { aiErrorResponse } from "@/lib/ai/metered";
+import { AIRequestError } from "@/lib/ai/provider";
 
 type ReplayResult = {
   title: string;
@@ -50,7 +52,7 @@ export async function POST() {
     const startedAt = Date.now();
     try {
       // Re-execute the pinned prompt against the LIVE model
-      const { output, latencyMs } = await runCompletion(item.prompt);
+      const { output, latencyMs, model, receipt } = await runCompletion(item.prompt, { purpose: `golden-replay:${item.id}` });
       const actualOutput = output.trim();
       const actualHash = sha256(actualOutput);
 
@@ -61,7 +63,7 @@ export async function POST() {
       const replay = await db.goldenSetReplay.create({
         data: {
           itemId: item.id,
-          modelUsed: "live-model", // the SDK's current model
+          modelUsed: model,
           actualOutput,
           actualHash,
           hashMatch,
@@ -88,13 +90,16 @@ export async function POST() {
         expectedExcerpt: item.expectedOutput.slice(0, 100) + "…",
         actualExcerpt: actualOutput.slice(0, 100) + "…",
         replayId: replay.id,
+        modelUsed: model,
+        receipt,
       });
 
       totalDrift += drift;
       if (passed) passCount++;
     } catch (e: any) {
-      if (e instanceof NoAIProviderError) {
-        return NextResponse.json({ error: e.message, code: "NO_AI_PROVIDER" }, { status: 503 });
+      if (e instanceof NoAIProviderError || (e instanceof AIRequestError && e.code === "AI_RATE_LIMITED")) {
+        const m = aiErrorResponse(e)!;
+        return NextResponse.json(m.body, { status: m.status });
       }
       results.push({
         title: item.title,

@@ -4,9 +4,28 @@
 import ZAI from "z-ai-web-dev-sdk";
 import { createHash } from "crypto";
 
+/** Thrown when no AI provider is configured. Callers must surface it, never fake output. */
+export class NoAIProviderError extends Error {
+  constructor(detail?: string) {
+    super(`no AI provider configured${detail ? `: ${detail}` : ""}. Set HELLO_AI_PROVIDER=z-ai and configure the z-ai SDK to run replays.`);
+    this.name = "NoAIProviderError";
+  }
+}
+
+export function aiProviderConfigured(): boolean {
+  return process.env.HELLO_AI_PROVIDER === "z-ai";
+}
+
 let _zai: any = null;
 async function getZai() {
-  if (!_zai) _zai = await ZAI.create();
+  if (!aiProviderConfigured()) throw new NoAIProviderError();
+  if (!_zai) {
+    try {
+      _zai = await ZAI.create();
+    } catch (e: any) {
+      throw new NoAIProviderError(e?.message ?? "SDK initialisation failed");
+    }
+  }
   return _zai;
 }
 

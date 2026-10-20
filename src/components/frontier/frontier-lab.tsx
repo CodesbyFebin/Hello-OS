@@ -80,7 +80,7 @@ function ForkSim() {
   function run() {
     const seed = 7;
     let pop: Candidate[] = createInitialPopulation(8, "coding", seed);
-    const out = [];
+    const out: { gen: number; best: number; bestId: string; parents: string }[] = [];
     for (let g = 0; g <= 6; g++) {
       if (g > 0) pop = evolvePopulation(pop, g, 8, 0.2, "coding", seed).population;
       const best = rankPopulation(pop)[0];

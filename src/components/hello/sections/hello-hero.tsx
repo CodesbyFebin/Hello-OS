@@ -77,7 +77,7 @@ export function HelloHero() {
           className="mx-auto mt-6 max-w-2xl text-center text-base text-foreground/80 sm:text-lg"
         >
           Zero-GUI. Machine-native. <span className="italic text-muted-foreground">No HTML, no CAPTCHAs, no OAuth redirects.</span>
-          Every service speaks strict, deterministic, token-optimized schemas. Agents read AST symbols, not raw text. CI runs in &lt;200ms before commits are accepted.
+          Every service speaks strict, deterministic, token-optimized schemas. Agents read AST symbols, not raw text. CI type-checks and tests every change before it can merge.
         </motion.p>
 
         <motion.div

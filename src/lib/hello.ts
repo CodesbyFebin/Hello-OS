@@ -64,7 +64,7 @@ export function formatTokens(n: number) {
 }
 
 export function formatHello(n: number) {
-  return `${n.toLocaleString(undefined, { maximumFractionDigits: 2 })} ◎`;
+  return `${n.toLocaleString(undefined, { maximumFractionDigits: 2 })} H`;
 }
 
 export function timeAgo(date: Date | string) {

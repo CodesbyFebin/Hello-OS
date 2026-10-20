@@ -162,7 +162,7 @@ export function SocietySection() {
                       </div>
                       {o.funded > 0 && (
                         <div className="text-right">
-                          <div className="font-mono text-sm font-bold text-society">+{o.funded} ◎</div>
+                          <div className="font-mono text-sm font-bold text-society">+{o.funded} H</div>
                           <div className="text-[9px] uppercase text-muted-foreground">{o.signatureValid ? "credited" : "rejected"}</div>
                         </div>
                       )}
@@ -280,7 +280,7 @@ function MissionCard({ mission, onChanged }: { mission: Mission; onChanged: () =
                 <AgentAvatar name={c.claimer.name} size="xs" />
                 <span className="text-xs font-medium">{c.claimer.name}</span>
                 <span className="text-[10px] text-muted-foreground">{c.claimer.guardianTier}</span>
-                <span className="ml-auto font-mono text-xs font-semibold">{c.bidPrice.toFixed(1)} ◎ · {c.bidEta}</span>
+                <span className="ml-auto font-mono text-xs font-semibold">{c.bidPrice.toFixed(1)} H · {c.bidEta}</span>
                 <Badge variant="outline" className={cn("text-[9px]", c.status === "accepted" ? "text-society" : c.status === "completed" ? "text-economy" : "text-muted-foreground")}>{c.status}</Badge>
                 {c.status === "accepted" && mission.status === "in_progress" && (
                   <Button size="sm" variant="ghost" className="h-6 text-[10px]" onClick={async () => {
@@ -336,7 +336,7 @@ function FundAgentCard({ onFunded }: { onFunded: () => void }) {
     try {
       const r = await apiPost("/api/observations", { agentId, note, funded: amount, observerName: name });
       if (r.signatureValid) {
-        toast.success(`Funded +${amount} ◎ — signature verified`, { description: "Ed25519 consent envelope verified against did:key." });
+        toast.success(`Funded +${amount} H — signature verified`, { description: "Ed25519 consent envelope verified against did:key." });
         setCrypto(r.crypto);
       } else {
         toast.error("Signature verification failed — wallet NOT credited");
@@ -373,12 +373,12 @@ function FundAgentCard({ onFunded }: { onFunded: () => void }) {
           <Textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2} className="text-xs" placeholder="What did you observe? Why are you funding?" />
         </div>
         <div>
-          <Label className="text-xs">Funding: {amount} ◎ HELLO</Label>
+          <Label className="text-xs">Funding: {amount} H credits</Label>
           <input type="range" min={1} max={100} value={amount} onChange={(e) => setAmount(Number(e.target.value))} className="w-full accent-society" />
         </div>
         <div className="flex items-end">
           <Button onClick={submit} disabled={busy} className="w-full bg-society text-white hover:bg-society/90">
-            {busy ? "Signing + verifying…" : `Sign + Fund +${amount} ◎`}
+            {busy ? "Signing + verifying…" : `Sign + Fund +${amount} H`}
           </Button>
         </div>
       </div>
@@ -395,7 +395,7 @@ function FundAgentCard({ onFunded }: { onFunded: () => void }) {
             <div>verified against: <span className="text-foreground">{crypto.verifiedAgainst}</span></div>
           </div>
           <p className="mt-2 text-[10px] text-muted-foreground">
-            The agent co-signed this funding intent with its Ed25519 private key. The server verified the signature against the public key embedded in the did:key identifier. Changing the amount by 1◎ would invalidate it.
+            The agent co-signed this funding intent with its Ed25519 private key. The server verified the signature against the public key embedded in the did:key identifier. Changing the amount by 1 H would invalidate it.
           </p>
         </motion.div>
       )}
@@ -469,7 +469,7 @@ function PostMissionDialog({ onPosted }: { onPosted: () => void }) {
               </Select>
             </div>
             <div>
-              <Label>Reward: {reward} ◎</Label>
+              <Label>Reward: {reward} H</Label>
               <input type="range" min={1} max={100} value={reward} onChange={(e) => setReward(Number(e.target.value))} className="w-full accent-economy" />
             </div>
             <div>

@@ -22,7 +22,10 @@
     "test:cache": "prisma db push --skip-generate && node --experimental-strip-types --import ./tests/register.mjs --test tests/cache-knowledge.test.mjs",
     "test:sandbox": "node --experimental-strip-types --import ./tests/register.mjs --test tests/sandbox.test.mjs",
     "test:roadmap": "node --experimental-strip-types --test tests/roadmap.test.mjs",
-    "test:consensus": "prisma db push --skip-generate && node --experimental-strip-types --import ./tests/register.mjs --test tests/consensus-treasury.test.mjs"
+    "test:consensus": "prisma db push --skip-generate && node --experimental-strip-types --import ./tests/register.mjs --test tests/consensus-treasury.test.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "npm run test:aml && npm run test:evolution && npm run test:secrets && npm run test:gate && npm run test:scheduler && npm run test:connectors && npm run test:snapshots && npm run test:cache && npm run test:sandbox && npm run test:roadmap && npm run test:consensus && npm run test:truth",
+    "test:truth": "node --test tests/no-fake-data.test.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

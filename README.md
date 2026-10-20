@@ -304,7 +304,6 @@ The [HELLO OS integration catalog](https://codesbyfebin.github.io/Hello-OS/integ
 
 - **[`AGENTS.md`](AGENTS.md)** gives coding agents repository-specific development and safety instructions.
 - **[`llms.txt`](llms.txt)** summarizes the project and points to canonical docs.
-- **[`llm.txt`](llm.txt)** is a compatibility alias for tools that look for the singular filename.
 - **[`docs/llms.txt`](docs/llms.txt)** is the version intended for the Pages guide path.
 
 These files are plain-text navigation aids. The `llms.txt` convention is community-proposed and not a universal crawler standard. Their presence cannot require any model or crawler to read the repository.

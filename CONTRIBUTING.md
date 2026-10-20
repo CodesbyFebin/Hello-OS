@@ -9,6 +9,7 @@ Thanks for helping HELLO evolve. This is an experimental prototype, so honesty a
 - Keep PRs small and focused, and say what you tested and what you couldn't.
 
 ## Setup
+Node 22+ is required for the tests.
 ```sh
 npm install
 cp .env.example .env
@@ -19,12 +20,16 @@ npm run mcp          # MCP service on :3030 (needs Bun)
 Or use `docker compose up --build`.
 
 ## Checks before a PR
+CI runs these on Node 22 for every PR (`.github/workflows/ci.yml`):
 ```sh
-npm run build        # must pass
-npm run lint         # there are known existing errors, so don't add new ones
-npx tsc --noEmit     # there are known existing errors, so don't add new ones
-npm run test:aml     # needs Node 22+ (uses --experimental-strip-types)
+npm ci
+npx prisma generate
+export DATABASE_URL=file:/tmp/hello-test.db   # disposable
+npx prisma db push --skip-generate
+npm run build
+for f in tests/*.test.mjs; do node --experimental-strip-types --experimental-sqlite --import ./tests/register.mjs --test "$f"; done
 ```
+Also lint the files you touched (`npx eslint <files>`) and check `npx tsc --noEmit` for your files. The repo has known existing lint/tsc errors, so don't add new ones. Fill in the PR template honestly: only tick checks you ran.
 
 ## Ways to contribute
 - **Evals**: a pinned prompt plus its expected result that measures whether a change helps.
@@ -33,6 +38,6 @@ npm run test:aml     # needs Node 22+ (uses --experimental-strip-types)
 - **Docs**: fix any place where the docs and the code disagree.
 
 ## Security
-Don't open public issues for vulnerabilities. Contact the maintainer privately through their GitHub profile.
+Don't open public issues for vulnerabilities. See [SECURITY.md](SECURITY.md).
 
 By participating you agree to the [Code of Conduct](CODE_OF_CONDUCT.md).

@@ -1,1 +1,8 @@
 blank_issues_enabled: true
+contact_links:
+  - name: Report a security vulnerability (private)
+    url: https://github.com/CodesbyFebin/Hello-OS/security/advisories/new
+    about: Please do not open public issues for vulnerabilities.
+  - name: Project guide
+    url: https://codesbyfebin.github.io/Hello-OS/
+    about: Setup, agent guide and feature status.

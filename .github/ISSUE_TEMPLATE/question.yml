@@ -1,0 +1,14 @@
+name: Question
+description: Ask how something works or whether it is implemented
+labels: [question]
+body:
+  - type: markdown
+    attributes:
+      value: "Check the README's Feature status table and the FAQ first. Security issues: please use private vulnerability reporting (see SECURITY.md), not an issue."
+  - type: textarea
+    id: question
+    attributes: { label: Your question }
+    validations: { required: true }
+  - type: textarea
+    id: context
+    attributes: { label: Context, description: "What you tried, which route/file, and your environment (OS, Node version, Docker or source)." }

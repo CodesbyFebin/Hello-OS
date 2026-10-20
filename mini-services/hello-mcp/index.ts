@@ -1,3 +1,4 @@
+/// <reference types="bun-types" />
 // hello-mcp — the MCP-compatible server for hello.forge + hello.cortex.
 //
 // This is a real HTTP server on port 3030 that any agent (Claude Code, Gemini,
@@ -14,6 +15,7 @@ import { db } from "../../src/lib/db";
 import { listSymbols, typecheck, patchSymbol, estimateTokens, type ForgeSymbol, type ForgeDiagnostic } from "../../src/lib/forge";
 import { compileAml } from "../../src/lib/aml";
 import { createHash } from "crypto";
+import pkg from "../../package.json";
 import { connectorTools } from "../../src/lib/mcp/connectors";
 
 const PORT = Number(process.env.HELLO_MCP_PORT || 3030);
@@ -320,7 +322,7 @@ const tools: Tool[] = [
   // ── hello.cloud ──
   {
     name: "cloud.checkpoint",
-    description: "Create a Copy-on-Write checkpoint of the repo state before a risky mutation. Returns a checkpointId for rollback. (CoW is simulated at the DB level; real Firecracker CoW is simulated.)",
+    description: "Create a Copy-on-Write checkpoint of the repo state before a risky mutation. Returns a checkpointId for rollback. SIMULATION: only a checkpoint record is written; no filesystem or VM copy-on-write happens yet.",
     inputSchema: {
       type: "object",
       properties: { name: { type: "string" }, repoId: { type: "string", default: "logistics" } },
@@ -338,19 +340,19 @@ const tools: Tool[] = [
           receiptHash: sha256(`ckpt:${args.name}:${Date.now()}`),
         },
       });
-      return { checkpointId: cp.id, name: cp.name, dbSnapshot: cp.dbSnapshotRef, fsSnapshot: cp.fsSnapshotRef, status: "active", receiptHash: cp.receiptHash };
+      return { checkpointId: cp.id, name: cp.name, dbSnapshot: cp.dbSnapshotRef, fsSnapshot: cp.fsSnapshotRef, status: "active", receiptHash: cp.receiptHash, simulation: true };
     },
   },
   {
     name: "cloud.rollback",
-    description: "Roll back to a checkpoint. Restores the DB + FS snapshot atomically.",
+    description: "SIMULATION: marks a checkpoint as rolled back. No DB or filesystem state is restored yet.",
     inputSchema: { type: "object", properties: { checkpointId: { type: "string" } }, required: ["checkpointId"] },
     handler: async (args) => {
       const cp = await db.checkpoint.update({
         where: { id: args.checkpointId },
         data: { status: "rolled_back" },
       });
-      return { checkpointId: cp.id, status: "rolled_back", restoredTo: cp.name };
+      return { checkpointId: cp.id, status: "rolled_back", restoredTo: cp.name, simulation: true, note: "Record-only rollback; no state was restored." };
     },
   },
   // ── connectors (read-only adapters; see docs/bridges.md) ──
@@ -361,7 +363,7 @@ const tools: Tool[] = [
 function handshakeManifest() {
   return {
     platform: "HELLO_AGENT_OS",
-    version: "1.0.0",
+    version: pkg.version, // from package.json (pre-release, not 1.0)
     humanGuiPresent: false,
     endpoint: `${process.env.HELLO_PUBLIC_URL || `http://localhost:${PORT}`}/mcp`,
     principles: [

@@ -308,7 +308,6 @@ The [HELLO OS integration catalog](https://codesbyfebin.github.io/Hello-OS/integ
 
 - **[`AGENTS.md`](AGENTS.md)** gives coding agents repository-specific development and safety instructions.
 - **[`llms.txt`](llms.txt)** summarizes the project and points to canonical docs.
-- **[`llm.txt`](llm.txt)** is a compatibility alias for tools that look for the singular filename.
 - **[`docs/llms.txt`](docs/llms.txt)** is the version intended for the Pages guide path.
 
 These files are plain-text navigation aids. The `llms.txt` convention is community-proposed and not a universal crawler standard. Their presence cannot require any model or crawler to read the repository.
@@ -455,4 +454,5 @@ For a production build, run `npm run build` and then `npm start`. Set `DATABASE_
 ## Prototype boundaries
 
 This is a runnable local-first prototype, not a hardened production control plane. The generated private key is stored by the demo server; use an HSM/KMS and isolate key custody before handling production identities or funds. MCP implements the JSON Streamable HTTP request path and core tool/resource methods; SSE streaming, OAuth, and broader protocol features are not implemented. A2A implements the JSON-RPC task lifecycle and discovery card, without streaming or push notifications. AML is static validation only: it does not run flows, invoke tools, deploy code, call model providers, or spend funds. Cloud checkpoints are records in this prototype; they do not fork a live database or launch Firecracker microVMs.
+
 

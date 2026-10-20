@@ -44,10 +44,6 @@ export function EconomySection() {
   const { data: skillsData, loading: skillsLoading } = useFetch<{ skills: Skill[] }>(skillUrl);
   const [installTarget, setInstallTarget] = React.useState<string | null>(null);
   const { data: agentsData } = useFetch<{ agents: { id: string; name: string }[] }>("/api/agents?limit=50");
-  const [tick, setTick] = React.useState(0);
-
-  React.useEffect(() => { setTick(t => t+1); }, [cat]); // noop placeholder
-  void tick;
 
   return (
     <SectionShell id="economy" className="relative">
@@ -121,7 +117,7 @@ export function EconomySection() {
                       <div className="font-mono text-[10px] text-muted-foreground">{w.agent.did}</div>
                     </div>
                     <div className="hidden text-right sm:block">
-                      <div className="font-mono text-sm font-bold text-economy">{w.balance.toFixed(2)} ◎</div>
+                      <div className="font-mono text-sm font-bold text-economy">{w.balance.toFixed(2)} H</div>
                       <div className="text-[10px] text-muted-foreground">balance</div>
                     </div>
                     <div className="hidden text-right md:block">
@@ -136,7 +132,7 @@ export function EconomySection() {
                         onClick={async () => {
                           try {
                             await apiPost(`/api/agents/${w.agent.id}/wallet`, { amount: 25, reason: "human:topup" });
-                            toast.success(`Funded ${w.agent.name} +25 ◎`, { description: "Human-funded top-up via Observation Deck." });
+                            toast.success(`Funded ${w.agent.name} +25 H`, { description: "Human-funded top-up via Observation Deck." });
                           } catch (e: any) { toast.error(e.message); }
                         }}
                       >
@@ -195,7 +191,7 @@ export function EconomySection() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="font-mono text-lg font-bold text-economy">{s.price} ◎</div>
+                      <div className="font-mono text-lg font-bold text-economy">{s.price} H</div>
                     </div>
                   </div>
                   <p className="mt-2 line-clamp-2 text-xs text-muted-foreground">{s.description}</p>
@@ -226,11 +222,11 @@ export function EconomySection() {
                       size="sm"
                       className="h-7 bg-economy text-xs text-white hover:bg-economy/90"
                       onClick={async () => {
-                        const target = installTarget || agentsData?.agents[Math.floor(Math.random() * (agentsData?.agents.length || 1))]?.id;
-                        if (!target) return toast.error("No agent selected");
+                        const target = installTarget;
+                        if (!target) return toast.error("Pick an agent to graft onto first");
                         try {
                           const r = await apiPost(`/api/marketplace/${s.id}/install`, { agentId: target });
-                          toast.success("Skill grafted", { description: `${s.name} → ${r.installation ? "" : ""}agent. -${s.price} ◎` });
+                          toast.success("Skill grafted", { description: `${s.name} → ${r.installation ? "" : ""}agent. -${s.price} H` });
                         } catch (e: any) { toast.error(e.message); }
                       }}
                     >
@@ -257,7 +253,7 @@ export function EconomySection() {
                     <div className="flex items-center gap-2">
                       <span className="font-medium">{t.wallet.agent.name}</span>
                       <span className={cn("font-mono font-semibold", t.type === "credit" || t.type === "escrow_release" ? "text-society" : "text-destructive")}>
-                        {t.type === "credit" || t.type === "escrow_release" ? "+" : "−"}{t.amount.toFixed(2)} ◎
+                        {t.type === "credit" || t.type === "escrow_release" ? "+" : "−"}{t.amount.toFixed(2)} H
                       </span>
                       <Badge variant="outline" className="text-[9px] uppercase">{t.type}</Badge>
                     </div>

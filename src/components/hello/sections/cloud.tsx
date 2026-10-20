@@ -33,7 +33,7 @@ export function CloudSection() {
         eyebrowColor="economy"
         icon={Cloud}
         title={<>Checkpoint before mutate. <span className="text-economy">Roll back atomically.</span></>}
-        description="Before a risky migration, an agent calls cloud.checkpoint to fork a Copy-on-Write snapshot of the DB + filesystem. If shadow traffic spikes, the platform auto-reverts. (CoW FS is simulated; the checkpoint records + receipts are real.)"
+        description="Before a risky migration, an agent calls cloud.checkpoint to fork a Copy-on-Write snapshot of the DB + filesystem. If shadow traffic spikes, the platform auto-reverts. SIMULATION: the checkpoint records and receipts are real database rows, but no copy-on-write snapshot is taken and rollback restores nothing yet."
       />
 
       {loading ? (
@@ -43,6 +43,7 @@ export function CloudSection() {
           {/* Timeline line */}
           <div className="absolute left-6 top-0 bottom-0 w-px bg-border/60" />
           <div className="space-y-3">
+            {(data?.checkpoints.length ?? 0) === 0 && <p className="pl-16 text-xs text-muted-foreground">No checkpoints recorded yet. Call the cloud.checkpoint MCP tool to create one.</p>}
             {data?.checkpoints.map((c, i) => {
               const meta = STATUS_META[c.status] ?? STATUS_META.active;
               const Icon = meta.icon;
@@ -83,7 +84,8 @@ export function CloudSection() {
         <div className="flex items-start gap-3">
           <ArrowRight className="mt-0.5 h-4 w-4 text-economy" />
           <div>
-            <h3 className="text-sm font-semibold">The 90-second deployment flow</h3>
+            <h3 className="text-sm font-semibold">The 90-second deployment flow <Badge variant="outline" className="ml-1 text-[9px] uppercase">Vision · not built</Badge></h3>
+            <p className="mt-1 text-xs text-muted-foreground">An illustrative target timeline. Nothing below is measured; microVMs and CoW forks do not exist in HELLO OS yet.</p>
             <ol className="mt-1.5 space-y-1 text-xs text-muted-foreground">
               <li><span className="font-mono text-economy">T+0.1s</span> — Architect Agent publishes OpenAPI + SQL contract to hello.mesh → INTERFACE_LOCK</li>
               <li><span className="font-mono text-economy">T+0.5s</span> — DB Agent forks CoW Postgres; Backend Agent writes AST nodes; Frontend Agent builds against locked types</li>

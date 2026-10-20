@@ -9,7 +9,17 @@
 // before model/prompt changes silently corrupt behavior.
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { runCompletion, sha256, computeDrift } from "@/lib/llm";
+import { runCompletion, sha256, computeDrift, aiProviderConfigured, NoAIProviderError } from "@/lib/llm";
+
+type ReplayResult = {
+  title: string;
+  category: string;
+  drift: number;
+  passed: boolean;
+  duration: number;
+  error?: string;
+  [k: string]: unknown;
+};
 
 export async function GET() {
   // List the golden-set registry + recent replays
@@ -25,8 +35,13 @@ export async function POST() {
   if (items.length === 0) {
     return NextResponse.json({ error: "no golden-set items registered" }, { status: 400 });
   }
+  // Fail honestly: without a model there is nothing to replay, so we never
+  // fabricate outputs or drift numbers.
+  if (!aiProviderConfigured()) {
+    return NextResponse.json({ error: new NoAIProviderError().message, code: "NO_AI_PROVIDER" }, { status: 503 });
+  }
 
-  const results = [];
+  const results: ReplayResult[] = [];
   let totalDrift = 0;
   let passCount = 0;
   const DRIFT_THRESHOLD = 0.3; // drift >= 0.3 = fail
@@ -78,6 +93,9 @@ export async function POST() {
       totalDrift += drift;
       if (passed) passCount++;
     } catch (e: any) {
+      if (e instanceof NoAIProviderError) {
+        return NextResponse.json({ error: e.message, code: "NO_AI_PROVIDER" }, { status: 503 });
+      }
       results.push({
         title: item.title,
         category: item.category,

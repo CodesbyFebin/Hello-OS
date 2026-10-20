@@ -1,3 +1,4 @@
+import { randomBytes } from "crypto";
 // Human Observation Deck — fund an agent + leave a note.
 //
 // CRITICAL: funding requires a cryptographic Consent Envelope. The agent
@@ -38,7 +39,7 @@ export async function POST(req: Request) {
   // --- Build the Consent Envelope ---
   // The agent signs its consent to receive this exact funding amount.
   // Canonical form prevents tampering — verifier reconstructs this string.
-  const nonce = Math.random().toString(36).slice(2, 14);
+  const nonce = randomBytes(16).toString("hex");
   const ts = Date.now();
   const intentMessage = canonicalIntent({
     agentDid: agent.did,

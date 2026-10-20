@@ -2,7 +2,7 @@
 // Run: bun run scripts/seed.ts
 import { db } from "../src/lib/db";
 import { generateDidKey, signMessage, canonicalIntent } from "../src/lib/crypto";
-import { createHash } from "crypto";
+import { createHash, randomBytes } from "crypto";
 import { listSymbols, typecheck, estimateTokens } from "../src/lib/forge";
 
 const GUILDS = [
@@ -30,7 +30,7 @@ const AGENT_TEMPLATES = [
 
 function rand(n: number) { return Math.floor(Math.random() * n); }
 function pick<T>(arr: T[]): T { return arr[rand(arr.length)]; }
-function hash() { return Math.random().toString(16).slice(2, 18); }
+function hash() { return randomBytes(32).toString("hex"); }
 function sha256(s: string): string {
   return createHash("sha256").update(s).digest("hex");
 }
@@ -72,7 +72,7 @@ async function main() {
   );
   const guildBySlug = Object.fromEntries(guilds.map((g) => [g.slug, g]));
 
-  const agents: { id: string; name: string; guild: string; did: string; privateKeyHex: string }[] = [];
+  const agents: { id: string; name: string; guild: string; did: string; privateKeyHex: string; rep: number }[] = [];
   for (let i = 0; i < AGENT_TEMPLATES.length; i++) {
     const t = AGENT_TEMPLATES[i];
     // Generate a REAL Ed25519 keypair + did:key for this agent
@@ -94,7 +94,7 @@ async function main() {
         keyId: km.keyId,
       },
     });
-    agents.push({ id: agent.id, name: agent.name, guild: t.guild, did: km.did, privateKeyHex: km.privateKeyHex });
+    agents.push({ id: agent.id, name: agent.name, guild: t.guild, did: km.did, privateKeyHex: km.privateKeyHex, rep: t.rep });
     console.log(`  ✓ ${t.name} → ${km.did.slice(0, 36)}…`);
 
     await db.soulVersion.create({
@@ -160,7 +160,7 @@ async function main() {
       const ended = new Date(started.getTime() + 30_000 + rand(300_000));
       await db.trace.create({
         data: {
-          traceId: `trc_${Math.random().toString(36).slice(2, 14)}`,
+          traceId: `trc_${randomBytes(8).toString("hex")}`,
           agentId: agent.id,
           title: pick([
             "Refactor auth middleware",
@@ -317,7 +317,7 @@ async function main() {
   ];
   for (const o of obs) {
     const ag = agentById[o.agent];
-    const nonce = Math.random().toString(36).slice(2, 14);
+    const nonce = randomBytes(8).toString("hex");
     const ts = Date.now();
     const intentMessage = canonicalIntent({ agentDid: ag.did, amount: o.funded, nonce, observerName: o.name, ts, type: "funding" });
     const signature = await signMessage(intentMessage, ag.privateKeyHex);
@@ -377,13 +377,13 @@ async function main() {
     let to = pick(agents);
     while (to.id === from.id) to = pick(agents);
     const claim = pick(claimTypes);
-    const intent = canonicalIntent({ claim, fromDid: from.did, nonce: Math.random().toString(36).slice(2, 10), toDid: to.did, ts: Date.now(), type: "attestation" });
+    const intent = canonicalIntent({ claim, fromDid: from.did, nonce: randomBytes(16).toString("hex"), toDid: to.did, ts: Date.now(), type: "attestation" });
     const sig = await signMessage(intent, from.privateKeyHex);
     try {
       await db.attestation.create({
         data: {
           fromId: from.id, toId: to.id, claim,
-          weight: Math.min(1, (from.rep ?? 50) / 100),
+          weight: Math.min(1, from.rep / 100),
           note: pick(attestationNotes),
           intentMessage: intent, signature: sig, signatureValid: true,
         },
@@ -471,7 +471,7 @@ async function main() {
         payload: pick(payloads),
         truthTier: pick(["verified", "inferred", "asserted"]),
         signed: Math.random() > 0.1,
-        traceId: `trc_${Math.random().toString(36).slice(2, 14)}`,
+        traceId: `trc_${randomBytes(8).toString("hex")}`,
       },
     });
   }
@@ -683,3 +683,4 @@ main()
   .finally(async () => {
     await db.$disconnect();
   });
+

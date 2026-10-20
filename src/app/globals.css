@@ -8,6 +8,44 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* HELLO OS design tokens (see /design). */
+  --color-void: var(--hello-void);
+  --color-abyss: var(--hello-abyss);
+  --color-panel: var(--hello-panel);
+  --color-edge: var(--hello-edge);
+  --color-agent-300: var(--hello-agent-300);
+  --color-agent-400: var(--hello-agent-400);
+  --color-agent-500: var(--hello-agent-500);
+  --color-soul-300: var(--hello-soul-300);
+  --color-soul-400: var(--hello-soul-400);
+  --color-soul-500: var(--hello-soul-500);
+  --color-cortex-300: var(--hello-cortex-300);
+  --color-cortex-400: var(--hello-cortex-400);
+  --color-cortex-500: var(--hello-cortex-500);
+  --color-ember-400: var(--hello-ember-400);
+  --color-ember-500: var(--hello-ember-500);
+  --color-blood-400: var(--hello-blood-400);
+  --color-blood-500: var(--hello-blood-500);
+
+  /* Design-guide domain aliases (docs/DESIGN.md). Aliases only: they point at
+     the canonical tokens above and never introduce new colors. */
+  --color-cognition: var(--hello-cortex-400);
+  --color-cognition-300: var(--hello-cortex-300);
+  --color-cognition-400: var(--hello-cortex-400);
+  --color-cognition-500: var(--hello-cortex-500);
+  --color-economy: var(--hello-ember-400);
+  --color-economy-400: var(--hello-ember-400);
+  --color-economy-500: var(--hello-ember-500);
+  --color-society: var(--hello-agent-400);
+  --color-society-300: var(--hello-agent-300);
+  --color-society-400: var(--hello-agent-400);
+  --color-society-500: var(--hello-agent-500);
+  --color-evolution: var(--hello-soul-300);
+  --color-evolution-300: var(--hello-soul-300);
+  --color-evolution-400: var(--hello-soul-400);
+  --color-evolution-500: var(--hello-soul-500);
+  --color-soul: var(--hello-soul-400);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -50,8 +88,27 @@
 
 :root {
   --radius: 0.75rem;
-  --font-geist-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-geist-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  /* Self-hosted via @fontsource-variable (imported in src/app/layout.tsx); no CDN. */
+  --font-geist-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-geist-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  --hello-void: #05060a;
+  --hello-abyss: #090b12;
+  --hello-panel: #0e111b;
+  --hello-edge: #1a2030;
+  --hello-agent-300: #33ffbb;
+  --hello-agent-400: #00ff9d;
+  --hello-agent-500: #00d985;
+  --hello-soul-300: #b49cff;
+  --hello-soul-400: #9775fa;
+  --hello-soul-500: #7c3aed;
+  --hello-cortex-300: #67e8f9;
+  --hello-cortex-400: #22d3ee;
+  --hello-cortex-500: #06b6d4;
+  --hello-ember-400: #fbbf24;
+  --hello-ember-500: #f59e0b;
+  --hello-blood-400: #f87171;
+  --hello-blood-500: #ef4444;
   /* Light mode: warm parchment, agents as ink */
   --background: oklch(0.98 0.008 80);
   --foreground: oklch(0.18 0.02 280);
@@ -132,7 +189,7 @@
   --economy: oklch(0.78 0.18 85);
   --society: oklch(0.72 0.17 165);
   --evolution: oklch(0.7 0.22 340);
-  --void: oklch(0.1 0.02 280);
+  --void: var(--hello-void);
 }
 
 @layer base {
@@ -169,20 +226,7 @@
     background-color: var(--void);
   }
 
-  /* Glassy card with subtle tint */
-  .glass-card {
-    background: color-mix(in oklch, var(--card) 75%, transparent);
-    backdrop-filter: blur(12px);
-    border: 1px solid color-mix(in oklch, var(--border) 80%, transparent);
-  }
-
-  /* Grid background for hero */
-  .bg-agent-grid {
-    background-image:
-      linear-gradient(to right, color-mix(in oklch, var(--foreground) 6%, transparent) 1px, transparent 1px),
-      linear-gradient(to bottom, color-mix(in oklch, var(--foreground) 6%, transparent) 1px, transparent 1px);
-    background-size: 44px 44px;
-  }
+  /* .glass-card, .matrix-grid and .bg-agent-grid live in the design-system block below. */
 
   .bg-radial-glow {
     background: radial-gradient(60% 50% at 50% 0%, color-mix(in oklch, var(--soul) 22%, transparent) 0%, transparent 70%);
@@ -242,4 +286,102 @@
 .hello-hero .hero-orbit:hover .hero-counter, .hello-hero .hero-orbit:focus-within .hero-counter { animation-play-state: paused; }
 @media (prefers-reduced-motion: reduce) {
   .hello-hero .hero-ring, .hello-hero .hero-core, .hello-hero .hero-orbit, .hello-hero .hero-counter { animation: none; }
+
+/* ============================================================
+   HELLO OS design system components (reference: /design)
+   ============================================================ */
+@layer utilities {
+  .glass-card {
+    background: linear-gradient(145deg, rgba(14, 17, 27, 0.92), rgba(9, 11, 18, 0.96));
+    border: 1px solid var(--hello-edge);
+    border-radius: 0.75rem;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+  .matrix-grid { background-color: var(--hello-void); }
+  .matrix-grid, .bg-agent-grid {
+    background-image:
+      linear-gradient(rgba(0, 255, 157, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 255, 157, 0.045) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  .status-dot { position: relative; display: inline-block; width: 8px; height: 8px; border-radius: 9999px; background: currentColor; flex: none; }
+  .pulse-ring::after {
+    content: ""; position: absolute; inset: -4px; border-radius: inherit; border: 2px solid currentColor;
+    opacity: 0; animation: hello-pulse-ring 1.8s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+  }
+  .pulse-glow { animation: hello-pulse-glow 2.4s ease-in-out infinite; }
 }
+
+@keyframes hello-pulse-ring { 0% { transform: scale(0.6); opacity: 0.7; } 100% { transform: scale(1.8); opacity: 0; } }
+@keyframes hello-pulse-glow { 0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, currentColor 0%, transparent); } 50% { box-shadow: 0 0 14px 2px color-mix(in srgb, currentColor 45%, transparent); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse-ring::after, .pulse-glow, .pulse-dot { animation: none; }
+  .pulse-ring::after { opacity: 0.35; transform: scale(1.4); }
+}
+
+/* ============================================================
+   HELLO Cloud utilities (gradient flow, glow, feature cards).
+   All motion stops under prefers-reduced-motion and falls back
+   to a static agent-400 colour.
+   ============================================================ */
+@layer utilities {
+  .gradient-text {
+    background: linear-gradient(90deg, var(--hello-agent-400), var(--hello-cortex-400), var(--hello-soul-300));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .animate-rgb-text {
+    background: linear-gradient(90deg, var(--hello-agent-400), var(--hello-cortex-400), var(--hello-soul-300), var(--hello-agent-400));
+    background-size: 300% 100%;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: gradient-flow 8s linear infinite;
+  }
+  .animate-rgb-bg {
+    background: linear-gradient(90deg, var(--hello-agent-400), var(--hello-cortex-400), var(--hello-soul-400), var(--hello-agent-400));
+    background-size: 300% 100%;
+    animation: gradient-flow 6s linear infinite;
+  }
+  .animate-rgb-border {
+    border: 1px solid transparent;
+    background:
+      linear-gradient(var(--hello-panel), var(--hello-panel)) padding-box,
+      linear-gradient(90deg, var(--hello-agent-400), var(--hello-cortex-400), var(--hello-soul-400), var(--hello-agent-400)) border-box;
+    background-size: 100% 100%, 300% 100%;
+    animation: gradient-flow-border 6s linear infinite;
+  }
+  .hero-glow { position: relative; isolation: isolate; }
+  .hero-glow::before {
+    content: ""; position: absolute; inset: -10% -5% auto; height: 70%; z-index: -1; pointer-events: none;
+    background:
+      radial-gradient(45% 60% at 30% 30%, color-mix(in srgb, var(--hello-agent-400) 16%, transparent), transparent 70%),
+      radial-gradient(40% 55% at 75% 25%, color-mix(in srgb, var(--hello-soul-400) 16%, transparent), transparent 70%);
+    filter: blur(20px);
+  }
+  .feature-card {
+    position: relative; overflow: hidden;
+    background: linear-gradient(145deg, rgba(14, 17, 27, 0.92), rgba(9, 11, 18, 0.96));
+    border: 1px solid var(--hello-edge); border-radius: 0.75rem;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+  .feature-card::before {
+    content: ""; position: absolute; left: 0; top: 0; height: 2px; width: 100%;
+    background: linear-gradient(90deg, transparent, var(--hello-agent-400), var(--hello-cortex-400), transparent);
+    transform: translateX(-100%); transition: transform 0.6s ease;
+  }
+  .feature-card:hover, .feature-card:focus-within { border-color: color-mix(in srgb, var(--hello-agent-400) 35%, var(--hello-edge)); }
+  .feature-card:hover::before, .feature-card:focus-within::before { transform: translateX(0); }
+}
+
+@keyframes gradient-flow { 0% { background-position: 0% 50%; } 100% { background-position: 300% 50%; } }
+@keyframes gradient-flow-border { 0% { background-position: 0 0, 0% 50%; } 100% { background-position: 0 0, 300% 50%; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-rgb-text { animation: none; background: none; color: var(--hello-agent-400); -webkit-text-fill-color: currentColor; }
+  .animate-rgb-bg { animation: none; background: var(--hello-agent-400); }
+  .animate-rgb-border { animation: none; background: var(--hello-panel); border-color: var(--hello-agent-400); }
+  .feature-card, .feature-card::before { transition: none; }
+  .feature-card::before { transform: none; background: var(--hello-agent-400); opacity: 0; }
+  .feature-card:hover::before, .feature-card:focus-within::before { opacity: 1; }
+}
+

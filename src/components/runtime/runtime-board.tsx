@@ -58,7 +58,7 @@ export function RuntimeBoard() {
 
   const live = PILLARS.filter((p) => probes[p.n]?.status === 200 && !p.partial).length;
   return (
-    <div className="min-h-screen bg-[#05060a] text-zinc-300">
+    <div className="min-h-screen bg-void text-zinc-300">
       <header className="border-b border-white/[.07] px-4 py-3"><div className="mx-auto flex max-w-6xl items-center gap-3 font-mono text-xs"><Link href="/" className="text-zinc-400 hover:text-white">mission control</Link><span className="text-zinc-600">/</span><span className="text-white">runtime</span><Link href="/frontier" className="ml-auto text-zinc-400 hover:text-white">frontier lab →</Link></div></header>
       <main className="mx-auto max-w-6xl px-4 py-10">
         <div className="font-mono text-[10px] tracking-[.18em] text-zinc-500">§ RUNTIME · 10 PILLARS</div>

@@ -526,6 +526,12 @@ export const ROUTE_MANIFEST = {
       ]
     },
     {
+      "path": "/api/sync",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
       "path": "/api/traces",
       "methods": [
         "GET"

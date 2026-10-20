@@ -3,9 +3,9 @@ import { docsCardExtension } from "@/lib/docs/discovery";
 export function createAgentCard(baseUrl = process.env.HELLO_PUBLIC_URL || "http://localhost:3000") {
   const url = baseUrl.replace(/\/$/, "");
   return {
-    name: "HELLO Agent Commons",
+    name: "HELLO OS",
     description: "A local-first agent operating system for signed identity, durable task delegation, tiered memory, MCP tools, and budgeted execution.",
-    version: "0.1.0",
+    version: "0.2.1",
     supportedInterfaces: [{ protocolBinding: "JSONRPC", url: `${url}/api/a2a`, protocolVersion: "1.0" }],
     capabilities: { streaming: false, pushNotifications: false, stateTransitionHistory: true },
     defaultInputModes: ["text/plain", "application/json"],

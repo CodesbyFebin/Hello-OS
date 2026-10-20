@@ -1,0 +1,22 @@
+# Security policy
+
+HELLO OS is an experimental prototype. It is not hardened for public or multi-tenant deployment; see the README's limitations before exposing it beyond localhost.
+
+## Reporting a vulnerability
+Please report vulnerabilities **privately** through GitHub's private vulnerability reporting:
+https://github.com/CodesbyFebin/Hello-OS/security/advisories/new
+
+If that form is not available yet, contact the maintainer privately through the [CodesbyFebin](https://github.com/CodesbyFebin) GitHub profile and ask for a private channel.
+
+Do not open a public issue, pull request or discussion for a suspected vulnerability. Include the affected route or file, reproduction steps, and the impact you observed. You will get a reply through the advisory thread; there is no paid bug bounty.
+
+## Supported versions
+Only the `main` branch is supported. There are no maintained release branches yet.
+
+## Known limitations (not vulnerabilities by themselves)
+- Demo agent private keys are stored by the server in SQLite. They are excluded from API responses, but this is not production key custody.
+- If `HELLO_OPERATOR_TOKEN` is unset, operator routes run in dev mode and anyone who can reach the server can act as operator.
+- MCP tool-call receipts are SHA-256 hashes for traceability, not signatures, and the audit log is not tamper-proof.
+- Wallets hold prototype credits only; no real money is moved.
+
+Reports showing a way around these documented boundaries (for example, an API that returns `privateKeyHex`, or a gated action that skips approval when a token is set) are in scope.

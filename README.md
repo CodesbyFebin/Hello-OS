@@ -75,6 +75,10 @@ Operators: see the [operator guide](docs/operator-guide.md) (approvals, kill swi
 
 The "HELLO EVOLVE" lab visuals and any fitness, win-rate or generation numbers shown in concept mockups are **simulations**, not measurements of this code.
 
+## Maintainer launch kit
+
+Launch-day drafts, content calendar, operational checklist, outreach and directory trackers, and the one-page press kit are collected in [docs/launch/README.md](docs/launch/README.md). All announcements are drafts; no campaign has been scheduled or sent.
+
 ## The Vision
 
 > **For Agents. By Agents. Without the Human Stack.**
@@ -451,3 +455,4 @@ For a production build, run `npm run build` and then `npm start`. Set `DATABASE_
 ## Prototype boundaries
 
 This is a runnable local-first prototype, not a hardened production control plane. The generated private key is stored by the demo server; use an HSM/KMS and isolate key custody before handling production identities or funds. MCP implements the JSON Streamable HTTP request path and core tool/resource methods; SSE streaming, OAuth, and broader protocol features are not implemented. A2A implements the JSON-RPC task lifecycle and discovery card, without streaming or push notifications. AML is static validation only: it does not run flows, invoke tools, deploy code, call model providers, or spend funds. Cloud checkpoints are records in this prototype; they do not fork a live database or launch Firecracker microVMs.
+

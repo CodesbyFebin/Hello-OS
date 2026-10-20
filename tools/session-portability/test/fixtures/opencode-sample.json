@@ -1,0 +1,70 @@
+{
+  "info": {
+    "id": "ses_testfixture0001",
+    "slug": "test-session",
+    "directory": "/Users/x/proj",
+    "path": "/Users/x/proj",
+    "title": "Test session",
+    "version": "1.0.0",
+    "projectID": "global",
+    "cost": 0.0123,
+    "time": { "created": 1782155266916, "updated": 1782155267999 },
+    "model": { "id": "gpt-5.5", "providerID": "openai", "variant": "default" },
+    "tokens": { "input": 12, "output": 34, "reasoning": 5, "cache": { "read": 0, "write": 0 } }
+  },
+  "messages": [
+    {
+      "info": { "id": "msg_u1", "role": "user", "time": { "created": 1782155267072 } },
+      "parts": [
+        { "type": "text", "text": "hello, please help", "id": "prt_u1a", "messageID": "msg_u1" }
+      ]
+    },
+    {
+      "info": {
+        "id": "msg_a1",
+        "role": "assistant",
+        "time": { "created": 1782155267200 },
+        "model": { "providerID": "openai", "modelID": "gpt-5.5" }
+      },
+      "parts": [
+        { "type": "step-start", "id": "prt_a1a", "messageID": "msg_a1" },
+        { "type": "reasoning", "text": "let me think about this internally", "id": "prt_a1b", "messageID": "msg_a1" },
+        { "type": "text", "text": "sure, here is the answer", "id": "prt_a1c", "messageID": "msg_a1" },
+        { "type": "tool", "tool": "bash", "callID": "call_1", "state": {}, "id": "prt_a1d", "messageID": "msg_a1" },
+        { "type": "step-finish", "id": "prt_a1e", "messageID": "msg_a1" }
+      ]
+    },
+    {
+      "info": { "id": "msg_u2", "role": "user", "time": { "created": 1782155267400 } },
+      "parts": [
+        { "type": "text", "text": "now run the tool", "id": "prt_u2a", "messageID": "msg_u2" }
+      ]
+    },
+    {
+      "info": {
+        "id": "msg_a2",
+        "role": "assistant",
+        "time": { "created": 1782155267600 },
+        "model": { "providerID": "openai", "modelID": "gpt-5.5" }
+      },
+      "parts": [
+        { "type": "step-start", "id": "prt_a2a", "messageID": "msg_a2" },
+        { "type": "reasoning", "text": "planning the tool call", "id": "prt_a2b", "messageID": "msg_a2" },
+        { "type": "tool", "tool": "bash", "callID": "call_2", "state": {}, "id": "prt_a2c", "messageID": "msg_a2" },
+        { "type": "file", "filename": "out.txt", "id": "prt_a2d", "messageID": "msg_a2" },
+        { "type": "step-finish", "id": "prt_a2e", "messageID": "msg_a2" }
+      ]
+    },
+    {
+      "info": {
+        "id": "msg_a3",
+        "role": "assistant",
+        "time": { "created": 1782155267800 },
+        "model": { "providerID": "openai", "modelID": "gpt-5.5" }
+      },
+      "parts": [
+        { "type": "text", "text": "   \n  ", "id": "prt_a3a", "messageID": "msg_a3" }
+      ]
+    }
+  ]
+}

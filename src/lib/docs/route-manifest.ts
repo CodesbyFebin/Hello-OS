@@ -11,6 +11,9 @@ export const ROUTE_MANIFEST = {
       "path": "/cloud"
     },
     {
+      "path": "/design"
+    },
+    {
       "path": "/docs"
     },
     {

@@ -68,7 +68,7 @@ export function AmlStudioClient() {
   }
 
   return (
-    <main className="min-h-screen bg-[#05060a] text-slate-200">
+    <main className="min-h-screen bg-void text-slate-200">
       <div className="border-b border-white/10 bg-black/40 px-4 py-3">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
           <Link href="/" className="flex items-center gap-2 font-mono text-xs font-bold tracking-[.16em] text-emerald-300">

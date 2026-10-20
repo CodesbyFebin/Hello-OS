@@ -4,7 +4,7 @@ import * as React from "react";
 
 type Layer = { n: number; name: string; desc: string; tag: "PROTOTYPE" | "VISION"; href?: string; probe?: { url: string; init?: RequestInit } };
 
-const LAYERS: Layer[] = [
+export const LAYERS: Layer[] = [
   { n: 1, name: "HELLO ID", desc: "did:key identities, Ed25519 passports, versioned soul charters", tag: "PROTOTYPE", href: "/hub", probe: { url: "/api/agents?limit=1" } },
   { n: 2, name: "HELLO Mesh", desc: "MCP tools + A2A intent contracts with trace continuity", tag: "PROTOTYPE", probe: { url: "/api/a2a" } },
   { n: 3, name: "HELLO Cortex", desc: "Tiered memory and a temporal knowledge graph", tag: "PROTOTYPE", probe: { url: "/api/hello/cortex/memories" } },

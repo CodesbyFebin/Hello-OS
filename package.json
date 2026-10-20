@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3000 2>&1 | tee dev.log",
-    "build": "next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/",
+    "build": "next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/ && cp -r sample-repo .next/standalone/",
     "start": "NODE_ENV=production node .next/standalone/server.js",
     "mcp": "bun --hot mini-services/hello-mcp/index.ts",
     "lint": "eslint .",
@@ -29,7 +29,8 @@
     "test:design": "node --experimental-strip-types --test tests/design.test.mjs",
     "typecheck": "tsc --noEmit",
     "test": "npm run test:aml && npm run test:evolution && npm run test:secrets && npm run test:gate && npm run test:scheduler && npm run test:connectors && npm run test:snapshots && npm run test:cache && npm run test:sandbox && npm run test:roadmap && npm run test:consensus && npm run test:truth",
-    "test:truth": "node --test tests/no-fake-data.test.mjs"
+    "test:truth": "node --test tests/no-fake-data.test.mjs",
+    "test:mcp": "prisma db push --skip-generate && node --experimental-strip-types --import ./tests/register.mjs --test tests/mcp-inprocess.test.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

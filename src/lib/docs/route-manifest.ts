@@ -387,6 +387,12 @@ export const ROUTE_MANIFEST = {
       ]
     },
     {
+      "path": "/api/hello/mcp",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
       "path": "/api/hello/mcp/call",
       "methods": [
         "POST"

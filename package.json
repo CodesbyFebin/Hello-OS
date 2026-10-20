@@ -22,12 +22,15 @@
     "test:cache": "prisma db push --skip-generate && node --experimental-strip-types --import ./tests/register.mjs --test tests/cache-knowledge.test.mjs",
     "test:sandbox": "node --experimental-strip-types --import ./tests/register.mjs --test tests/sandbox.test.mjs",
     "test:roadmap": "node --experimental-strip-types --test tests/roadmap.test.mjs",
+    "test:design": "node --experimental-strip-types --test tests/design.test.mjs",
     "test:consensus": "prisma db push --skip-generate && node --experimental-strip-types --import ./tests/register.mjs --test tests/consensus-treasury.test.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
+    "@fontsource-variable/inter": "5.3.0",
+    "@fontsource-variable/jetbrains-mono": "5.3.0",
     "@hookform/resolvers": "^5.1.1",
     "@mdxeditor/editor": "^3.39.1",
     "@noble/ed25519": "^3.2.0",
@@ -77,6 +80,7 @@
     "next-intl": "^4.3.4",
     "next-themes": "^0.4.6",
     "prisma": "^6.11.1",
+    "quickjs-emscripten": "0.32.0",
     "react": "^19.0.0",
     "react-day-picker": "^9.8.0",
     "react-dom": "^19.0.0",
@@ -94,8 +98,7 @@
     "vaul": "^1.1.2",
     "z-ai-web-dev-sdk": "^0.0.18",
     "zod": "^4.0.2",
-    "zustand": "^5.0.6",
-    "quickjs-emscripten": "0.32.0"
+    "zustand": "^5.0.6"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

@@ -11,7 +11,7 @@ export function Badge({ kind, children }: { kind: "real" | "sim" | "vision" | "w
 
 export function OpsFrame({ title, subtitle, children }: { title: string; subtitle?: string; children: ReactNode }) {
   return (
-    <div className="min-h-screen bg-[#05060a] text-zinc-300">
+    <div className="min-h-screen bg-void text-zinc-300">
       <header className="border-b border-white/[.07] px-4 py-3">
         <div className="mx-auto flex max-w-6xl items-center gap-3 font-mono text-xs">
           <Link href="/" className="text-zinc-400 hover:text-white">mission control</Link><span className="text-zinc-600">/</span>

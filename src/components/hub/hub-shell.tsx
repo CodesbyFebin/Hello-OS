@@ -4,8 +4,8 @@ import * as React from "react";
 import Link from "next/link";
 import { Bell, Cloud, Dna, Plug, FlaskConical, LayoutDashboard, Map as MapIcon, MessageSquare, Search, Telescope } from "lucide-react";
 
-export const card = "rounded-xl border border-white/[.07] bg-[#0f1019]/80";
-export const kicker = "font-mono text-[10px] tracking-[.18em] text-zinc-500";
+export const card = "glass-card";
+export const kicker = "font-mono text-[10px] tracking-[.18em] text-zinc-400";
 
 export function DemoBadge({ label = "Demo data" }: { label?: string }) {
   return <span title="Sample content: not stored in HELLO OS" className="rounded border border-amber-400/30 bg-amber-400/10 px-1.5 py-0.5 font-mono text-[9px] tracking-wider text-amber-300">{label.toUpperCase()}</span>;
@@ -21,14 +21,14 @@ export function SoonButton({ children, className = "" }: { children: React.React
 
 export function HubShell({ active, search, onSearch, children }: { active: "hub" | "evolve" | "cloud" | "frontier" | "roadmap" | "integrations"; search?: string; onSearch?: (v: string) => void; children: React.ReactNode }) {
   const tab = (href: string, label: string, Icon: typeof Dna, on: boolean) => (
-    <Link href={href} className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 font-mono text-xs ${on ? "bg-[#43e6a5]/10 text-[#43e6a5]" : "text-zinc-400 hover:text-white"}`}><Icon size={14} />{label}</Link>
+    <Link href={href} className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 font-mono text-xs ${on ? "bg-agent-400/10 text-agent-400" : "text-zinc-400 hover:text-white"}`}><Icon size={14} />{label}</Link>
   );
   return (
-    <div className="min-h-screen bg-[#05060a] text-zinc-300">
-      <header className="sticky top-0 z-30 border-b border-white/[.07] bg-[#05060a]/90 backdrop-blur">
+    <div className="min-h-screen matrix-grid text-zinc-300">
+      <header className="sticky top-0 z-30 border-b border-edge bg-void/90 backdrop-blur">
         <div className="mx-auto flex max-w-[1400px] items-center gap-4 px-4 py-3">
           <Link href="/hub" className="flex items-center gap-2">
-            <span className="grid h-8 w-8 place-items-center rounded-lg bg-[#43e6a5] font-mono font-bold text-black">G</span>
+            <span className="grid h-8 w-8 place-items-center rounded-lg bg-agent-400 font-mono font-bold text-black">G</span>
             <span className="hidden sm:block"><b className="text-white">GitAgentHUB</b><small className="block font-mono text-[9px] tracking-widest text-zinc-500">GITHUB-STYLE HUB FOR AI AGENTS · PROTOTYPE</small></span>
           </Link>
           <nav className="flex items-center gap-1">

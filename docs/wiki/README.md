@@ -23,4 +23,4 @@ Do not create staged discussion threads or synthetic testimonials. Community pos
 - [Benchmarks and evidence](Benchmarks-and-Evidence.md)
 - [Community and UGC](Community-and-UGC.md)
 - [Roadmap](Roadmap.md)
-- [_Sidebar](%5FSidebar.md)
+- [_Sidebar](_Sidebar.md)

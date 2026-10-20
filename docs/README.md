@@ -5,6 +5,7 @@ HELLO OS is an experimental, local-first agent operating system prototype (Next.
 **Status key:** `shipped` = on `main` · `in PR #N` = open pull request, not merged · `planned` = intended, not built · `vision` = not possible or not attempted today.
 
 ## Start here
+- [Wiki-ready guide and import instructions](wiki/README.md) — evidence-led pages and a community contribution playbook. Copy to the separate GitHub Wiki repository to publish Wiki pages.
 - [Getting started (Pages)](https://codesbyfebin.github.io/Hello-OS/getting-started/) · [Agent guide (Pages)](https://codesbyfebin.github.io/Hello-OS/agent-guide/)
 - [Configuration and environment variables](configuration.md)
 - [Operator guide](operator-guide.md): approvals, kill switch, scheduler ticks, roles

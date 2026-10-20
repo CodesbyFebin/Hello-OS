@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { JOB_KINDS } from "@/lib/scheduler";
-import { operatorAllowed } from "@/lib/operator-auth";
+import { operatorAuth, operatorDenied } from "@/lib/operator-auth";
 
 export async function GET() {
   const jobs = await db.scheduledJob.findMany({ orderBy: { createdAt: "asc" }, include: { runs: { orderBy: { createdAt: "desc" }, take: 3 } } });
@@ -9,7 +9,7 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  if (!operatorAllowed(req)) return NextResponse.json({ error: "operator token required" }, { status: 401 });
+  const op = operatorAuth(req); if (!op.ok) return operatorDenied(op);
   const b = await req.json().catch(() => ({}));
   if (!JOB_KINDS.includes(b.kind)) return NextResponse.json({ error: `kind must be one of ${JOB_KINDS.join(", ")}` }, { status: 400 });
   const intervalSec = Math.round(Number(b.intervalSec ?? 3600));

@@ -15,7 +15,7 @@ Only the `main` branch is supported. There are no maintained release branches ye
 
 ## Known limitations (not vulnerabilities by themselves)
 - Demo agent private keys are stored by the server in SQLite. They are excluded from API responses, but this is not production key custody.
-- If `HELLO_OPERATOR_TOKEN` is unset, operator routes run in dev mode and anyone who can reach the server can act as operator.
+- If `HELLO_OPERATOR_TOKEN` is unset, operator routes run in dev mode locally (anyone who can reach the server can act as operator) and fail closed with 503 in production (`NODE_ENV=production` or `VERCEL` set). See [docs/operator-guide.md](docs/operator-guide.md) and [docs/security-review-2026-10.md](docs/security-review-2026-10.md).
 - MCP tool-call receipts are SHA-256 hashes for traceability, not signatures, and the audit log is not tamper-proof.
 - Wallets hold prototype credits only; no real money is moved.
 

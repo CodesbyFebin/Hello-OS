@@ -1,3 +1,4 @@
+import { operatorDenied } from "@/lib/operator-auth";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { audit, getControl, operatorCheck } from "@/lib/gate";
@@ -10,7 +11,7 @@ export async function GET(req: Request) {
 // Operator-only: toggle the kill switch or change the approval threshold.
 export async function POST(req: Request) {
   const auth = operatorCheck(req);
-  if (!auth.ok) return NextResponse.json({ error: "operator token required" }, { status: 401 });
+  if (!auth.ok) return operatorDenied(auth);
   const body = await req.json().catch(() => ({}));
   const data: { killSwitch?: boolean; approvalThreshold?: number } = {};
   if (typeof body.killSwitch === "boolean") data.killSwitch = body.killSwitch;

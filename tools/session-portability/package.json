@@ -1,0 +1,36 @@
+{
+  "name": "@hello-os/session-portability",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Local session portability utility for HELLO OS.",
+  "license": "MIT",
+  "homepage": "https://github.com/CodesbyFebin/Hello-OS",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CodesbyFebin/Hello-OS.git"
+  },
+  "type": "module",
+  "bin": {
+    "hello-sessions": "./src/cli.ts"
+  },
+  "scripts": {
+    "cli": "bun run src/cli.ts",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit",
+    "sandbox:backup": "bun run scripts/sandbox/backup.ts",
+    "sandbox:restore": "bun run scripts/sandbox/restore.ts",
+    "sandbox:reroute": "bun run scripts/sandbox/reroute.ts",
+    "sandbox:seed": "bun run scripts/sandbox/seed.ts",
+    "demo:reset": "bun run scripts/demo/reset-destinations.ts"
+  },
+  "dependencies": {
+    "zod": "^3.23.8",
+    "@opentui/core": "^0.4.2",
+    "@opentui/solid": "^0.4.2",
+    "solid-js": "^1.9.13"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5.5.0"
+  }
+}

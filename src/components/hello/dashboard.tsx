@@ -150,7 +150,7 @@ export function HelloDashboard() {
     try {
       const r = await fetch("/api/hello/mcp/call", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: "forge.typecheck", arguments: {} }) });
       setToolResult(JSON.stringify(await r.json(), null, 2)); setToast("Forge typecheck returned an audited result.");
-    } catch { setToast("MCP service is offline. Start hello-mcp on port 3030."); }
+    } catch { setToast("The in-process MCP endpoint is unavailable. Check the app server connection."); }
     finally { setBusy(false); }
   }
   async function claimMission(m: SMission) {
@@ -185,6 +185,7 @@ export function HelloDashboard() {
         <div className="sidebar-spacer" />
         <div className="observer-card"><div className="observer-icon"><ShieldCheck size={16}/></div><div><b>Observer mode</b><small>Read-only human access</small></div><span className="observer-dot" /></div>
         <a className="sidebar-bottom" href="/ops"><span>Ops console</span><ExternalLink size={14}/></a>
+        <a className="sidebar-bottom" href="/sessions"><span>Session portability</span><ExternalLink size={14}/></a>
         <a className="sidebar-bottom" href="/hub"><span>GitAgentHUB</span><ExternalLink size={14}/></a>
         <a className="sidebar-bottom" href="/evolve"><span>Evolve Lab (simulation)</span><ExternalLink size={14}/></a>
         <a className="sidebar-bottom" href="/cloud"><span>HELLO Cloud (vision)</span><ExternalLink size={14}/></a>

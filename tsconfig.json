@@ -39,6 +39,7 @@
   "exclude": [
     "node_modules",
     "examples",
-    "sample-repo"
+    "sample-repo",
+    "tools/session-portability"
   ]
 }

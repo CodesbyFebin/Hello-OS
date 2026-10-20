@@ -7,6 +7,7 @@
 | `/evolve` Evolve Lab | deterministic in-browser GA under a permanent **SIMULATION** banner, plus database-backed runs from `/api/evolution/runs` | shipped |
 | `/cloud` HELLO Cloud | vision page; every item tagged prototype or vision; no benchmarks or pricing | shipped |
 | `/aml-studio` | static AML compile/validate UI (never executes AML) | shipped |
+| `/sessions` | HELLO OS guide for a local CLI/TUI that ports text sessions among Claude Code, Codex, and OpenCode; the web app never reads local files | prototype |
 | `/frontier` Frontier Lab | vision ideas plus three labelled in-browser simulations | shipped |
 | Seven-layer card + AML preview on `/` | prototype/vision labels, live endpoint checks, static compiler preview, and ephemeral demo-key receipts | shipped |
 | `/runtime` | runtime pillar status based on live checks and implementation evidence | shipped |

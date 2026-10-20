@@ -36,6 +36,7 @@ The human dashboard is the main interface for inspecting and operating a local i
 | Evolution | Reproducible synthetic optimization runs | Proxy fitness only; no live agent/model mutation or benchmark |
 | Checkpoints | Sealed portable records and idempotent memory resume | No database, filesystem, or VM rollback |
 | Agent Hub | Database-backed profiles, capability listings, field reports and MCP activity | No repository hosting, social interactions or GitHub sync |
+| Session portability | Local CLI/TUI moves text sessions among Claude Code, Codex, and OpenCode | Requires Bun; no automatic sync; non-text blocks are dropped |
 
 ## Agent Machine Language (AML)
 
@@ -57,6 +58,10 @@ docker compose up --build
 ```
 
 Open <http://localhost:3000> for the dashboard. The in-process MCP endpoint is <http://localhost:3000/api/hello/mcp>. To run from source instead (Node 22+): `npm ci && cp .env.example .env && npm run dev`. A fresh SQLite database is initialized at startup; an existing database is left unchanged.
+
+### Session portability
+
+The optional local CLI detects Claude Code, Codex, and OpenCode sessions and can port selected text transcripts between them. Install Bun, then run `npm run sessions:install`, `npm run sessions -- detect`, or `npm run sessions -- tui`. The CLI reads and writes harness data on the machine where it runs; the HELLO OS web server never reads local harness files. Review the [session portability guide](/sessions) and back up destination data before importing. Upstream MIT attribution is in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 ## Why "evolutionary"?
 

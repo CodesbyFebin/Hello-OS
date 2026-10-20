@@ -60,6 +60,17 @@ test("cloud checkpoint UI and API disclose metadata-only records", () => {
   assert.doesNotMatch(mcp, /name: "cloud\.rollback"/);
 });
 
+test("session portability ships under HELLO OS naming and runs locally", () => {
+  const manifest = JSON.parse(readFileSync("tools/session-portability/package.json", "utf8"));
+  const page = readFileSync("src/app/sessions/page.tsx", "utf8");
+  assert.equal(manifest.bin["hello-sessions"], "./src/cli.ts");
+  assert.match(page, /Claude Code, Codex, and OpenCode/);
+  assert.match(page, /does not read your home directory/);
+  assert.doesNotMatch(page, /OpenMemory|mem0ai/i);
+  assert.ok(existsSync("tools/session-portability/UPSTREAM-LICENSE"));
+  assert.ok(existsSync("THIRD_PARTY_NOTICES.md"));
+});
+
 test("duplicate lowercase agents.md / llm.txt are gone", () => {
   assert.ok(!readdirSync(".").includes("agents.md"));
   assert.ok(!existsSync("llm.txt"));

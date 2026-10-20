@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { buildSnapshot, snapshotStream } from "@/lib/sync";
+import { dbNotConfiguredResponse, isDbConfigured } from "@/lib/db-config";
 
 export const dynamic = "force-dynamic";
 
 // GET /api/sync         → text/event-stream of dashboard snapshots (pushed on change)
 // GET /api/sync?once=1  → one JSON snapshot (polling fallback)
 export async function GET(req: Request) {
+  if (!isDbConfigured()) return dbNotConfiguredResponse();
   if (new URL(req.url).searchParams.get("once")) {
     return NextResponse.json(await buildSnapshot(db), { headers: { "Cache-Control": "no-store" } });
   }

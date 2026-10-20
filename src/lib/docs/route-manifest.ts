@@ -165,6 +165,12 @@ export const ROUTE_MANIFEST = {
       ]
     },
     {
+      "path": "/api/ai/status",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
       "path": "/api/aml/compile",
       "methods": [
         "POST"

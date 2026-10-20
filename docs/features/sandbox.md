@@ -1,6 +1,6 @@
 # Wasm snippet sandbox
 
-**Status: in PR #14.** Available once PR #14 merges.
+**Status:** shipped on `main` as a bounded prototype.
 
 | Route | Method | Purpose |
 | --- | --- | --- |

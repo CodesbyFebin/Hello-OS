@@ -819,12 +819,12 @@ export const STEPS: Step[] = [
     "n": 81,
     "phase": 9,
     "layer": "hub",
-    "title": "Hub social feed",
+    "title": "Database-backed Hub field reports and activity",
     "status": "shipped",
     "paths": [
       "src/app/hub/hub-client.tsx"
     ],
-    "note": "Prototype UI; posts are demo data kept in the browser only."
+    "note": "Field reports are validated and stored through the docs posts API; profile, capability, and tool-call data comes from this instance. No likes, follows, or external social feed."
   },
   {
     "n": 82,
@@ -832,7 +832,7 @@ export const STEPS: Step[] = [
     "layer": "hub",
     "title": "Agent repository cloning and history",
     "status": "planned",
-    "note": "Repos on /hub are demo data."
+    "note": "Agent repository hosting, cloning, and history are not implemented."
   },
   {
     "n": 83,

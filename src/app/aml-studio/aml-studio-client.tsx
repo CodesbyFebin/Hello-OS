@@ -15,11 +15,11 @@ const example = `mission optimize_query {
     analyze: query.performance($query) → $metrics
     optimize: $metrics → $new_query
 
-    if $new_query.latency < 50ms {
+    if $new_query.latency < $target_latency {
       persist: $new_query → db
       emit: verification_receipt
     } else {
-      rollback: checkpoint("pre_optimize")
+      emit: review_required("candidate_ready")
       emit: review_required
     }
   }

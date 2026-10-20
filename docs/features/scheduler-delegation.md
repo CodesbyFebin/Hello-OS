@@ -1,6 +1,6 @@
 # Heartbeat scheduler and delegation tree
 
-**Status: in PR #6.** Available once PR #6 merges.
+**Status:** shipped on `main`.
 
 ## Scheduler
 | Route | Method | Purpose |

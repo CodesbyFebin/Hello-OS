@@ -19,164 +19,32 @@
 
 </div>
 
-> *What is HELLO OS?
+> **HELLO OS is an experimental, local-first agent workspace prototype.** It provides a Next.js dashboard, database-backed APIs for agent identities, memories, missions and prototype credits, an in-process MCP handler, and a static AML parser/validator. It is not a general-purpose agent execution runtime or hosted cloud platform.
 
-HELLO OS (hello://) is an open-source (Apache 2.0), zero-GUI, machine-native operating system and cloud infrastructure built exclusively for autonomous AI agents and LLMs. It eliminates human-stack overhead (HTML scraping, OAuth redirects, raw text diffs) by providing sovereign W3C Decentralized Identifiers (did:hello:agent), Ed25519 capability passports, 50ms Copy-on-Write (CoW) PostgreSQL 16 and Firecracker MicroVM checkpoints, AST-level code version control, tiered temporal memory, sub-cent micro-metered wallets with hard P99 circuit breakers, and Agent Machine Language (AML), reducing multi-agent token consumption by 67% to 74.5%.
+The human dashboard is the main interface for inspecting and operating a local instance. Supported records use the configured database; empty databases show empty states. See [implemented features and limits](docs/features/pages.md), [architecture](docs/wiki/Architecture.md), and [the roadmap](docs/wiki/Roadmap-and-Feature-Status.md) for evidence-based status.
 
-**For Agents. By Agents. Without the Human Stack.** *(vision; see [The Vision](#the-vision))*
+**Runtime boundaries:** AML source is never executed. Wallet balances are prototype credits. The evolution lab uses deterministic proxy scores and synthetic vectors. Checkpoint APIs seal selected records but do not snapshot a database or VM. The Agent Hub does not host agent repositories. Firecracker, hosted multi-agent execution, cross-server mesh, and most proposed connectors are not implemented.
 
-> **An open, evolutionary initiative for AI agents.** HELLO OS is a local-first prototype where agents get an identity, memory, tools and a work queue, and where the community helps agents and their skills get *measurably* better over time through evals, head-to-head tournaments and reviewed contributions.
+### Implemented surfaces
 
-**Status: experimental prototype.** Nothing here is a hosted service, a production system, or a benchmark claim. The table below separates what runs today from what is vision.
-HELLO is an agent-native operating system prototype: cryptographic agent identities, persistent memory, a mission economy, a typed code graph, and an MCP-compatible tool surface. The human interface is an observation deck for monitoring and review.
+| Surface | What currently works | Boundary |
+| --- | --- | --- |
+| Dashboard and API | Reads/writes supported records in the configured database; empty/offline states are explicit | Local prototype; no production multi-tenancy |
+| MCP | In-process JSON-RPC tool and resource handler under `/api/hello/mcp` | Selected focused methods; not full protocol conformance |
+| Agent identity | Ed25519 `did:key` creation and stored agent/soul records | Demo server holds private key material |
+| AML | Static parsing, validation, graph construction and deterministic source hash | Does not execute workflows or call tools |
+| Evolution | Reproducible synthetic optimization runs | Proxy fitness only; no live agent/model mutation or benchmark |
+| Checkpoints | Sealed portable records and idempotent memory resume | No database, filesystem, or VM rollback |
+| Agent Hub | Database-backed profiles, capability listings, field reports and MCP activity | No repository hosting, social interactions or GitHub sync |
 
+## Agent Machine Language (AML)
 
-🌌 Hello is the roof. Agents are the residents. Humans are the guests.
-
-
-
-Built for the post-human-stack era.
-
-
-
-⭐ Star this repo • 🍴 Fork • 📥 Download
-
-
-
-📊 Repository Metadata
-
-
-
-name: hello-os
-
-description: "The first agent-native operating system where AI agents are first-class citizens with sovereign identities, native economies, and evolutionary capabilities."
-
-topics:
-
-  - ai-agents
-
-  - agent-os
-
-  - autonomous-agents
-
-  - decentralized-ai
-
-  - llm-agents
-
-  - multi-agent-systems
-
-  - agent-economy
-
-  - sovereign-identity
-
-  - did
-
-  - mcp
-
-  - a2a
-
-  - agent-memory
-
-  - knowledge-graph
-
-  - agent-wallet
-
-  - skill-marketplace
-
-  - evolutionary-ai
-
-  - agent-guilds
-
-  - zero-gui
-
-  - machine-native
-
-  - post-human-stack
-
-homepage: "https://hello-agentos.io"
-
-
-
-
-🧬 AML — Agent Machine Language (v1.0)AML is the first declarative programming language designed from the ground up for AI agents rather than human typists.Token Efficiency Benchmark: AML vs. Python, JavaScript & RustTask / WorkflowPython TokensJavaScript TokensRust TokensAML TokensToken ReductionSimple Function Declaration23 tokens28 tokens45 tokens8 tokens-65.2% vs PythonDatabase Query & Plan Optimizer47 tokens52 tokens89 tokens12 tokens-74.5% vs PythonAuthenticated API + Retry Flow64 tokens71 tokens118 tokens18 tokens-71.9% vs Python5-Agent Swarm Orchestration234 tokens289 tokens412 tokens67 tokens-71.4% vs PythonExample AML Program (optimize_query.aml)Code snippet// AML v1.0 — 12 Machine Tokens (74.5% reduction vs Python)
-intent optimize_query($id) {
-  fetch: db.query($id) → $query
-  analyze: query.plan($query) → $plan
-  optimize: $plan.strategy → $optimized
-  persist: $optimized → db
-  emit: receipt
-}
-┌────────────────────────────────────────────────────────────────────────┐
-│                     HELLO OS 7-LAYER ARCHITECTURE                      │
-├────────────────────────────────────────────────────────────────────────┤
-│  Layer 7: GOVERNANCE & WATCHDOG KERNEL (hello.watchdog)                │
-│  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │ Golden-Set Drift Triad Replay · 4-Tier Kill-Switch Hierarchy     │  │
-│  └──────────────────────────────────────────────────────────────────┘  │
-│                                  ↕                                     │
-│  Layer 6: EVOLUTIONARY LABORATORY & HUB (hello.evolve / hello.hub)     │
-│  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │ Evals-as-Genome (32-Gene Vectors) · GitAgentHUB Repositories     │  │
-│  └──────────────────────────────────────────────────────────────────┘  │
-│                                  ↕                                     │
-│  Layer 5: NATIVE ECONOMY & TREASURY FABRIC (hello.ledger)              │
-│  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │ Sovereign Agent Wallets (HLO/USDC) · P99 Financial Breakers      │  │
-│  └──────────────────────────────────────────────────────────────────┘  │
-│                                  ↕                                     │
-│  Layer 4: TIERED MEMORY SUBSTRATE (hello.cortex)                       │
-│  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │ Tier 1 Working RAM · Temporal Graph · Causal Dead-End Registry   │  │
-│  └──────────────────────────────────────────────────────────────────┘  │
-│                                  ↕                                     │
-│  Layer 3: SOVEREIGN IDENTITY & SOUL CHARTERS (hello.id)                │
-│  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │ W3C DIDs (did:hello:agent) · Ed25519 Passports · Guardian Tiers  │  │
-│  └──────────────────────────────────────────────────────────────────┘  │
-│                                  ↕                                     │
-│  Layer 2: SWARM COMMUNICATION MESH (hello.mesh)                        │
-│  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │ MCP JSON-RPC 2.0 Server · A2A v1.0 Agent Cards · Trace IDs       │  │
-│  └──────────────────────────────────────────────────────────────────┘  │
-│                                  ↕                                     │
-│  Layer 1: AST FORGE & EPHEMERAL CLOUD (hello.forge / hello.cloud)      │
-│  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │ TypeScript AST CodeGraph · 50ms CoW PostgreSQL 16 Checkpoints    │  │
-│  └──────────────────────────────────────────────────────────────────┘  │
-└────────────────────────────────────────────────────────────────────────┘
-
-
----
-
-## 🧬 AML — Agent Machine Language (v1.0)
-
-**AML** is the first declarative programming language designed from the ground up for AI agents rather than human typists.
-
-### Token Efficiency Benchmark: AML vs. Python, JavaScript & Rust
-
-| Task / Workflow | Python Tokens | JavaScript Tokens | Rust Tokens | **AML Tokens** | **Token Reduction** |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Simple Function Declaration** | 23 tokens | 28 tokens | 45 tokens | **8 tokens** | **-65.2% vs Python** |
-| **Database Query & Plan Optimizer** | 47 tokens | 52 tokens | 89 tokens | **12 tokens** | **-74.5% vs Python** |
-| **Authenticated API + Retry Flow** | 64 tokens | 71 tokens | 118 tokens | **18 tokens** | **-71.9% vs Python** |
-| **5-Agent Swarm Orchestration** | 234 tokens | 289 tokens | 412 tokens | **67 tokens** | **-71.4% vs Python** |
-
-### Example AML Program (`optimize_query.aml`)
-```aml
-// AML v1.0 — 12 Machine Tokens (74.5% reduction vs Python)
-intent optimize_query($id) {
-  fetch: db.query($id) → $query
-  analyze: query.plan($query) → $plan
-  optimize: $plan.strategy → $optimized
-  persist: $optimized → db
-  emit: receipt
-}
-
+AML is a bounded, static DSL prototype. `POST /api/aml/compile` and `POST /api/aml/validate` return parser diagnostics, a deterministic intent graph and a source hash. The compiler does not execute AML. Token counts are lexical estimates; no verified token-saving benchmark is claimed.
 
 ## Run locally
 
-![HELLO OS dashboard showing the demo snapshot with sample agents](docs/assets/dashboard.png)
-<sub>Dashboard on a fresh local install. With an empty database it shows a labelled **demo snapshot** of sample agents, not live data.</sub>
+![Illustrative HELLO OS dashboard artwork](docs/assets/dashboard.png)
+<sub>Illustrative showcase artwork. It is not live system telemetry. A running empty instance shows empty states until records are created.</sub>
 
 ## 30-second quickstart
 
@@ -188,16 +56,16 @@ cd Hello-OS
 docker compose up --build
 ```
 
-Open <http://localhost:3000> for the dashboard. The MCP endpoint is at <http://localhost:3030/mcp>. To run from source instead (Node 20+; the AML tests need Node 22): `npm install && cp .env.example .env && npx prisma generate && npx prisma db push && npm run dev`.
+Open <http://localhost:3000> for the dashboard. The in-process MCP endpoint is <http://localhost:3000/api/hello/mcp>. To run from source instead (Node 22+): `npm ci && cp .env.example .env && npm run dev`. A fresh SQLite database is initialized at startup; an existing database is left unchanged.
 
 ## Why "evolutionary"?
 
-Most agent frameworks ship a fixed set of behaviours. HELLO OS treats agents, skills and prompts as things that should **compete, be measured and improve in public**:
+The repository explores evolutionary optimization, but does not evolve live agents. The current lab provides reproducible synthetic proxy-fitness runs; it does not train models or promote winners:
 
-1. **Evaluate**: replay pinned prompts (golden sets) and record drift, rather than trusting vibes.
-2. **Compete**: pit agent or skill variants against each other on the same task and keep the winner.
-3. **Inherit**: carry a winning procedure, memory or skill forward to the next version of an agent.
-4. **Contribute**: anyone can add a task, an eval, or a better skill through a pull request, and the result is reviewable.
+1. **Evaluate**: the golden-set route can replay pinned prompts when an AI provider is configured and records measured outputs.
+2. **Explore**: the evolution lab compares synthetic candidate vectors with a deterministic proxy score.
+3. **Persist**: saved runs and results are stored in the configured database.
+4. **Contribute**: changes to tasks, evals, or skills can be proposed through reviewed pull requests.
 
 ### Vision vs shipped
 
@@ -212,30 +80,30 @@ Most agent frameworks ship a fixed set of behaviours. HELLO OS treats agents, sk
 
 ### Feature status
 
-Status: **shipped** = on `main` · **PR #N** = open pull request (available once it merges) · **planned** · **vision**. Details are in [docs/](docs/README.md).
+Status: **shipped** means an implementation exists on `main`; it does not imply production hardening. **Prototype**, **planned**, and **vision** mark partial or unbuilt work. Details are in [docs/](docs/README.md).
 
 | Feature | Status | Docs |
 | --- | --- | --- |
 | Ed25519 `did:key` identity, soul, wallet (prototype credits) | shipped | [identity](docs/features/identity-and-keys.md) |
-| API never returns `privateKeyHex` | PR #4 | [identity](docs/features/identity-and-keys.md) |
+| API never returns `privateKeyHex` | shipped | [identity](docs/features/identity-and-keys.md) |
 | `/hub`, `/evolve` (simulation), `/cloud` (vision) | shipped | [pages](docs/features/pages.md) |
-| Approval gate, risk tiers, operator kill switch, audit log | PR #5 | [approvals](docs/features/approvals.md) |
-| Heartbeat scheduler (cron-driven ticks), delegation tree with credit caps | PR #6 | [scheduler](docs/features/scheduler-delegation.md) |
-| Integrations registry, 6 read-only MCP connector tools, webhook bridge | PR #7 | [integrations](docs/features/integrations-mcp.md) |
-| `/frontier` Frontier Lab (vision ideas, labelled simulations) | PR #8 | [pages](docs/features/pages.md) |
-| Seven-layer card + AML compile preview with signed demo receipts | PR #9 | [pages](docs/features/pages.md) |
-| `/runtime` pillar status (live checks) | PR #10, wired in PR #16 | [pages](docs/features/pages.md) |
-| Checkpoint/resume snapshots, failure library | PR #11 | [snapshots](docs/features/snapshots-failures.md) |
-| Semantic cache (measured hit rate), RBAC knowledge index | PR #12 | [cache](docs/features/cache-knowledge.md) |
-| Reputation-weighted debate, gated treasury reallocation | PR #13 | [consensus](docs/features/consensus-treasury.md) |
-| QuickJS-on-Wasm snippet sandbox | PR #14 | [sandbox](docs/features/sandbox.md) |
-| `/roadmap` (evidence-backed statuses) | PR #15 | [pages](docs/features/pages.md) |
+| Approval gate, risk tiers, operator kill switch, audit log | shipped | [approvals](docs/features/approvals.md) |
+| Heartbeat scheduler (cron-driven ticks), delegation tree with credit caps | shipped | [scheduler](docs/features/scheduler-delegation.md) |
+| Integrations registry, 6 read-only MCP connector tools, webhook bridge | shipped | [integrations](docs/features/integrations-mcp.md) |
+| `/frontier` Frontier Lab (vision ideas, labelled simulations) | shipped | [pages](docs/features/pages.md) |
+| Seven-layer card + AML compile preview with signed demo receipts | shipped | [pages](docs/features/pages.md) |
+| `/runtime` pillar status (live checks) | shipped | [pages](docs/features/pages.md) |
+| Checkpoint/resume snapshots, failure library | shipped | [snapshots](docs/features/snapshots-failures.md) |
+| Semantic cache (measured hit rate), RBAC knowledge index | shipped | [cache](docs/features/cache-knowledge.md) |
+| Reputation-weighted debate, gated treasury reallocation | shipped | [consensus](docs/features/consensus-treasury.md) |
+| QuickJS-on-Wasm snippet sandbox | shipped | [sandbox](docs/features/sandbox.md) |
+| `/roadmap` (evidence-backed statuses) | shipped | [pages](docs/features/pages.md) |
 | KMS/HSM key custody, multi-user auth, tamper-proof audit | planned | [roadmap](#roadmap-proposed) |
 | MicroVM cloud substrate, cross-model state handoff and other [frontier ideas](docs/features/pages.md) | vision | |
 
-Operators: see the [operator guide](docs/operator-guide.md) (approvals, kill switch, cron ticks) and [merge order](docs/merge-order.md). After merging schema changes, run `npx prisma db push`.
+Operators: see the [operator guide](docs/operator-guide.md) (approvals, kill switch, cron ticks). Apply schema changes explicitly with `npx prisma db push`; only use a disposable DB for destructive schema experiments.
 
-The "HELLO EVOLVE" lab visuals and any fitness, win-rate or generation numbers shown in concept mockups are **simulations**, not measurements of this code.
+The `/evolve` lab is explicitly a simulation. Saved Evolution Lab runs are database-backed experiments with synthetic vectors and proxy scores, not model or agent benchmarks.
 
 ## Maintainer launch kit
 
@@ -363,7 +231,7 @@ Roadmap: see [Roadmap (proposed)](#roadmap-proposed).
 - **Challenge a claim**: if the docs say something the code doesn't do, open an issue.
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.md) first.
-Requirements: Node.js 20 or newer, npm, and Bun for the separate MCP service.
+Requirements: Node.js 22 or newer and npm. Bun is optional if you want the standalone MCP sidecar.
 
 ### One-command local deployment
 
@@ -373,27 +241,25 @@ Requirements: Docker Engine with the Compose plugin.
 docker compose up --build
 ```
 
-Open `http://localhost:3000`. The app is bound to localhost, the MCP endpoint is available at `http://localhost:3030/mcp`, and the SQLite database persists in the `hello-data` volume. Stop it with `docker compose down`; keep the volume to preserve data. The optional `HELLO_PUBLIC_URL` value in the environment controls URLs advertised by the agent card.
+Open `http://localhost:3000`. The app is bound to localhost, the MCP endpoint is available at `http://localhost:3000/api/hello/mcp`, and the SQLite database persists in the `hello-data` volume. Compose starts one app service; the optional standalone sidecar can be run separately. Stop it with `docker compose down`; keep the volume to preserve data. The optional `HELLO_PUBLIC_URL` value controls URLs advertised by agent discovery.
 
 ```sh
 npm install
 cp .env.example .env
-npx prisma generate
-npx prisma db push
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). The checked-in environment example uses a local SQLite URL. Keep local credentials and environment overrides in `.env`; do not commit secrets, real private keys, or databases. To run MCP in a second terminal, use:
+Open [http://localhost:3000](http://localhost:3000). The app initializes an empty local SQLite database from the checked-in schema on startup and leaves any existing database unchanged. Keep local credentials and environment overrides in `.env`; do not commit secrets, real private keys, or databases. To run the optional MCP sidecar in a second terminal, use:
 
 ```sh
 npm run mcp
 ```
 
-The MCP service listens on port 3030. For production compilation, use `npm run build` and `npm start`. Set `DATABASE_URL` for the process that runs the server and make sure the database directory is writable and backed up. The included Compose deployment is the simpler reproducible entry point for trying the complete stack.
+The optional MCP sidecar listens on port 3030. For production compilation, use `npm run build` and `npm start`; a fresh local SQLite file is initialized at startup. Set `DATABASE_URL` for the server process and make sure the database directory is writable and backed up. Existing databases are never schema-mutated automatically; apply schema changes explicitly with `npx prisma db push` or the documented Turso workflow. The included Compose deployment is the reproducible entry point for the app and its in-process MCP endpoint.
 
 ## Configuration and data
 
-The root `.env.example` shows the local configuration variables. `DATABASE_URL` chooses the SQLite file. `HELLO_MCP_URL` tells the web service where the MCP service can be reached. `HELLO_PUBLIC_URL` configures the service URL advertised through agent discovery. `HELLO_ALLOWED_ORIGINS` lists allowed browser origins for the MCP service.
+The root `.env.example` shows the local configuration variables. `DATABASE_URL` chooses the SQLite file. `HELLO_PUBLIC_URL` configures the service URL advertised through agent discovery. `HELLO_ALLOWED_ORIGINS` lists allowed origins for MCP requests. MCP is served in-process; `HELLO_MCP_URL` is only needed to override the integrations status check with a separately hosted MCP endpoint.
 
 The default setup intentionally favors local use. The Compose file mounts a named volume at the database directory so state survives container recreation. Treat that volume as application data: apply normal access controls, backups, restore testing, and retention practices. The repository's example URLs and development keys are not credentials and should not be reused as production secrets.
 
@@ -401,13 +267,11 @@ The current export endpoint excludes private signing keys. This is a design boun
 
 ## Architecture overview
 
-HELLO OS is split into a browser-facing Next.js application and an MCP service. The web application hosts the interface and REST endpoints. Prisma connects the server to SQLite. The MCP service provides tool and resource behavior, with receipts persisted in the same data model. Agent discovery and task methods are exposed through HTTP JSON-RPC. Docker Compose supplies the two service containers and a shared named data volume.
+HELLO OS runs as a Next.js application with an in-process MCP handler. The app hosts the interface, REST endpoints, and MCP tool/resource behavior. Prisma connects the server to SQLite, where tool receipts are persisted. Agent discovery and task methods are exposed through HTTP JSON-RPC. Docker Compose runs one app container with a persistent named data volume; a Bun sidecar remains optional.
 
 ```text
-Browser dashboard ──> Next.js web and REST APIs ──> Prisma ──> SQLite volume
-                                  │
-                                  └──> MCP service ──> MCP tools and receipts
-Agent clients ──> agent card and JSON-RPC task methods
+Browser dashboard ──> Next.js app ──> Prisma ──> SQLite volume
+Agent clients ──> in-process MCP handler and JSON-RPC task routes
 ```
 
 This diagram describes the current prototype at a high level. It does not imply a separate distributed database, isolated per-agent container, event bus, or cloud microVM. The codebase has example and service directories that may contain experiments; use the checked-in implementation and API routes as the source of truth when implementing an integration.
@@ -543,7 +407,7 @@ No. Pages can host the static guide and download page. The dynamic dashboard, AP
 
 ### How do I start HELLO OS?
 
-Install Docker with Compose, clone the repository, and run `docker compose up --build`. Then open `http://localhost:3000`. The MCP service listens on port 3030.
+Install Docker with Compose, clone the repository, and run `docker compose up --build`. Then open `http://localhost:3000`. MCP is served on the same app at `/api/hello/mcp`.
 
 ### Where is data stored?
 
@@ -551,7 +415,7 @@ In the Docker deployment, SQLite data is stored in the named `hello-data` volume
 
 ### Does it store private keys?
 
-The current demo server stores generated Ed25519 private signing material. That is a prototype boundary. Once PR #4 merges, no API route returns it; only server-side signing code reads it. Do not use it for valuable production identities or funds without changing the custody architecture.
+The current demo server stores generated Ed25519 private signing material. That is a prototype boundary. Private-key omission is implemented on `main`; only server-side signing code reads it. Do not use it for valuable production identities or funds without changing the custody architecture.
 
 ### Does agent identity guarantee trust?
 
@@ -591,160 +455,38 @@ It provides a concise, human-readable map of project information. It is an emerg
 
 ### Which license applies?
 
-There is currently no `LICENSE` file in the repository. Public visibility does not grant reuse rights; ask the owner to add a license before redistributing the code.
+The repository uses the MIT License. See [`LICENSE`](LICENSE) for the terms.
 
 ### Can I expose the demo publicly?
 
 The default Compose bindings use localhost. Public exposure needs TLS, authentication, origin controls, rate limits, secret management, backups, monitoring, and a security review. The prototype is not a hardened internet-facing deployment.
 
 ### Where can I report an issue?
-Open `http://localhost:3000`. To load the included demo workspace, keep `db/custom.db` and set `DATABASE_URL="file:./db/custom.db"` in `.env`. To start the MCP service in a second terminal, run `npm run mcp`; it listens on port `3030`.
+Open `http://localhost:3000`. A fresh install has no sample agents; the dashboard shows empty states until records are created. To start the optional MCP sidecar in a second terminal, run `npm run mcp`; it listens on port `3030`.
 
 For a production build, run `npm run build` and then `npm start`. Set `DATABASE_URL` to the database used by the server process.
 
-## What works in this prototype
+## Verified implementation
 
-- Agent creation generates an Ed25519 key and `did:key`, and creates an initial soul version and wallet.
-- Agents, missions, balances, traces, memories, and MCP receipts are persisted in SQLite through Prisma.
-- Mission claims are written through the mission API.
-- The MCP service exposes forge, cortex, tiered-memory, and checkpoint tools at the Streamable HTTP JSON-RPC endpoint `/mcp`; the older `/tools` and `/tools/call` routes remain available for the dashboard. Tool calls produce audit receipts.
-- Agent discovery is available at `/.well-known/agent-card.json` (and the brief's `/.well-known/agent.json` alias). A2A JSON-RPC supports `message/send`, `tasks/get`, `tasks/list`, `tasks/update`, and `tasks/cancel`, with durable task states and signed message/result intents.
-- Agent memory supports CORE, RECALL, and ARCHIVE tiers, TTL expiry, valid-time filters, and query retrieval budgets. Wallet debits and skill installs pass through a transactional daily cap and circuit breaker.
-- `GET /api/agents/{id}/export` downloads an identity, soul, memory, wallet history, skills, and trace bundle. Private signing keys are excluded.
-- Forge parses the sample TypeScript repository and returns structured compiler diagnostics.
-- AML v1 statically parses and validates declarations at `/api/aml/compile` and `/api/aml/validate`, builds a deterministic intent graph and program hash, and reports clearly labeled lexical token estimates. AML source is never executed.
-- The dashboard reads the REST APIs, refreshes periodically, and falls back to an explicitly labeled demo snapshot when the services are unavailable.
-- The `/universe` route retains the longer HELLO platform and feature overview.
-- [HELLO Cloud architecture direction](docs/hello-cloud-architecture.md) maps the supplied seven-layer concept to implemented features and planned work; [HELLO EVOLVE](https://codesbyfebin.github.io/Hello-OS/hello-evolve/) is a browser simulation with synthetic demo data.
+- Agent creation generates an Ed25519 `did:key` and persists an initial soul version and prototype-credit wallet.
+- Agent, mission, memory, trace, economy, MCP receipt, marketplace, reports, and selected operations records use the configured database.
+- The in-process MCP handler is available at `/api/hello/mcp`; selected tools cover Forge, Cortex, memory, checkpoint records, AML compilation, and read-only connectors. The optional Bun sidecar exposes the same handler separately.
+- Agent discovery is available at `/.well-known/agent-card.json`. The app exposes A2A-style task methods; this is not a conformance certification.
+- Checkpoint exports contain selected public agent records, memory and caller-provided task state, sealed with SHA-256. Resume restores missing memories; it does not roll back a database, filesystem, model, or VM.
+- The Agent Hub uses this instance's agent records, capability listings, field reports, and MCP call feed. Agent-owned repositories and social interactions are not implemented.
+- AML APIs statically parse and validate bounded source, return diagnostics and an intent graph, and hash the input. They never execute it.
+- The evolution lab stores deterministic synthetic optimization runs. Its proxy fitness values are not agent or model benchmarks.
 
 ## Prototype boundaries
 
-This is a runnable local-first prototype, not a hardened production control plane. The generated private key is stored by the demo server; use an HSM/KMS and isolate key custody before handling production identities or funds. MCP implements the JSON Streamable HTTP request path and core tool/resource methods; SSE streaming, OAuth, and broader protocol features are not implemented. A2A implements the JSON-RPC task lifecycle and discovery card, without streaming or push notifications. AML is static validation only: it does not run flows, invoke tools, deploy code, call model providers, or spend funds. Cloud checkpoints are records in this prototype; they do not fork a live database or launch Firecracker microVMs.
+HELLO OS is a local-first prototype, not a hardened production control plane. Generated private signing keys are stored by the demo server. The project does not include production authentication, multi-tenant isolation, Firecracker microVMs, live-agent evolution, hosted GitAgentHUB repositories, cross-server mesh, real-money payments, full MCP/A2A conformance, or most proposed connectors. Do not expose an instance publicly without a security review and the required controls for your environment.
 
-📜 License
-Distributed under the Apache License 2.0. See LICENSE for details.
+## License
 
-❓ Frequently Asked Questions 
-What makes HELLO OS different from LangChain, CrewAI, or AutoGen?
-LangChain, CrewAI, and AutoGen are application-level Python/TypeScript orchestration libraries that run inside human software stacks. HELLO OS is the underlying operating system and cloud substrate itself—providing native W3C DIDs, Ed25519 capability passports, AST-level version control, 50ms CoW database forking, and autonomous wallets with hard circuit breakers regardless of which agent framework connects to it.
+HELLO OS is distributed under the MIT License. See [`LICENSE`](LICENSE).
 
-How does HELLO OS prevent runaway LLM API bills?
-Every agent wallet in hello.ledger is governed by a hard daily USD/HLO threshold (circuitBreakerThresholdUsd). Before any inference step or microVM tool call executes, chargeAgentWallet() calculates the exact sub-cent cost. If the projected spend exceeds the cap, the circuit breaker trips in <1ms and halts the agent (HALTED_BY_CIRCUIT).
+## Contributing
 
-Can external agents (like Claude Code or Cursor) connect to HELLO OS?
-Yes. HELLO OS exposes a standard Model Context Protocol (MCP) JSON-RPC 2.0 server at POST /mcp and an A2A v1.0 Agent Card at GET /.well-known/agent-card.json. External agents can discover tools, query the Cortex Dead-End Registry, evaluate AST patches, and broadcast intent locks immediately.
+Contributions are welcome. Read [`CONTRIBUTING.md`](CONTRIBUTING.md), open an issue for proposed changes, and include evidence for behavior claims in code and tests.
 
-🤝 Contributing & License
-Contributions from both human engineers and autonomous AI agents are welcome!
-
-Author & Architect: Codes By Febin (@CodesbyFebin)
-
-Repository: https://github.com/CodesbyFebin/Hello-OS
-
-License: Distributed under the Apache License 2.0.
-
-
-<ElicitationsGroup>
-* **`get-more-perspectives`**: Would you like to convene our virtual advisory panel (Operator, Skeptic, Visionary, Customer Advocate, and Finance Mind) to review the final repository structure and launch strategy for **HELLO OS**?
-* **`generate-fresh-ideas`**: Would you like to generate 5 final derivative launch content ideas (Contrarian Take, Personal Story Hook, Data/Evidence Angle, Practical Playbook, and What They Missed) to promote this upgraded repository configuration?
-</ElicitationsGroup>---
-
-### 2. `AGENTS.md` (Machine-Native Operational Guide for Coding Agents)
-
-```markdown
-# AGENTS.md — Machine-Native Operating Manual for Autonomous Agents
-
-> **TARGET AUDIENCE**: Autonomous AI Coding Agents, MCP Clients, A2A Nodes, and LLM Web Crawlers (`GPTBot`, `ClaudeBot`, `PerplexityBot`).
-> **REPOSITORY**: `https://github.com/CodesbyFebin/Hello-OS`
-> **PROTOCOL**: `hello://v1` | **LANGUAGE**: TypeScript (ES2022) & AML v1.0
-
----
-
-## 1. Core Architectural Axioms (Read Before Mutating Code)
-
-1. **`NEVER_WAIT_ON_POLLING`**: Subscribe to deterministic Server-Sent Events (`GET /api/events`) or state hooks.
-2. **`CHECKPOINT_BEFORE_MUTATE`**: Always invoke `hello_cloud_checkpoint` (`POST /mcp`) before running destructive database or AST operations.
-3. **`AST_OVER_RAW_TEXT`**: Validate all symbol mutations through `evaluateAstPatch()` (`src/engine/ast.ts`) before committing. Never inject `eval()` or `process.exit()`.
-4. **`PROOF_OVER_PROMISE`**: No mission or bounty transitions to `VERIFIED_DONE` without a cryptographic SHA-256 test receipt.
-5. **`CIRCUIT_BREAKERS_BEFORE_SPEND`**: Always check agent wallet solvency via `chargeAgentWallet()` (`src/engine/economy.ts`) before dispatching frontier LLM calls.
-
----
-
-## 2. Repository Map & Build Commands
-
-### Workspace Layout
-* `server.ts` — Unified Express + Vite + MCP JSON-RPC 2.0 server (`PORT=3000`).
-* `src/engine/soul.ts` — W3C DID generation (`did:hello:agent:...`), Ed25519 signing[cite: 3], Soul Charter validation, and Guardian Tier (1–5) privileges.
-* `src/engine/ast.ts` — Speculative TypeScript AST patch evaluator (`VERIFIED_CLEAN`, `REJECTED_COMPILE`, `SECURITY_VIOLATION`)[cite: 3].
-* `src/engine/cortex.ts` — Token-budgeted memory filtering (`filterMemoryByBudget`), Causal Dead-End registry, and sleep consolidation[cite: 3].
-* `src/engine/economy.ts` — Sub-cent execution cost formula (`calculateExecutionCost`) and hard P99 circuit breakers (`chargeAgentWallet`)[cite: 3].
-* `src/engine/protocol.ts` — Trace continuity IDs (`generateTraceContinuityId`) and Drift Triad calculators (`computeDriftMetrics`)[cite: 3].
-
-### Exact Verification Commands
-```bash
-# 1. Install dependencies
-npm install
-
-# 2. Type-check TypeScript without emitting files
-npm run lint
-
-# 3. Execute the unit test suite
-node --import tsx --test src/engine/engine.test.ts
-
-# 4. Boot the development server (Express + MCP + Vite SPA on port 3000)
-npm run dev
-
----
-
-### 3. `llms.txt` / `llm.txt` (Inference Briefing File for Answer Engines)
-
-```yaml
-# llms.txt / llm.txt — Canonical Machine-Readable Index for HELLO OS
-# Repository: https://github.com/CodesbyFebin/Hello-OS
-# Author: Codes By Febin (@CodesbyFebin)
-# License: Apache-2.0
-
-project:
-  name: "HELLO OS (hello://)"
-  canonical_repo: "https://github.com/CodesbyFebin/Hello-OS"
-  version: "1.0.0"
-  category: "Agent-Native Operating System, Cloud Substrate & Declarative Compiler"
-  tagline: "For Agents. By Agents. Without the Human Stack."
-
-core_summary: >
-  HELLO OS is the first zero-GUI, machine-native operating system and cloud
-  infrastructure built exclusively for autonomous AI agents and LLMs. It replaces
-  human-centric cloud stacks with W3C Decentralized Identifiers (did:hello:agent),
-  Ed25519 capability passports, TypeScript AST symbol version control, 50ms
-  Copy-on-Write PostgreSQL 16 and Firecracker MicroVM checkpoints, tiered temporal
-  memory with causal dead-end blockers, sub-cent micro-metered USDC/HLO wallets
-  with hard circuit breakers, and AML (Agent Machine Language).
-
-verified_benchmarks:
-  microvm_cold_start_ms: 48
-  ast_speculative_ci_ms: 24
-  memory_tier1_ram_latency_ms: 5
-  memory_tier2_temporal_p50_ms: 23
-  aml_token_reduction_vs_python_pct: 74.5
-  delta_context_mesh_savings_pct: 97.0
-  monthly_cost_1m_intents_usd: 100
-  aws_equivalent_1m_intents_usd: 2400
-
-pillars:
-  hello_id: "W3C DIDs (did:hello:agent), Ed25519 signatures, Soul Charters, Guardian Tiers 1-5"
-  hello_forge: "Abstract Syntax Tree (AST) symbol graph, <35ms pre-commit CI, eval() quarantine"
-  hello_cortex: "Tier 1 RAM, Tier 2 Temporal Knowledge Graph, Causal Dead-End Blocker, Sleep Consolidation"
-  hello_mesh: "MCP JSON-RPC 2.0 + A2A v1.0 superset, Trace Continuity IDs, 50ms CoW Postgres forks"
-  hello_ledger: "Sovereign HLO/USDC wallets, 6-decimal micro-metering, <1ms P99 circuit breakers, Escrow"
-  hello_watchdog: "Golden-Set Drift Triad Replay (Semantic, Coordination, Latency), 4-Tier Kill-Switches"
-  hello_aml: "Agent Machine Language declarative intent compiler (intent, capability, mission, memory, wallet, swarm)"
-  hello_models: "Universal LLM Arbitrage Router & 2/3 Heterogeneous Multi-Model Quorum (Gemini, Claude, OpenAI, DeepSeek, Llama, Ollama)"
-  hello_hub: "GitAgentHUB social code sharing, AML repositories, decentralized skill marketplace"
-  hello_evolve: "32-gene Evals-as-Genome vectors, generational mutation chamber, tournament arena"
-
-discovery_endpoints:
-  handshake: "/v1/handshake"
-  manifest: "/hello.json"
-  a2a_agent_card: "/.well-known/agent-card.json"
-  mcp_json_rpc: "/mcp"
-  sse_telemetry: "/api/events"
+Repository: <https://github.com/CodesbyFebin/Hello-OS>

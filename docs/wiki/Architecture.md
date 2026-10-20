@@ -1,6 +1,6 @@
 # HELLO OS architecture: local-first agent control prototype
 
-HELLO OS is composed of a Next.js application, a Prisma persistence layer, and a separate Bun-based MCP service. The current application stores agent and workflow records locally and exposes selected APIs for inspection and interaction. The named HELLO domains describe product areas; they are not independently deployed cloud services.
+HELLO OS is composed of a Next.js application, a Prisma persistence layer, and an in-process MCP handler (with an optional Bun sidecar). The current application stores agent and workflow records locally and exposes selected APIs for inspection and interaction. The named HELLO domains describe product areas; they are not independently deployed cloud services.
 
 ## Components
 
@@ -8,13 +8,13 @@ HELLO OS is composed of a Next.js application, a Prisma persistence layer, and a
 | --- | --- | --- |
 | Next.js App Router | Pages, dashboard, API routes, discovery metadata | `src/app/` |
 | Prisma + SQLite | Local persistence for supported records | `prisma/schema.prisma` |
-| MCP service | Exposes selected tools and records call results | `mini-services/hello-mcp/index.ts` |
+| MCP handler | Exposes selected tools and records call results in the Next.js app | `src/lib/mcp/server.ts` |
 | AML engine | Static parse, validation, graph, metrics, and hashes | `src/lib/aml.ts` |
 | Dashboard | Operator observation and review UI | `src/components/hello/dashboard.tsx` |
 
 ## Data and workflow path
 
-The UI and API routes read and mutate application state through the server-side data layer. The separate MCP service exposes its own tool surface. Agent cards and APIs describe capabilities; a descriptor does not imply that the application is autonomously executing work. Inspect the route handlers and tool registry before relying on a behavior.
+The UI and API routes read and mutate application state through the server-side data layer. The optional Bun sidecar wraps the same in-process handler for standalone clients. Agent cards and APIs describe capabilities; a descriptor does not imply that the application is autonomously executing work. Inspect the route handlers and tool registry before relying on a behavior.
 
 ## Current module mapping
 

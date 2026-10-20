@@ -3,9 +3,9 @@
   "version": "0.2.1",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3000 2>&1 | tee dev.log",
+    "dev": "node scripts/runtime-db-init.mjs && next dev -p 3000 2>&1 | tee dev.log",
     "build": "prisma generate && next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/ && cp -r sample-repo .next/standalone/",
-    "start": "NODE_ENV=production node .next/standalone/server.js",
+    "start": "node scripts/runtime-db-init.mjs && NODE_ENV=production node .next/standalone/server.js",
     "mcp": "bun --hot mini-services/hello-mcp/index.ts",
     "lint": "eslint .",
     "db:push": "prisma db push",

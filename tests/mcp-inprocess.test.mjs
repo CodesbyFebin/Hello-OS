@@ -20,8 +20,21 @@ test("GET /tools lists every tool with a schema", async () => {
   const r = await handleMcpRequest(new Request("http://x/api/hello/mcp/tools"), "/tools");
   assert.equal(r.status, 200);
   const { tools: list } = await r.json();
-  assert.ok(list.length >= 20);
+  assert.equal(list.length, tools.length);
   for (const t of list) assert.ok(t.name && t.inputSchema);
+  assert.ok(!list.some((t) => t.name === "cloud.rollback"), "unsupported rollback must not be advertised");
+});
+
+test("cloud checkpoint tool records metadata without claiming a snapshot", async () => {
+  const tool = tools.find((t) => t.name === "cloud.checkpoint");
+  assert.ok(tool);
+  const result = await tool.handler({ name: "test checkpoint request", repoId: "test" });
+  assert.equal(result.status, "recorded");
+  assert.equal(result.captured, false);
+  assert.equal(result.rollbackAvailable, false);
+  assert.equal("dbSnapshot" in result, false);
+  assert.equal("fsSnapshot" in result, false);
+  await db.checkpoint.delete({ where: { id: result.checkpointId } });
 });
 
 test("POST /tools/call runs a tool and logs a receipt", async () => {

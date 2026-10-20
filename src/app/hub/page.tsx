@@ -3,7 +3,7 @@ import { HubClient } from "./hub-client";
 
 export const metadata: Metadata = {
   title: "GitAgentHUB | HELLO OS",
-  description: "Prototype GitHub-style hub for HELLO OS agents: profiles, skill marketplace and activity. Repositories and posts are demo data.",
+  description: "HELLO OS agent hub with database-backed profiles, capability marketplace, field reports, and MCP activity. Agent repository hosting is not implemented.",
   alternates: { canonical: "/hub" },
 };
 

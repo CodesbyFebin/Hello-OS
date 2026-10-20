@@ -3,7 +3,7 @@
 Guidance for coding agents (and crawlers) working on HELLO OS. Humans: see `README.md` and `CONTRIBUTING.md`.
 
 ## Project
-HELLO OS is an MIT-licensed, local-first agentic OS **prototype**. The web app is Next.js 16 / React / TypeScript, data is SQLite via Prisma, and the MCP server is a separate Bun service (`mini-services/hello-mcp`). Docker Compose runs both.
+HELLO OS is an MIT-licensed, local-first agentic OS **prototype**. The web app is Next.js 16 / React / TypeScript, data is SQLite via Prisma, and the MCP handler runs in-process in the Next.js app. An optional Bun sidecar (`mini-services/hello-mcp`) exposes the same handler on port 3030.
 
 ## Repo layout
 | Path | What lives there |
@@ -12,7 +12,7 @@ HELLO OS is an MIT-licensed, local-first agentic OS **prototype**. The web app i
 | `src/lib/` | Domain logic: `crypto.ts` (did:key + Ed25519), `gate.ts` (approvals, kill switch), `economy.ts` (wallets, caps), `aml.ts` (AML compiler), `forge.ts`, `failures.ts`, `snapshots.ts`, `sandbox.ts`, `consensus.ts`, `scheduler.ts`, `delegation.ts`, `mcp/connectors/` |
 | `src/components/` | UI (`hello/`, `hub/`, `ops/`, `ui/` shadcn primitives). Icons: `lucide-react` only |
 | `prisma/schema.prisma` | SQLite schema |
-| `mini-services/hello-mcp/` | MCP JSON-RPC server (Bun), default port 3030 |
+| `mini-services/hello-mcp/` | Optional MCP JSON-RPC sidecar (Bun), default port 3030 |
 | `tests/` | `node:test` suites (`*.test.mjs`); `register.mjs` maps the `@/` alias |
 | `scripts/` | Seed and helper scripts |
 | `docs/` | Static GitHub Pages guide (`https://codesbyfebin.github.io/Hello-OS/`); does not run the app |
@@ -21,22 +21,22 @@ HELLO OS is an MIT-licensed, local-first agentic OS **prototype**. The web app i
 ```sh
 npm ci
 cp .env.example .env
-npx prisma generate
-DATABASE_URL=file:/tmp/hello-dev.db npx prisma db push   # use a disposable DB
+npm run dev            # http://localhost:3000; fresh SQLite file is initialized automatically
 npm run build
-npm run dev            # http://localhost:3000
-npm run mcp            # MCP service on :3030 (needs Bun)
+npm start
+npm run mcp            # optional MCP service on :3030 (needs Bun)
 
 # tests: Node 22+ (use `npx -y node@22` if your node is older)
 export DATABASE_URL=file:/tmp/hello-test.db && npx prisma db push --skip-generate
 for f in tests/*.test.mjs; do node --experimental-strip-types --experimental-sqlite --import ./tests/register.mjs --test "$f"; done
 ```
-CI (`.github/workflows/ci.yml`) runs exactly these steps on Node 22. Lint touched files with `npx eslint <files>`; the repo has some pre-existing lint/tsc errors, so don't add new ones. `next.config.ts` sets `typescript.ignoreBuildErrors`, so run `npx tsc --noEmit` yourself and check your files.
+CI (`.github/workflows/ci.yml`) runs exactly these steps on Node 22. Lint touched files with `npx eslint <files>`. `next.config.ts` sets `typescript.ignoreBuildErrors`, so run `npx tsc --noEmit` yourself; CI includes typechecking.
 
 ## MCP tools (real endpoints)
-- JSON-RPC 2.0 at `POST http://localhost:3030/mcp` (`initialize`, `tools/list`, `tools/call`, `resources/list`, `resources/read`). Compatibility routes: `GET /tools`, `POST /tools/call`.
+- JSON-RPC 2.0 at `POST http://localhost:3000/api/hello/mcp` (`initialize`, `tools/list`, `tools/call`, `resources/list`, `resources/read`). Compatibility routes: `GET /api/hello/mcp/tools`, `POST /api/hello/mcp/call`.
+- Optional Bun sidecar mirrors the same handler at `http://localhost:3030/mcp`; compatibility routes are `GET /tools`, `POST /tools/call`.
 - Web-app views of the same data: `GET /api/hello/mcp/tools`, `GET /api/hello/mcp/feed`, `POST /api/hello/mcp/call`, `GET /api/hello/handshake`.
-- Tools: `forge.listSymbols`, `forge.readSymbol`, `forge.typecheck`, `forge.patchSymbol`, `aml.compile`, `cortex.recall`, `cortex.recordDeadEnd`, `cortex.proposeContract`, `cortex.lockInterface`, `cortex.listContracts`, `memory.recall`, `memory.write`, `cloud.checkpoint`, `cloud.rollback`, and read-only connectors `connector.sql.query|schema|fingerprint`, `connector.github.read`, `connector.openapi.reflect`, `connector.webhook.transpile`. There are no write-capable connector tools.
+- Tools: `forge.listSymbols`, `forge.readSymbol`, `forge.typecheck`, `forge.patchSymbol`, `aml.compile`, `cortex.recall`, `cortex.recordDeadEnd`, `cortex.proposeContract`, `cortex.lockInterface`, `cortex.listContracts`, `memory.recall`, `memory.write`, `cloud.checkpoint` (metadata record only), and read-only connectors `connector.sql.query|schema|fingerprint`, `connector.github.read`, `connector.openapi.reflect`, `connector.webhook.transpile`. There are no write-capable connector tools or state-restore tool.
 - Discovery: `/.well-known/agent-card.json` (also served at `/.well-known/agent.json`) and `llms.txt`.
 
 ## How signing actually works

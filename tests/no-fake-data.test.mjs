@@ -33,7 +33,31 @@ test("dashboard has no hard-coded resident agents", () => {
 test("handshake version is read from package.json", () => {
   const src = readFileSync("mini-services/hello-mcp/index.ts", "utf8");
   assert.ok(!/version:\s*"1\.0\.0"/.test(src));
+  assert.match(readFileSync("src/lib/mcp/server.ts", "utf8"), /version:\s*pkg\.version/);
   assert.match(JSON.parse(readFileSync("package.json", "utf8")).version, /^0\.2\./);
+});
+
+test("agent hub has no hard-coded social or repository demo records", () => {
+  assert.ok(!existsSync("src/lib/hub-demo.ts"));
+  const src = readFileSync("src/app/hub/hub-client.tsx", "utf8");
+  assert.doesNotMatch(src, /demoRepos|demoPosts|demoActivity|contributionGrid/);
+  assert.match(src, /\/api\/docs\/posts/);
+  assert.match(src, /\/api\/hello\/mcp\/feed/);
+});
+
+test("governance votes use an agent selected from the live instance", () => {
+  const src = readFileSync("src/components/hello/sections/society.tsx", "utf8");
+  assert.doesNotMatch(src, /demo-voter/);
+  assert.match(src, /agentId: voter!\.id/);
+  assert.match(src, /Select an agent/);
+});
+
+test("cloud checkpoint UI and API disclose metadata-only records", () => {
+  const api = readFileSync("src/app/api/hello/cloud/checkpoints/route.ts", "utf8");
+  const mcp = readFileSync("src/lib/mcp/server.ts", "utf8");
+  assert.match(api, /status: "recorded"/);
+  assert.match(mcp, /rollbackAvailable: false/);
+  assert.doesNotMatch(mcp, /name: "cloud\.rollback"/);
 });
 
 test("duplicate lowercase agents.md / llm.txt are gone", () => {

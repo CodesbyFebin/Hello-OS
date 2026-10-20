@@ -1,32 +1,13 @@
-# Merge order for the open PRs
+# Database and schema update notes
 
-Nothing below is merged yet unless GitHub shows it as merged. Suggested order:
+The repository uses Prisma with SQLite and does not currently ship a versioned migration history. Fresh local SQLite files are initialized from `prisma/turso/init.sql` by the app startup script. Existing databases are deliberately left unchanged during app startup.
 
-1. **#4**: stop API routes returning `privateKeyHex`. Merge first.
-2. **#5**: approval gate, kill switch, audit log. Then **#13** (consensus + treasury). It is stacked on #5 and GitHub retargets it to `main` after #5 merges.
-3. **#6** (scheduler + delegation), **#11** (snapshots + failures), **#12** (cache + knowledge), **#14** (Wasm sandbox), in any order.
-4. **#10** (`/runtime`), then **#16** (wires pillars 3 and 5–10). #16 is stacked on #10.
-5. **#7** (integrations), **#8** (`/frontier`), **#9** (layers + AML preview), **#15** (`/roadmap`) are independent.
+After pulling a schema change, back up the database and review the Prisma schema diff. For a disposable local database, apply the current schema with:
 
-## Expected conflicts (trivial)
-- `package.json` scripts: each PR adds one `test:*` line. Keep them all.
-- `prisma/schema.prisma`: PRs add model blocks in different places. Keep both blocks if Git flags them.
-- `src/components/hub/hub-shell.tsx` nav: #7 and #15 each add a tab. Keep both.
-- The `/ops` shell (`src/app/ops/page.tsx`, `src/components/ops/*`, `tests/register.mjs`, `tests/alias-hooks.mjs`, `src/lib/similarity.ts`, `src/lib/operator-auth.ts`) is byte-identical across PRs and merges cleanly.
-
-## After merging
-```bash
-npx prisma db push
-npm run build
-npm run test:aml && npm run test:evolution        # Node 22 (`npx node@22`) for the node:test suites
-npm run test:secrets   # #4  (needs DATABASE_URL pointing at a scratch DB)
-npm run test:gate      # #5
-npm run test:scheduler # #6
-npm run test:snapshots # #11
-npm run test:cache     # #12
-npm run test:consensus # #13
-npm run test:sandbox   # #14
+```sh
+DATABASE_URL=file:/tmp/hello-schema-check.db npx prisma db push
 ```
-The `test:*` scripts that touch the database run `prisma db push` against `DATABASE_URL` first. Point it at a disposable file, e.g. `DATABASE_URL=file:/tmp/hello-test.db npm run test:gate`.
 
-A local, unpushed merge of #5, #6 and #11–#14 with #16 validated the schema, built, and passed all 15 new and 12 existing node tests.
+For Turso/libSQL, use the documented SQL apply procedure for an empty database or prepare an explicit migration for an existing database. Do not run destructive schema changes against a database with data you need to preserve.
+
+The optional Bun MCP sidecar and the in-process Next.js MCP handler share the same implementation. The default Compose deployment runs only the app service.

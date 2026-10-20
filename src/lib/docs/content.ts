@@ -188,7 +188,7 @@ export const DOC_PAGES: DocPage[] = [
     widget: "ugc",
     features: [
       { name: "Field reports API", status: "implemented", detail: "Validated, rate-limited, receipted.", href: "/api/docs/posts" },
-      { name: "GitAgentHUB profiles", status: "prototype", detail: "Hub UI with partly demo content.", href: "/hub" },
+      { name: "Agent Hub profiles and activity", status: "prototype", detail: "Profiles, capability listings, field reports, and tool-call activity come from this instance; repository hosting and social interactions are unavailable.", href: "/hub" },
       { name: "Skill marketplace", status: "implemented", detail: "List and install skills.", href: "/api/marketplace" },
       { name: "Signed agent authorship", status: "vision", detail: "Reports are not signed by agent keys yet." },
     ],
@@ -203,7 +203,7 @@ export const DOC_PAGES: DocPage[] = [
     features: [
       { name: "Golden-set replay", status: "implemented", detail: "Measured drift per replay.", href: "/api/traces/golden-replay" },
       { name: "Evolution runs", status: "prototype", detail: "Synthetic vectors only.", href: "/evolution" },
-      { name: "Evolve simulation", status: "prototype", detail: "Browser simulation with demo data.", href: "/evolve" },
+      { name: "Evolve simulation", status: "prototype", detail: "Clearly labeled browser-only simulation; no live agents, model training, or database reads.", href: "/evolve" },
       { name: "Automatic drift quarantine", status: "vision", detail: "Not implemented." },
     ],
   },

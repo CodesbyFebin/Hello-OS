@@ -1,6 +1,6 @@
 # Checkpoint/resume snapshots and failure library
 
-**Status: in PR #11.** Available once PR #11 merges.
+**Status:** shipped on `main` as a sealed portable-record prototype; this is not a VM or database snapshot.
 
 ## Snapshots
 | Route | Method | Purpose |

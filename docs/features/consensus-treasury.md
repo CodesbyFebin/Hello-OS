@@ -1,6 +1,6 @@
 # Consensus/debate protocol and treasury reallocation
 
-**Status: in PR #13**, stacked on PR #5. Available once PRs #5 and #13 merge.
+**Status:** shipped on `main`.
 
 ## Consensus & debate
 - `GET /api/consensus` lists debates. `POST /api/consensus {proposerId, topic, quorumWeight}` opens one.

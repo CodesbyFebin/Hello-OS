@@ -17,7 +17,7 @@ The repository contains routes for agent, mission, memory, Forge, MCP, economy, 
 
 ## MCP service
 
-The standalone local MCP service runs with `npm run mcp` and Bun, listening on port `3030` by default. The MCP tool registry is in [`mini-services/hello-mcp/index.ts`](https://github.com/CodesbyFebin/Hello-OS/blob/main/mini-services/hello-mcp/index.ts). The dashboard also exposes application API routes under `/api/hello/mcp/` for selected tool calls and receipt feeds.
+The primary MCP endpoint runs in the Next.js app at `/api/hello/mcp` without a sidecar. The optional standalone MCP service runs with `npm run mcp` and Bun, listening on port `3030` by default. The MCP tool registry is in [`mini-services/hello-mcp/index.ts`](https://github.com/CodesbyFebin/Hello-OS/blob/main/mini-services/hello-mcp/index.ts). The app also exposes compatibility API routes under `/api/hello/mcp/` for tool listing, calls, and receipt feeds.
 
 Check the tool registry and configuration before connecting clients. A compatible transport is not a guarantee of authentication, user isolation, broad MCP conformance, or safe access from the public internet.
 

@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Download the HELLO OS source code and browse verified releases and platform builds published by the project.">
+  <meta name="theme-color" content="#0a0514">
+  <title>Downloads · HELLO OS</title>
+  <style>
+    :root{color-scheme:dark;--void:#0a0514;--abyss:#0d0a1a;--panel:#120e22;--edge:#1f1a35;--ink:#f1eff8;--muted:#aaa5b8;--soul:#fbbf24;--cognition:#a78bfa;--society:#2dd4bf;--evolution:#e879f9}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 50% -10%,rgba(167,139,250,.15),transparent 48%),var(--void);color:var(--ink);font:16px/1.6 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+    a{color:inherit}.wrap{width:min(1080px,calc(100% - 36px));margin:auto}.top{height:68px;border-bottom:1px solid var(--edge);display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:11px;text-decoration:none}.mark{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--soul),var(--cognition));color:var(--void);font-weight:900}.brand b{display:block;font:700 13px ui-monospace,monospace;letter-spacing:.12em}.brand small{display:block;color:#827d91;font:10px ui-monospace,monospace}.top nav{display:flex;gap:20px;font:11px ui-monospace,monospace;color:var(--muted)}.top nav a{text-decoration:none}.top nav a:hover,.link:hover{color:var(--soul)}
+    .hero{padding:78px 0 60px;text-align:center}.eyebrow{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(45,212,191,.25);background:rgba(45,212,191,.06);border-radius:999px;padding:5px 11px;color:var(--society);font:10px ui-monospace,monospace;letter-spacing:.09em}.hero h1{margin:20px 0 12px;font-size:clamp(40px,8vw,76px);line-height:1.02;letter-spacing:-.06em}.hero h1 span{color:var(--soul)}.hero p{max-width:660px;margin:0 auto;color:var(--muted);font-size:16px}.actions{display:flex;justify-content:center;flex-wrap:wrap;gap:11px;margin-top:25px}.button{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:11px 16px;border:1px solid var(--edge);border-radius:10px;text-decoration:none;font-size:13px;font-weight:650}.button.primary{background:var(--soul);border-color:var(--soul);color:#201900}.button.secondary{background:rgba(255,255,255,.03);color:var(--ink)}.button:hover{transform:translateY(-1px)}
+    section{padding:34px 0 48px}.heading{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:18px}.label{color:var(--cognition);font:10px ui-monospace,monospace;letter-spacing:.15em;text-transform:uppercase}.heading h2{margin:5px 0 0;font-size:24px;letter-spacing:-.035em}.heading p{margin:0;color:var(--muted);font-size:12px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}.card{min-width:0;padding:18px;border:1px solid var(--edge);border-radius:14px;background:linear-gradient(145deg,rgba(18,14,34,.92),rgba(13,10,26,.96))}.card h3{margin:0 0 5px;font-size:15px}.card p{margin:0;color:var(--muted);font-size:12px}.card .tag{display:inline-block;margin-bottom:12px;padding:3px 7px;border:1px solid rgba(167,139,250,.25);border-radius:999px;color:var(--cognition);font:9px ui-monospace,monospace;text-transform:uppercase;letter-spacing:.08em}.download-list{display:grid;gap:10px}.asset{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:14px 16px;border:1px solid var(--edge);border-radius:12px;background:rgba(18,14,34,.72)}.asset strong{display:block;overflow-wrap:anywhere;font-size:13px}.asset small{display:block;color:var(--muted);font:10px ui-monospace,monospace}.asset .button{flex:none;padding:7px 11px;font-size:11px}.notice{padding:15px 17px;border:1px solid rgba(251,191,36,.22);border-radius:12px;background:rgba(251,191,36,.045);color:#dbd5c6;font-size:12px}.notice b{color:var(--soul)}.status{display:inline-flex;align-items:center;gap:7px;color:var(--society);font:10px ui-monospace,monospace}.dot{width:7px;height:7px;border-radius:50%;background:currentColor}.empty{padding:22px;border:1px dashed #37304d;border-radius:12px;color:var(--muted);text-align:center;font-size:12px}.empty a{color:var(--soul)}.code{display:block;overflow:auto;margin-top:12px;padding:14px;border:1px solid var(--edge);border-radius:10px;background:var(--void);color:#ddd6fe;font:11px/1.8 ui-monospace,monospace}.foot{margin-top:20px;padding:28px 0 40px;border-top:1px solid var(--edge);color:#827d91;font:10px ui-monospace,monospace}.foot .links{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:8px}.foot a{text-decoration:none}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    @media(max-width:720px){.top nav{display:none}.hero{padding-top:58px}.grid{grid-template-columns:1fr}.heading{display:block}.heading p{margin-top:7px}.asset{align-items:flex-start;flex-direction:column}.asset .button{align-self:flex-start}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important;scroll-behavior:auto!important}}
+  </style>
+</head>
+<body>
+  <header class="top wrap">
+    <a class="brand" href="https://github.com/CodesbyFebin/Hello-OS" aria-label="HELLO OS GitHub repository"><span class="mark" aria-hidden="true">H</span><span><b>HELLO OS</b><small>SOURCE & RELEASES</small></span></a>
+    <nav aria-label="Main navigation"><a href="#downloads">Downloads</a><a href="#releases">Releases</a><a href="https://github.com/CodesbyFebin/Hello-OS">Source</a></nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hero" aria-labelledby="page-title">
+      <span class="eyebrow"><span class="dot" aria-hidden="true"></span>OPEN SOURCE · APACHE-2.0</span>
+      <h1 id="page-title">Get <span>HELLO OS</span></h1>
+      <p>Download the source, review published release assets, and run the prototype in your own environment. Platform installers appear here only after a release asset has been published.</p>
+      <div class="actions"><a class="button primary" href="https://github.com/CodesbyFebin/Hello-OS/archive/refs/heads/main.zip">Download source ZIP <span aria-hidden="true">↓</span></a><a class="button secondary" href="https://github.com/CodesbyFebin/Hello-OS/releases">Browse GitHub Releases <span aria-hidden="true">↗</span></a></div>
+    </section>
+
+    <section id="downloads" aria-labelledby="downloads-heading">
+      <div class="heading"><div><div class="label">Choose a package</div><h2 id="downloads-heading">Downloads</h2></div><span id="release-status" class="status" role="status" aria-live="polite"><span class="dot" aria-hidden="true"></span>Checking latest release</span></div>
+      <div class="grid">
+        <article class="card"><span class="tag">Source</span><h3>Source code archive</h3><p>Latest snapshot from the repository's main branch. This is source code, not a prebuilt installer.</p><a class="button secondary" style="margin-top:14px" href="https://github.com/CodesbyFebin/Hello-OS/archive/refs/heads/main.zip">Download ZIP</a></article>
+        <article class="card"><span class="tag">Self-host</span><h3>Docker Compose files</h3><p>Use the repository setup guide to configure and run the web and MCP services locally.</p><a class="button secondary" style="margin-top:14px" href="https://github.com/CodesbyFebin/Hello-OS/blob/main/README.md#quick-start">Read setup guide</a></article>
+        <article class="card"><span class="tag">Installers</span><h3>Platform builds</h3><p>APK, Windows, Linux, and macOS installers are listed only when attached to a published release.</p><a class="button secondary" style="margin-top:14px" href="https://github.com/CodesbyFebin/Hello-OS/releases">View release assets</a></article>
+      </div>
+      <div class="notice" style="margin-top:14px"><b>Build availability:</b> HELLO OS is currently a Next.js web application. The repository does not claim downloadable APK, EXE, DEB, or native installers unless a matching asset is shown below.</div>
+    </section>
+
+    <section id="releases" aria-labelledby="releases-heading">
+      <div class="heading"><div><div class="label">Verified from GitHub Releases</div><h2 id="releases-heading">Published release assets</h2></div><p>Only attached release files are shown here.</p></div>
+      <div id="release-assets" class="download-list"><div class="empty">Loading release assets…</div></div>
+    </section>
+
+    <section aria-labelledby="quick-start-heading">
+      <div class="heading"><div><div class="label">Run locally</div><h2 id="quick-start-heading">Source setup</h2></div><p>Review the complete README before deployment.</p></div>
+      <div class="card"><p>Commands shown here are a quick pointer; the README contains the full environment and database steps.</p><code class="code">git clone https://github.com/CodesbyFebin/Hello-OS.git<br>cd Hello-OS<br>npm install<br>cp .env.example .env<br>npx prisma generate<br>npx prisma db push<br>npm run dev</code><a class="link" style="display:inline-block;margin-top:12px;font-size:12px" href="https://github.com/CodesbyFebin/Hello-OS/blob/main/README.md">Open full setup instructions ↗</a></div>
+    </section>
+  </main>
+
+  <footer class="foot"><div class="wrap"><div class="links"><a href="https://github.com/CodesbyFebin/Hello-OS">Repository</a><a href="https://github.com/CodesbyFebin/Hello-OS/releases">Releases</a><a href="https://github.com/CodesbyFebin/Hello-OS/blob/main/LICENSE">Apache-2.0 license</a><a href="https://vercel.com/">Main website</a></div><div>Download source for review. Native release assets require their own build, verification, and release workflow.</div></div></footer>
+
+  <script>
+    (() => {
+      const owner = "CodesbyFebin";
+      const repo = "Hello-OS";
+      const output = document.getElementById("release-assets");
+      const status = document.getElementById("release-status");
+      const releasesUrl = `https://github.com/${owner}/${repo}/releases`;
+      const allowedHosts = new Set(["github.com", "objects.githubusercontent.com"]);
+
+      function showMessage(message) {
+        const box = document.createElement("div");
+        box.className = "empty";
+        box.textContent = message + " ";
+        const link = document.createElement("a");
+        link.href = releasesUrl;
+        link.textContent = "Open GitHub Releases";
+        box.append(link);
+        output.replaceChildren(box);
+      }
+
+      function formatSize(size) {
+        if (!Number.isFinite(size) || size < 0) return "size unavailable";
+        if (size < 1024 * 1024) return `${Math.max(1, Math.round(size / 1024))} KB`;
+        return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+      }
+
+      fetch(`https://api.github.com/repos/${owner}/${repo}/releases/latest`, {
+        headers: { Accept: "application/vnd.github+json" },
+        cache: "no-store"
+      }).then(async (response) => {
+        if (response.status === 404) throw new Error("No published release is available yet.");
+        if (!response.ok) throw new Error("Release information is temporarily unavailable.");
+        return response.json();
+      }).then((release) => {
+        const assets = Array.isArray(release.assets) ? release.assets : [];
+        const safeAssets = assets.filter((asset) => {
+          try { return allowedHosts.has(new URL(asset.browser_download_url).hostname); }
+          catch { return false; }
+        });
+        status.lastChild.textContent = ` ${release.tag_name || "Latest release"}`;
+        if (!safeAssets.length) {
+          showMessage("The latest release has no downloadable files attached yet.");
+          return;
+        }
+        const fragment = document.createDocumentFragment();
+        safeAssets.forEach((asset) => {
+          const row = document.createElement("article");
+          row.className = "asset";
+          const meta = document.createElement("div");
+          const name = document.createElement("strong");
+          name.textContent = asset.name || "Release file";
+          const detail = document.createElement("small");
+          detail.textContent = `${formatSize(asset.size)} · ${Number(asset.download_count || 0).toLocaleString()} downloads`;
+          const link = document.createElement("a");
+          link.className = "button secondary";
+          link.href = asset.browser_download_url;
+          link.textContent = "Download";
+          link.rel = "noopener noreferrer";
+          meta.append(name, detail);
+          row.append(meta, link);
+          fragment.append(row);
+        });
+        output.replaceChildren(fragment);
+      }).catch((error) => {
+        status.lastChild.textContent = " No published assets";
+        showMessage(error instanceof Error ? error.message : "Release information is unavailable.");
+      });
+    })();
+  </script>
+</body>
+</html>

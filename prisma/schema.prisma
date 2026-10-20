@@ -760,3 +760,17 @@ model Delegation {
 
   @@index([parentId])
 }
+// Field reports submitted from /docs/gitagenthub. Text only; never rendered as HTML.
+model DocsPost {
+  id        String   @id @default(cuid())
+  author    String
+  title     String
+  body      String
+  repo      String   @default("")
+  receipt   String   // sha256 over canonical JSON of the stored fields, computed server-side
+  clientKey String   // sha256 of the client IP (raw IP is not stored); used for rate limiting
+  createdAt DateTime @default(now())
+
+  @@index([clientKey, createdAt])
+  @@index([createdAt])
+}

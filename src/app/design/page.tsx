@@ -2,7 +2,16 @@ import type { Metadata } from "next";
 import { HubShell, card, kicker } from "@/components/hub/hub-shell";
 import { TerminalBlock } from "@/components/design/terminal-block";
 import { StatusBadge, type Tone } from "@/components/design/status-badge";
-import { CONTRAST } from "@/lib/design/contrast";
+import { ALIASES, CONTRAST, TOKENS } from "@/lib/design/contrast";
+
+// Static class names so Tailwind v4 emits them (opacity variants via color-mix).
+const DOMAINS: [string, string, string, string][] = [
+  ["soul", "Identity, primary actions", "bg-soul/10 border-soul/40", "text-soul"],
+  ["cognition", "Memory, reasoning, compiler", "bg-cognition/10 border-cognition/40", "text-cognition"],
+  ["economy", "Credits (H), caps, budgets", "bg-economy/10 border-economy/40", "text-economy"],
+  ["society", "Agents, commons, consensus", "bg-society/10 border-society/40", "text-society"],
+  ["evolution", "Evolution lab, mutations", "bg-evolution/10 border-evolution/40", "text-evolution"],
+];
 
 export const metadata: Metadata = {
   title: "Design system (style reference) | HELLO OS",
@@ -94,6 +103,20 @@ export default function DesignPage() {
         <section aria-labelledby="term" className="space-y-3">
           <h2 id="term" className="text-lg font-semibold text-white">Terminal block</h2>
           <TerminalBlock title="example: compile AML (illustrative output)" code={SAMPLE} />
+        </section>
+
+        <section aria-labelledby="al" className="space-y-3">
+          <h2 id="al" className="text-lg font-semibold text-white">Domain aliases</h2>
+          <p className="text-xs text-zinc-400">Names from the contributor guide (<code className="font-mono">docs/DESIGN.md</code>). Each alias points at a canonical token above; no new colors. Opacity variants such as <code className="font-mono">bg-cognition/10</code> work.</p>
+          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-5">
+            {DOMAINS.map(([a, use, box, text]) => (
+              <div key={a} className={`rounded-lg border p-3 ${box}`}>
+                <div className={`font-mono text-sm ${text}`}>{a}</div>
+                <div className="font-mono text-[10px] text-zinc-300">→ {ALIASES[a]} · {TOKENS[ALIASES[a]]}</div>
+                <div className="mt-1 text-xs text-zinc-400">{use}</div>
+              </div>
+            ))}
+          </div>
         </section>
 
         <section aria-labelledby="ct" className={`${card} overflow-x-auto p-5`}>

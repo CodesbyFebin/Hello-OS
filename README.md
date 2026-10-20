@@ -1,4 +1,6 @@
 # HELLO OS
+<img width="2149" height="732" alt="image" src="https://github.com/user-attachments/assets/ef300479-89a3-4f0b-aeca-fde4193a1606" />
+
 
 ![HELLO OS agent universe: guild constellations, connected agents, and evolving DNA nebula](docs/assets/hello-os-hero.png)
 

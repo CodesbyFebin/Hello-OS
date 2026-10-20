@@ -322,7 +322,7 @@ export const tools: Tool[] = [
   // ── hello.cloud ──
   {
     name: "cloud.checkpoint",
-    description: "Create a Copy-on-Write checkpoint of the repo state before a risky mutation. Returns a checkpointId for rollback. (CoW is simulated at the DB level; real Firecracker CoW is simulated.)",
+    description: "SIMULATION: records a named checkpoint row before a risky mutation. No database or filesystem snapshot is taken; the snapshot refs are labels only. Copy-on-write and Firecracker are not built.",
     inputSchema: {
       type: "object",
       properties: { name: { type: "string" }, repoId: { type: "string", default: "logistics" } },
@@ -340,19 +340,19 @@ export const tools: Tool[] = [
           receiptHash: sha256(`ckpt:${args.name}:${Date.now()}`),
         },
       });
-      return { checkpointId: cp.id, name: cp.name, dbSnapshot: cp.dbSnapshotRef, fsSnapshot: cp.fsSnapshotRef, status: "active", receiptHash: cp.receiptHash };
+      return { checkpointId: cp.id, name: cp.name, dbSnapshot: cp.dbSnapshotRef, fsSnapshot: cp.fsSnapshotRef, status: "active", receiptHash: cp.receiptHash, simulated: true, note: "No data was snapshotted; refs are labels." };
     },
   },
   {
     name: "cloud.rollback",
-    description: "Roll back to a checkpoint. Restores the DB + FS snapshot atomically.",
+    description: "SIMULATION: marks a checkpoint row as rolled_back. It does not restore any database or filesystem state.",
     inputSchema: { type: "object", properties: { checkpointId: { type: "string" } }, required: ["checkpointId"] },
     handler: async (args) => {
       const cp = await db.checkpoint.update({
         where: { id: args.checkpointId },
         data: { status: "rolled_back" },
       });
-      return { checkpointId: cp.id, status: "rolled_back", restoredTo: cp.name };
+      return { checkpointId: cp.id, status: "rolled_back", restoredTo: cp.name, simulated: true, note: "Status change only; no state was restored." };
     },
   },
   // ── connectors (read-only adapters; see docs/bridges.md) ──

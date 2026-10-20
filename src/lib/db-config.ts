@@ -15,7 +15,7 @@ export function isDbConfigured(url: string | undefined = process.env.DATABASE_UR
 export const DB_NOT_CONFIGURED = {
   error: 'DB_NOT_CONFIGURED',
   message:
-    'DATABASE_URL is not set. On Vercel, set DATABASE_URL (libsql://...) and TURSO_AUTH_TOKEN; see docs/DEPLOY-VERCEL.md.',
+    'DATABASE_URL is not set. Locally: cp .env.example .env && npx prisma db push, then restart. On Vercel: set DATABASE_URL (libsql://...) and TURSO_AUTH_TOKEN; see docs/DEPLOY-VERCEL.md.',
 } as const
 
 export function dbNotConfiguredResponse(): Response {

@@ -58,3 +58,6 @@ server.log
 /db/*.db
 /db/*.db-journal
 /worklog.md
+
+# local SQLite created by `prisma db push` with the default .env
+/prisma/db/

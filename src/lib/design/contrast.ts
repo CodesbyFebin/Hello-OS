@@ -9,6 +9,15 @@ export const TOKENS: Record<string, string> = {
   "zinc-200": "#e4e4e7", "zinc-300": "#d4d4d8", "zinc-400": "#a1a1aa", "zinc-500": "#71717a", "zinc-600": "#52525b",
 };
 
+// Design-guide domain aliases -> canonical token (mirrors globals.css @theme).
+export const ALIASES: Record<string, string> = {
+  cognition: "cortex-400", "cognition-300": "cortex-300", "cognition-400": "cortex-400", "cognition-500": "cortex-500",
+  economy: "ember-400", "economy-400": "ember-400", "economy-500": "ember-500",
+  society: "agent-400", "society-300": "agent-300", "society-400": "agent-400", "society-500": "agent-500",
+  evolution: "soul-300", "evolution-300": "soul-300", "evolution-400": "soul-400", "evolution-500": "soul-500",
+  soul: "soul-400",
+};
+
 const lin = (c: number) => { const s = c / 255; return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4; };
 export function luminance(hex: string) {
   const n = parseInt(hex.slice(1), 16);

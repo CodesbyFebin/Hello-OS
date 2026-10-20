@@ -1,0 +1,13 @@
+/* Minimal styles so the shared AmlPreview (which uses dashboard class names)
+   renders inside /docs. Scoped to .docs-aml. */
+.docs-aml .panel { border: 1px solid rgba(255,255,255,.07); background: rgba(15,16,25,.8); border-radius: 12px; padding: 14px; color: #d4d4d8; }
+.docs-aml .panel-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+.docs-aml .panel-kicker { font-family: ui-monospace, monospace; font-size: 10px; letter-spacing: .18em; color: #71717a; }
+.docs-aml h2 { font-size: 14px; font-weight: 600; color: #fff; margin-top: 4px; }
+.docs-aml .panel-count { font-family: ui-monospace, monospace; font-size: 10px; color: #a1a1aa; border: 1px solid rgba(255,255,255,.1); border-radius: 4px; padding: 1px 5px; margin-left: 6px; }
+.docs-aml .panel-link { font-size: 12px; color: #43e6a5; }
+.docs-aml .button-primary { background: #43e6a5; color: #000; font-weight: 600; border-radius: 6px; padding: 5px 10px; font-size: 12px; }
+.docs-aml .button-secondary { border: 1px solid rgba(255,255,255,.12); border-radius: 6px; padding: 4px 9px; font-size: 11px; color: #d4d4d8; }
+.docs-aml .button-secondary:disabled { opacity: .45; }
+.docs-aml textarea { color: #e4e4e7; }
+@media (max-width: 760px) { .docs-aml .panel > div:nth-child(2) { grid-template-columns: minmax(0,1fr) !important; } }

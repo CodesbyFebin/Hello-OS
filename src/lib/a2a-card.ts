@@ -1,3 +1,5 @@
+import { docsCardExtension } from "@/lib/docs/discovery";
+
 export function createAgentCard(baseUrl = process.env.HELLO_PUBLIC_URL || "http://localhost:3000") {
   const url = baseUrl.replace(/\/$/, "");
   return {
@@ -24,5 +26,6 @@ export function createAgentCard(baseUrl = process.env.HELLO_PUBLIC_URL || "http:
       writeTools: [],
       note: "Discovery metadata only; it grants no authorization.",
     },
+    "x-hello-docs": docsCardExtension(url),
   };
 }

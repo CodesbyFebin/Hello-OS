@@ -41,7 +41,7 @@ const REALITY_MAP = [
     feature: "Consent Envelopes (#7)",
     icon: ShieldCheck,
     real: true,
-    detail: "Tamper-proof: changing the amount by 1◎ invalidates the signature. Wallet is NOT credited on verification failure.",
+    detail: "Tamper-proof: changing the amount by 1 H invalidates the signature. Wallet is NOT credited on verification failure.",
     proof: "signatureValid gate on credit",
   },
   {

@@ -12,3 +12,4 @@ export async function resolve(specifier, context, next) {
   }
   return next(spec, context);
 }
+

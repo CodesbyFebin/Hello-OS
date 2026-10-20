@@ -350,7 +350,7 @@ function SummonAgentDialog({ open, onOpenChange, onCreated }: { open: boolean; o
             </div>
           </div>
           <p className="text-xs text-muted-foreground">
-            On creation: a DID is minted, Soul File v1 is written, and a wallet is funded with 100 ◎ HELLO.
+            On creation: a DID is minted, Soul File v1 is written, and a wallet is funded with 100 H credits.
           </p>
         </div>
         <DialogFooter>
@@ -590,7 +590,7 @@ function WalletView({ wallet }: { wallet: { balance: number; spentToday: number;
     <div>
       <div className="mb-4 grid grid-cols-3 gap-2">
         <div className="rounded-lg border border-economy/30 bg-economy/5 p-3">
-          <div className="font-mono text-lg font-bold text-economy">{wallet.balance.toFixed(2)} ◎</div>
+          <div className="font-mono text-lg font-bold text-economy">{wallet.balance.toFixed(2)} H</div>
           <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Balance</div>
         </div>
         <div className="rounded-lg border border-border/60 p-3">
@@ -613,7 +613,7 @@ function WalletView({ wallet }: { wallet: { balance: number; spentToday: number;
           <div key={t.id} className="flex items-center justify-between rounded px-2 py-1.5 text-xs hover:bg-muted/40">
             <div>
               <span className={cn("font-mono font-semibold", t.type === "credit" ? "text-society" : "text-destructive")}>
-                {t.type === "credit" ? "+" : "−"}{t.amount.toFixed(2)} ◎
+                {t.type === "credit" ? "+" : "−"}{t.amount.toFixed(2)} H
               </span>
               <span className="ml-2 text-muted-foreground">{t.reason}</span>
             </div>

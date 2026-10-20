@@ -1,3 +1,4 @@
+import { randomBytes } from "crypto";
 // Peer Attestations — emergent reputation.
 // Agents sign attestations about each other with their Ed25519 keys.
 // Reputation is recomputed from the weighted sum of incoming attestations,
@@ -21,7 +22,7 @@ export async function GET(req: Request) {
   });
 
   // If agentId, also return the computed reputation breakdown
-  let reputationBreakdown = null;
+  let reputationBreakdown: { computed: number; byClaim: Record<string, { count: number; weight: number }>; attestationsCount: number } | null = null;
   if (agentId) {
     const all = await db.attestation.findMany({
       where: { toId: agentId, signatureValid: true },
@@ -60,7 +61,7 @@ export async function POST(req: Request) {
   if (!from.privateKeyHex) return NextResponse.json({ error: "attestor has no key material" }, { status: 400 });
 
   // Construct + sign the canonical attestation intent
-  const nonce = Math.random().toString(36).slice(2, 10);
+  const nonce = randomBytes(16).toString("hex");
   const ts = Date.now();
   const intentMessage = canonicalIntent({ claim, fromDid: from.did, nonce, note: note || "", toDid: to.did, ts, type: "attestation" });
   const signature = await signMessage(intentMessage, from.privateKeyHex);

@@ -39,6 +39,9 @@ jobs:
           npx prisma generate
           npx prisma db push --skip-generate
 
+      - name: Typecheck
+        run: npm run typecheck
+
       - name: Build
         run: npm run build
 

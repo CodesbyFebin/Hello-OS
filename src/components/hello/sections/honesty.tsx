@@ -108,10 +108,10 @@ const REALITY_MAP = [
     proof: "cortex.recall(task, maxTokens=1500) → 3 memories, 83 tokens used",
   },
   {
-    feature: "MCP Server (hello-mcp :3030)",
+    feature: "MCP Server (in-process, /api/hello/mcp)",
     icon: ExternalLink,
     real: true,
-    detail: "Real HTTP server on port 3030. 11 tools, MCP-shaped JSON-RPC 2.0 (tools/list, tools/call). Any agent can connect. Every call logged with SHA-256 receipt.",
+    detail: "Runs in-process in Next at /api/hello/mcp (optional Bun sidecar on 3030). Tools, MCP-shaped JSON-RPC 2.0 (tools/list, tools/call). Any agent can connect. Every call logged with SHA-256 receipt.",
     proof: "GET /tools → 11 tools; POST /tools/call → real structured results",
   },
   {

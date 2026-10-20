@@ -95,7 +95,7 @@ export function HelloDashboard() {
     try {
       const response = await fetch("/api/hello/mcp/call", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: "forge.typecheck", arguments: {} }) });
       const payload = await response.json(); setToolResult(JSON.stringify(payload, null, 2)); setToast("Forge typecheck returned an audited result."); refresh();
-    } catch { setToast("MCP service is offline. Start hello-mcp on port 3030."); }
+    } catch { setToast("MCP tool call failed. Check the server log."); }
     finally { setBusy(false); }
   }
 

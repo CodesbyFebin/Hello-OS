@@ -4,9 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3000 2>&1 | tee dev.log",
-    "build": "next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/",
+    "build": "next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/ && cp -r sample-repo .next/standalone/",
     "start": "NODE_ENV=production node .next/standalone/server.js",
     "mcp": "bun --hot mini-services/hello-mcp/index.ts",
+    "typecheck": "tsc --noEmit",
+    "test:mcp": "prisma db push --skip-generate && node --experimental-strip-types --import ./tests/register.mjs --test tests/mcp-inprocess.test.mjs",
     "lint": "eslint .",
     "db:push": "prisma db push",
     "db:generate": "prisma generate",

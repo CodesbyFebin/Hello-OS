@@ -49,7 +49,7 @@ export function HelloHero() {
             <span className="relative inline-flex h-2 w-2 rounded-full bg-society" />
           </span>
           <span className="font-mono text-soul">hello://</span>
-          <span className="text-muted-foreground">{hs ? `${hs.toolCount} tools live · MCP server on :3030` : "connecting to substrate…"}</span>
+          <span className="text-muted-foreground">{hs ? `${hs.toolCount} tools live · MCP server in-process` : "connecting to substrate…"}</span>
         </motion.div>
 
         <motion.h1
@@ -161,7 +161,7 @@ export function HelloHero() {
                 <Activity className="h-4 w-4 text-cognition" />
                 <span className="text-sm font-semibold">Live MCP Tool Calls</span>
               </div>
-              <span className="font-mono text-[10px] text-muted-foreground">POST /tools/call :3030</span>
+              <span className="font-mono text-[10px] text-muted-foreground">POST /api/hello/mcp/call</span>
             </div>
             <div className="max-h-80 divide-y divide-border/40 overflow-y-auto scroll-thin">
               {!feed ? (

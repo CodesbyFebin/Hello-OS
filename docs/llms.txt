@@ -4,6 +4,9 @@
 
 ## Canonical sources
 - Repository: https://github.com/CodesbyFebin/Hello-OS
+- Wiki-ready page bundle: https://github.com/CodesbyFebin/Hello-OS/tree/main/docs/wiki
+- Community contribution guide: https://github.com/CodesbyFebin/Hello-OS/blob/main/docs/wiki/Community-and-UGC.md
+- GitHub Pages machine-readable guide: https://codesbyfebin.github.io/Hello-OS/agents.md
 - GitHub Pages project guide: https://codesbyfebin.github.io/Hello-OS/
 - Agent guide: https://codesbyfebin.github.io/Hello-OS/agent-guide/
 - AML Studio: https://codesbyfebin.github.io/Hello-OS/aml-studio/

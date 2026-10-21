@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { OperatorTokenForm } from "@/components/ops/operator-token-form";
 import { LayersCard } from "@/components/hello/layers-card";
 import { AmlPreview } from "@/components/hello/aml-preview";
 import { NetworkBackground } from "@/components/hello/network-background";
@@ -202,6 +203,7 @@ export function HelloDashboard() {
           <div className="top-actions">
             {snap?.seeded && <span className="demo-pill" title={`Records created by scripts/seed.ts${snap.seededAt ? ` at ${new Date(snap.seededAt).toLocaleString()}` : ""}`}>DEMO DATA</span>}
             <div className={`connection-pill ${mode === "stream" || mode === "poll" ? "connected" : "offline"}`} title={updatedAt ? `Last update ${new Date(updatedAt).toLocaleTimeString()}` : ""}><span className="connection-led"/>{syncLabel}</div>
+            <div className="w-72"><OperatorTokenForm compact /></div>
             <button className="icon-action" aria-label="Refresh now" onClick={() => { void refresh(); void check(); }}><RefreshCw size={16}/></button>
           </div>
         </header>

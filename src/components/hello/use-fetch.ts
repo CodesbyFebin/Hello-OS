@@ -1,6 +1,12 @@
 "use client";
 
 import * as React from "react";
+import { describeAuthError, operatorHeaders, TOKEN_EVENT } from "@/lib/operator-client";
+
+async function fail(r: Response): Promise<never> {
+  const e = await r.json().catch(() => ({}));
+  throw new Error(describeAuthError(r.status, e) ?? e.error ?? `HTTP ${r.status}`);
+}
 
 export function useFetch<T>(url: string | null, opts?: { refresh?: number }) {
   const [data, setData] = React.useState<T | null>(null);
@@ -10,9 +16,9 @@ export function useFetch<T>(url: string | null, opts?: { refresh?: number }) {
   const refresh = React.useCallback(() => {
     if (!url) return;
     setLoading(true);
-    fetch(url)
+    fetch(url, { headers: operatorHeaders() })
       .then(async (r) => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        if (!r.ok) return fail(r);
         return r.json();
       })
       .then((d) => {
@@ -25,10 +31,13 @@ export function useFetch<T>(url: string | null, opts?: { refresh?: number }) {
 
   React.useEffect(() => {
     refresh();
+    // Re-fetch when the operator token changes (redacted vs full views).
+    window.addEventListener(TOKEN_EVENT, refresh);
     if (opts?.refresh) {
       const t = setInterval(refresh, opts.refresh);
-      return () => clearInterval(t);
+      return () => { clearInterval(t); window.removeEventListener(TOKEN_EVENT, refresh); };
     }
+    return () => window.removeEventListener(TOKEN_EVENT, refresh);
   }, [refresh, opts?.refresh]);
 
   return { data, loading, error, refresh, setData };
@@ -37,34 +46,25 @@ export function useFetch<T>(url: string | null, opts?: { refresh?: number }) {
 export async function apiPost(url: string, body: any) {
   const r = await fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...operatorHeaders() },
     body: JSON.stringify(body),
   });
-  if (!r.ok) {
-    const e = await r.json().catch(() => ({}));
-    throw new Error(e.error || `HTTP ${r.status}`);
-  }
+  if (!r.ok) return fail(r);
   return r.json();
 }
 
 export async function apiPatch(url: string, body: any) {
   const r = await fetch(url, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...operatorHeaders() },
     body: JSON.stringify(body),
   });
-  if (!r.ok) {
-    const e = await r.json().catch(() => ({}));
-    throw new Error(e.error || `HTTP ${r.status}`);
-  }
+  if (!r.ok) return fail(r);
   return r.json();
 }
 
 export async function apiDelete(url: string) {
-  const r = await fetch(url, { method: "DELETE" });
-  if (!r.ok) {
-    const e = await r.json().catch(() => ({}));
-    throw new Error(e.error || `HTTP ${r.status}`);
-  }
+  const r = await fetch(url, { method: "DELETE", headers: operatorHeaders() });
+  if (!r.ok) return fail(r);
   return r.json();
 }

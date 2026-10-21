@@ -5,7 +5,9 @@ import { audit, getControl, operatorCheck } from "@/lib/gate";
 
 export async function GET(req: Request) {
   const control = await getControl();
-  return NextResponse.json({ control, devMode: operatorCheck(req).devMode });
+  const a = operatorCheck(req);
+  // Lets the dashboard show a truthful state: dev mode, authorized, token missing/wrong (401) or not configured (503).
+  return NextResponse.json({ control, devMode: a.devMode, auth: a.ok ? { authorized: true, devMode: a.devMode } : { authorized: false, status: a.status, code: a.code, message: a.error } });
 }
 
 // Operator-only: toggle the kill switch or change the approval threshold.

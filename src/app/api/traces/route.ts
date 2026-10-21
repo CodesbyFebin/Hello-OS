@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { operatorAuth } from "@/lib/operator-auth";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -19,5 +20,7 @@ export async function GET(req: Request) {
     take: 80,
     include: { agent: { select: { id: true, name: true, did: true, avatar: true, guardianTier: true } } },
   });
-  return NextResponse.json({ traces });
+  // Public view hides titles (they can describe private tasks); operator / local dev sees everything.
+  const full = operatorAuth(req).ok;
+  return NextResponse.json({ traces: full ? traces : traces.map((t) => ({ ...t, title: "[redacted]" })), redacted: !full });
 }

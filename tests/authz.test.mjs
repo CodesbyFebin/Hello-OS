@@ -48,9 +48,9 @@ test("kill switch route: needs operator; production without token is 503; kill s
     assert.equal((await POST(json("/api/operator", "POST", { approvalThreshold: -1 }, op))).status, 400);
     const on = await POST(json("/api/operator", "POST", { killSwitch: true }, op));
     assert.equal(on.status, 200); assert.equal((await on.json()).control.killSwitch, true);
-    assert.equal((await spend(json("/x", "POST", { amount: 1 }), ctx(agent.id))).status, 423, "kill switch blocks");
+    assert.equal((await spend(json("/x", "POST", { amount: 1 }, op), ctx(agent.id))).status, 423, "kill switch blocks");
     await POST(json("/api/operator", "POST", { killSwitch: false, approvalThreshold: 25 }, op));
-    assert.equal((await spend(json("/x", "POST", { amount: 1 }), ctx(agent.id))).status, 200);
+    assert.equal((await spend(json("/x", "POST", { amount: 1 }, op), ctx(agent.id))).status, 200);
     setEnv({ NODE_ENV: "production" });
     assert.equal((await POST(json("/api/operator", "POST", { killSwitch: true }))).status, 503);
   } finally { await db.agent.delete({ where: { id: agent.id } }); }
@@ -79,15 +79,15 @@ test("wallet caps: changing caps/funding needs operator, bounds enforced, spend 
     assert.equal((await w.POST(json("/x", "POST", { amount: -5 }, op), ctx(agent.id))).status, 400);
     assert.equal((await w.POST(json("/x", "POST", { amount: 5 }, op), ctx("missing"))).status, 404);
     assert.equal((await w.PATCH(json("/x", "PATCH", { dailyCap: 5 }, op), ctx(agent.id))).status, 200);
-    assert.notEqual((await spend(json("/x", "POST", { amount: 6 }), ctx(agent.id))).status, 200, "over daily cap");
+    assert.notEqual((await spend(json("/x", "POST", { amount: 6 }, op), ctx(agent.id))).status, 200, "over daily cap");
     // A cap breach trips the circuit breaker; only the operator can close it.
-    assert.equal((await spend(json("/x", "POST", { amount: 4 }), ctx(agent.id))).status, 423);
+    assert.equal((await spend(json("/x", "POST", { amount: 4 }, op), ctx(agent.id))).status, 423);
     assert.equal((await w.PATCH(json("/x", "PATCH", { circuitOpen: false }), ctx(agent.id))).status, 401);
     assert.equal((await w.PATCH(json("/x", "PATCH", { circuitOpen: false }, op), ctx(agent.id))).status, 200);
-    assert.equal((await spend(json("/x", "POST", { amount: 4 }), ctx(agent.id))).status, 200);
-    assert.equal((await spend(json("/x", "POST", { amount: 1e12 }), ctx(agent.id))).status, 400, "bound");
+    assert.equal((await spend(json("/x", "POST", { amount: 4 }, op), ctx(agent.id))).status, 200);
+    assert.equal((await spend(json("/x", "POST", { amount: 1e12 }, op), ctx(agent.id))).status, 400, "bound");
     await w.PATCH(json("/x", "PATCH", { dailyCap: 80 }, op), ctx(agent.id));
-    assert.equal((await spend(json("/x", "POST", { amount: 30 }), ctx(agent.id))).status, 202, "above threshold → approval");
+    assert.equal((await spend(json("/x", "POST", { amount: 30 }, op), ctx(agent.id))).status, 202, "above threshold → approval");
     assert.ok(await db.auditLog.findFirst({ where: { action: "wallet.update", target: agent.id } }));
   } finally { await db.actionApproval.deleteMany({ where: { agentId: agent.id } }).catch(() => {}); await db.agent.delete({ where: { id: agent.id } }); }
 });
@@ -104,7 +104,7 @@ test("role-scoped knowledge: writes need operator; search filters by role", asyn
     const doc = await (await k.POST(json("/x", "POST", { title: "zebra runbook", body: "zebra rotation procedure for incident keys", allowedRoles: ["security"] }, op))).json();
     assert.ok(doc.id);
     assert.equal((await roles.POST(json("/x", "POST", { agentId: a.id, role: "security" }, op))).status, 200);
-    const ids = async (agentId) => { const r = await (await search(new Request(`http://x/api/knowledge/search?agentId=${agentId}&q=zebra+rotation`))).json(); return JSON.stringify(r); };
+    const ids = async (agentId) => { const r = await (await search(new Request(`http://x/api/knowledge/search?agentId=${agentId}&q=zebra+rotation`, { headers: op }))).json(); return JSON.stringify(r); };
     assert.ok((await ids(a.id)).includes(doc.id), "security role sees it");
     assert.ok(!(await ids(b.id)).includes(doc.id), "no role, no result");
     await db.knowledgeDoc.delete({ where: { id: doc.id } });

@@ -118,6 +118,13 @@ export const ROUTE_MANIFEST = {
       ]
     },
     {
+      "path": "/api/agents/[id]/auth-key",
+      "methods": [
+        "POST",
+        "DELETE"
+      ]
+    },
+    {
       "path": "/api/agents/[id]/export",
       "methods": [
         "GET"

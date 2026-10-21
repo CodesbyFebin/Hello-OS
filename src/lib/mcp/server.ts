@@ -20,6 +20,7 @@ import { createHash } from "crypto";
 import pkg from "../../../package.json" with { type: "json" };
 import { connectorTools } from "@/lib/mcp/connectors";
 import { operatorAuth } from "@/lib/operator-auth";
+import { clientKey, idempotent, rateLimit } from "@/lib/guard";
 
 /** Tools that write state or read other agents' private data. They need operator
  *  auth (src/lib/operator-auth.ts): open in local dev mode, closed in production
@@ -51,12 +52,12 @@ export function checkArgs(tool: { inputSchema: Tool["inputSchema"] }, args: unkn
 /** Public view of a logged call: metadata only, never arguments or results. */
 const FEED_SELECT = { id: true, agentDid: true, toolName: true, isError: true, latencyMs: true, receiptHash: true, createdAt: true } as const;
 
-async function readBody(req: Request): Promise<{ ok: true; body: any } | { ok: false; status: number; error: string }> {
+async function readBody(req: Request): Promise<{ ok: true; body: any; text: string } | { ok: false; status: number; error: string }> {
   const len = Number(req.headers.get("content-length") || 0);
   if (len > MAX_BODY_BYTES) return { ok: false, status: 413, error: "request body too large" };
   const text = await req.text().catch(() => "");
   if (text.length > MAX_BODY_BYTES) return { ok: false, status: 413, error: "request body too large" };
-  try { return { ok: true, body: JSON.parse(text) }; } catch { return { ok: false, status: 400, error: "body must be valid JSON" }; }
+  try { return { ok: true, body: JSON.parse(text), text }; } catch { return { ok: false, status: 400, error: "body must be valid JSON" }; }
 }
 
 export const MCP_PROTOCOL_VERSION = "2026-07-28";
@@ -496,9 +497,12 @@ export async function handleMcpRequest(req: Request, pathname: string): Promise<
         }
         const argErr = checkArgs(tool, params.arguments);
         if (argErr) return Response.json({ jsonrpc: "2.0", id: body.id, error: { code: -32602, message: argErr } }, { status: 400, headers: cors });
+        const rl = await rateLimit("mcp", clientKey(req), 120);
+        if (!rl.ok) return Response.json({ jsonrpc: "2.0", id: body.id, error: { code: -32029, message: "rate limited", data: await rl.response.json() } }, { status: 429, headers: { ...cors, "retry-after": rl.response.headers.get("retry-after") ?? "60" } });
         const args = params.arguments || {};
         // agentDid is self-asserted by the caller; it labels the log, it does not authenticate.
         const agentDid = typeof (params._meta?.agentDid ?? args.agentDid) === "string" ? String(params._meta?.agentDid ?? args.agentDid).slice(0, 200) : undefined;
+        return idempotent(req, `mcp:${clientKey(req)}`, parsed.text, async () => {
         const started = Date.now();
         try {
           const result = await tool.handler({ ...args, agentDid });
@@ -510,6 +514,7 @@ export async function handleMcpRequest(req: Request, pathname: string): Promise<
           await logToolCall(tool.name, args, { error: message }, Date.now() - started, true, agentDid);
           return rpc({ content: [{ type: "text", text: `Error: ${message}` }], isError: true });
         }
+        });
       }
       if (body.method === "resources/list") return rpc({ resources: [
         { uri: "hello://handshake", name: "HELLO handshake", mimeType: "application/json" },
@@ -552,8 +557,11 @@ export async function handleMcpRequest(req: Request, pathname: string): Promise<
       }
       const argErr = checkArgs(tool, body.arguments);
       if (argErr) return Response.json({ error: argErr }, { status: 400, headers: cors });
+      const rl = await rateLimit("mcp", clientKey(req), 120);
+      if (!rl.ok) return rl.response;
       const args = body.arguments || {};
       const agentDid = typeof body.agentDid === "string" ? body.agentDid.slice(0, 200) : undefined;
+      return idempotent(req, `mcp:${clientKey(req)}`, parsed.text, async () => {
       const t0 = Date.now();
       try {
         const result = await tool.handler({ ...args, agentDid });
@@ -578,6 +586,7 @@ export async function handleMcpRequest(req: Request, pathname: string): Promise<
           latencyMs,
         }, { status: 500, headers: cors });
       }
+      });
     }
 
     // GET /feed → recent tool calls (for the observer HUD)

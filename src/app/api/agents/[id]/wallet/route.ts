@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { operatorAuth, operatorDenied } from "@/lib/operator-auth";
+import { guardWrite, idempotent } from "@/lib/guard";
 
 const MAX_CREDITS = 1_000_000; // H; input bound, not a business limit
 
@@ -39,11 +40,11 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
 // Operator-only top up (human funding) — Observation Deck funding action
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const op = operatorAuth(req); if (!op.ok) return operatorDenied(op);
+  const g = await guardWrite(req, { bucket: "operator", operatorOnly: true });
+  if (!g.ok) return g.response;
   const { id } = await params;
-  const body = await req.json().catch(() => null);
-  if (!body || typeof body !== "object") return NextResponse.json({ error: "body must be a JSON object" }, { status: 400 });
-  const { amount, reason } = body as { amount?: unknown; reason?: unknown };
+  return idempotent(req, `topup:${id}`, g.text, async () => {
+  const { amount, reason } = g.json as { amount?: unknown; reason?: unknown };
   const amt = Number(amount);
   if (!Number.isFinite(amt) || amt <= 0 || amt > MAX_CREDITS) return NextResponse.json({ error: `amount must be >0 and <= ${MAX_CREDITS} H` }, { status: 400 });
   if (!(await db.wallet.findUnique({ where: { agentId: id } }))) return NextResponse.json({ error: "no wallet" }, { status: 404 });
@@ -53,4 +54,5 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     return updated;
   });
   return NextResponse.json({ wallet });
+  });
 }

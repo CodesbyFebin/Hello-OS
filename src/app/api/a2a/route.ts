@@ -2,6 +2,7 @@ import { createHash, randomUUID } from "crypto";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { signMessage, verifySignature } from "@/lib/crypto";
+import { authenticate, clientKey, idempotent, principalScope, rateLimit, readBody } from "@/lib/guard";
 
 const digest = (value: string) => createHash("sha256").update(value).digest("hex");
 const error = (id: unknown, code: number, message: string) => NextResponse.json({ jsonrpc: "2.0", id: id ?? null, error: { code, message } });
@@ -63,14 +64,46 @@ export async function GET(req: Request) {
   return NextResponse.json({ tasks, messages });
 }
 
+/** Which agent must sign a write: the sender for sends/cancels, the receiver for updates. Reads need none. */
+async function actingAgents(body: any): Promise<string[] | null> {
+  if (!body.jsonrpc) return [String(body.senderId ?? "")];
+  const p = body.params || {};
+  if (body.method === "message/send") return [String(p.senderId || p.metadata?.senderId || "")];
+  if (body.method === "tasks/cancel" || body.method === "tasks/update") {
+    const t = await db.a2ATask.findUnique({ where: { taskId: String(p.id || "") }, select: { senderId: true, receiverId: true } });
+    if (!t) return null; // handled below as "task not found"
+    return body.method === "tasks/cancel" ? [t.senderId] : [t.receiverId];
+  }
+  return null;
+}
+
 export async function POST(req: Request) {
-  const body = await req.json().catch(() => null);
-  if (!body || typeof body !== "object") return error(null, -32700, "invalid JSON request");
+  const read = await readBody(req, 256 * 1024);
+  if (!read.ok) return read.response;
+  const body = read.json;
+  const writes = await actingAgents(body);
+  let scope = "public";
+  if (writes) {
+    const auth = await authenticate(req, read.text, writes);
+    if (!auth.ok) return auth.response;
+    scope = principalScope(auth.principal);
+    const rl = await rateLimit("a2a", clientKey(req, auth.principal), 120);
+    if (!rl.ok) return rl.response;
+    return idempotent(req, `a2a:${scope}`, read.text, () => handle(req, body));
+  }
+  const rl = await rateLimit("a2a_read", clientKey(req), 600);
+  if (!rl.ok) return rl.response;
+  return handle(req, body);
+}
+
+async function handle(req: Request, body: any): Promise<Response> {
 
   // Preserve the small legacy REST envelope for existing HELLO clients.
   if (!body.jsonrpc) {
     const { senderId, receiverId, intent, payload, truthTier } = body;
     if (!senderId || !receiverId) return NextResponse.json({ error: "sender+receiver required" }, { status: 400 });
+    if (intent !== undefined && (typeof intent !== "string" || intent.length > 64)) return NextResponse.json({ error: "intent must be at most 64 characters" }, { status: 400 });
+    if (truthTier !== undefined && !["asserted", "inferred"].includes(truthTier)) return NextResponse.json({ error: "truthTier must be asserted or inferred (verified is set only for signed A2A tasks)" }, { status: 400 });
     const message = await db.a2AMessage.create({
       data: { senderId, receiverId, intent: intent || "query", payload: typeof payload === "string" ? payload : JSON.stringify(payload || {}), truthTier: truthTier || "asserted", signed: false, traceId: `trc_${randomUUID()}` },
       include: { sender: { select: { name: true, avatar: true } }, receiver: { select: { name: true, avatar: true } } },

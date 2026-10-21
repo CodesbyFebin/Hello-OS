@@ -11,7 +11,8 @@ Commit tested: `main` @ `972b3e9`, fresh `git clone` into `/tmp/qs`, Node v22.23
 | `npm run dev` | Turbopack crashed with "OS file watch limit reached". That's a limit of this box, not of the repo. `WATCHPACK_POLLING=true npx next dev --webpack` worked. Smoke results below. Raise `fs.inotify.max_user_watches` if you hit this. |
 | `next dev` side effect | Next 16 appended a generated block to the repo's `AGENTS.md`. **Fixed: `agentRules: false` in `next.config.ts`.** |
 | `npm run build` | ok (now with `typescript.ignoreBuildErrors: false`) |
-| `npm start` (standalone) with the default relative `DATABASE_URL` | **500 "Unable to open the database file"**: the standalone server runs from `.next/standalone`, where `./db/custom.db` doesn't exist. Workaround: use an absolute path, e.g. `DATABASE_URL=file:$PWD/prisma/db/custom.db npm start`. Not fixed in code (see gaps). |
+| `npm start` (standalone) with the default relative `DATABASE_URL` | Originally **500 "Unable to open the database file"**, because the standalone server runs from `.next/standalone`. **Fixed in `fix/db-url-resolution`:** `src/lib/db.ts` now resolves relative `file:` URLs against `<project root>/prisma`, after removing a trailing `.next/standalone` from the cwd. Re-checked on 2026-10-21 with `DATABASE_URL=file:./db/e2e.db PORT=3999 NODE_ENV=production node .next/standalone/server.js`: `GET /api/agents` → 200. |
+| Same, but the DB file is missing (no `prisma db push` yet) | 503 `{"error":"DB_UNAVAILABLE","message":"The database file /…/prisma/db/missing.db does not exist. From the project root run: npx prisma db push …"}`. DB-free routes (e.g. `POST /api/aml/validate`) still answer (400 for an empty body). |
 | Docker Compose | **Not run.** `docker` exists but the box user can't reach `/var/run/docker.sock` ("permission denied"), and the `docker compose` plugin isn't installed. |
 
 Smoke against `next dev` (port 3112):

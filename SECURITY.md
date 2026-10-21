@@ -20,3 +20,7 @@ Only the `main` branch is supported. There are no maintained release branches ye
 - Wallets hold prototype credits only; no real money is moved.
 
 Reports showing a way around these documented boundaries (for example, an API that returns `privateKeyHex`, or a gated action that skips approval when a token is set) are in scope.
+
+## Database availability errors
+
+When the SQLite file named by `DATABASE_URL` is missing or empty, `/api` routes return 503 `DB_UNAVAILABLE` with the resolved path and the fix (`npx prisma db push`). That path is a server filesystem path. A schema mismatch still gives a generic 500, and the Prisma message is written only to the server log.

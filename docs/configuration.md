@@ -6,7 +6,7 @@ Every variable the code reads (`rg "process.env" src mini-services scripts`). Ne
 
 | Variable | Default | Notes |
 | --- | --- | --- |
-| `DATABASE_URL` | `file:./db/custom.db` (from `.env.example`) | `file:` = local SQLite. Relative paths resolve from `prisma/`, so the default file is `prisma/db/custom.db`. `libsql://…` = Turso. **Unset = every DB-backed `/api` route returns `503 DB_NOT_CONFIGURED`**, with the fix in the message. |
+| `DATABASE_URL` | `file:./db/custom.db` (from `.env.example`) | `file:` = local SQLite. Relative paths resolve from `<project root>/prisma/` (in code too, so `npm start` from `.next/standalone` finds the same file), so the default file is `prisma/db/custom.db`. A missing or empty file: `503 DB_UNAVAILABLE`. `libsql://…` = Turso. **Unset = every DB-backed `/api` route returns `503 DB_NOT_CONFIGURED`**, with the fix in the message. |
 | `TURSO_AUTH_TOKEN` | unset | Required with a `libsql://` URL. |
 | `HELLO_DB_ADAPTER` | unset | `libsql` forces the libSQL adapter for a `file:` URL (used by tests). |
 | `HELLO_PUBLIC_URL` | `http://localhost:3000` | Base URL for links, the agent card and the MCP handshake. |

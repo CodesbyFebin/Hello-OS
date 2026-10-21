@@ -64,3 +64,7 @@ New tables: apply `prisma/turso/2026-10-21-eval.sql` to an existing Turso databa
 - One small suite. Graders are string/regex/JSON checks, not semantic judges.
 - No UI page yet; use the API or CLI.
 - Live latency depends on the network and provider and is not a benchmark.
+
+## Optional: Google Stax format
+
+`scripts/stax.mjs` can export suites to a Stax dataset CSV and read Stax chat exports as advisory annotations. It is off by default, makes no network calls, and never changes HELLO results. See [INTEGRATIONS-EVAL.md](INTEGRATIONS-EVAL.md#google-stax).

@@ -28,7 +28,7 @@
     "routes:manifest": "node scripts/gen-route-manifest.mjs",
     "test:design": "node --experimental-strip-types --test tests/design.test.mjs",
     "typecheck": "tsc --noEmit",
-    "test": "npm run test:aml && npm run test:evolution && npm run test:secrets && npm run test:gate && npm run test:scheduler && npm run test:connectors && npm run test:snapshots && npm run test:cache && npm run test:sandbox && npm run test:roadmap && npm run test:consensus && npm run test:truth && npm run test:ai && npm run test:turso && npm run test:eval",
+    "test": "npm run test:aml && npm run test:evolution && npm run test:secrets && npm run test:gate && npm run test:scheduler && npm run test:connectors && npm run test:snapshots && npm run test:cache && npm run test:sandbox && npm run test:roadmap && npm run test:consensus && npm run test:truth && npm run test:ai && npm run test:turso && npm run test:eval && npm run test:stax",
     "test:truth": "node --test tests/no-fake-data.test.mjs",
     "test:ai": "prisma db push --skip-generate && node --experimental-strip-types --import ./tests/register.mjs --test tests/ai-provider.test.mjs",
     "test:mcp": "prisma db push --skip-generate && node --experimental-strip-types --import ./tests/register.mjs --test tests/mcp-inprocess.test.mjs",
@@ -37,6 +37,7 @@
     "db:turso:apply": "node scripts/turso-apply.mjs",
     "test:turso": "node --experimental-strip-types --import ./tests/register.mjs --test tests/turso-adapter.test.mjs",
     "test:eval": "prisma db push --skip-generate && node --experimental-strip-types --import ./tests/register.mjs --test tests/eval-loop.test.mjs",
+    "test:stax": "node --experimental-strip-types --import ./tests/register.mjs --test tests/stax-adapter.test.mjs",
     "eval:offline": "node --experimental-strip-types --import ./tests/register.mjs scripts/eval-run.mjs"
   },
   "dependencies": {

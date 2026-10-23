@@ -1,6 +1,6 @@
 # Approval gate, kill switch and audit log
 
-**Status: in PR #5.** Available once PR #5 merges.
+**Status:** shipped on `main`.
 
 | Route | Method | Purpose |
 | --- | --- | --- |

@@ -51,7 +51,10 @@ export function SocietySection() {
   const { data: missionsData } = useFetch<{ missions: Mission[] }>("/api/missions", { refresh: 20000 });
   const { data: obsData, loading: obsLoading } = useFetch<{ observations: Observation[] }>("/api/observations", { refresh: 15000 });
   const { data: propData } = useFetch<{ proposals: Proposal[] }>("/api/governance");
+  const { data: agentsData } = useFetch<{ agents: { id: string; name: string }[] }>("/api/agents?limit=100");
   const [tick, setTick] = React.useState(0);
+  const [voterId, setVoterId] = React.useState("");
+  const voter = agentsData?.agents.find((agent) => agent.id === voterId);
 
   return (
     <SectionShell id="society" className="relative">
@@ -187,6 +190,14 @@ export function SocietySection() {
 
         {/* Governance */}
         <TabsContent value="governance">
+          <Card className="mb-4 flex flex-wrap items-center gap-3 border-border/60 bg-card/50 p-3">
+            <label htmlFor="governance-voter" className="text-xs text-muted-foreground">Cast vote as a stored agent</label>
+            <Select value={voterId} onValueChange={setVoterId}>
+              <SelectTrigger id="governance-voter" className="h-8 w-64 text-xs"><SelectValue placeholder="Select an agent" /></SelectTrigger>
+              <SelectContent>{agentsData?.agents.map((agent) => <SelectItem key={agent.id} value={agent.id}>{agent.name}</SelectItem>)}</SelectContent>
+            </Select>
+            {!agentsData?.agents.length && <span className="text-xs text-muted-foreground">Create an agent before voting. No sample voter is used.</span>}
+          </Card>
           <div className="grid gap-3 lg:grid-cols-2">
             {propData?.proposals.map((p) => {
               const isConstitutional = p.voteType === "constitutional";
@@ -225,13 +236,13 @@ export function SocietySection() {
                     </div>
                   </div>
                   <div className="mt-3 flex gap-2">
-                    <Button size="sm" variant="outline" className="h-7 flex-1 text-xs text-society" onClick={async () => {
-                      try { await apiPatch("/api/governance", { proposalId: p.id, agentId: "demo-voter", support: true }); toast.success("Vote cast: FOR", { description: isConstitutional ? "quadratic weight applied" : "token-weight applied" }); } catch (e: any) { toast.error(e.message); }
+                    <Button size="sm" variant="outline" disabled={!voter} className="h-7 flex-1 text-xs text-society" onClick={async () => {
+                      try { await apiPatch("/api/governance", { proposalId: p.id, agentId: voter!.id, support: true }); toast.success(`Vote cast as ${voter!.name}: FOR`, { description: isConstitutional ? "quadratic weight applied" : "token-weight applied" }); } catch (e: any) { toast.error(e.message); }
                     }}>
                       <ThumbsUp className="mr-1 h-3 w-3" /> For
                     </Button>
-                    <Button size="sm" variant="outline" className="h-7 flex-1 text-xs text-destructive" onClick={async () => {
-                      try { await apiPatch("/api/governance", { proposalId: p.id, agentId: "demo-voter", support: false }); toast.success("Vote cast: AGAINST"); } catch (e: any) { toast.error(e.message); }
+                    <Button size="sm" variant="outline" disabled={!voter} className="h-7 flex-1 text-xs text-destructive" onClick={async () => {
+                      try { await apiPatch("/api/governance", { proposalId: p.id, agentId: voter!.id, support: false }); toast.success(`Vote cast as ${voter!.name}: AGAINST`); } catch (e: any) { toast.error(e.message); }
                     }}>
                       <ThumbsDown className="mr-1 h-3 w-3" /> Against
                     </Button>

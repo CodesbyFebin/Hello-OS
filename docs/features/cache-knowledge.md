@@ -1,6 +1,6 @@
 # Semantic cache and permission-scoped knowledge index
 
-**Status: in PR #12.** Available once PR #12 merges.
+**Status:** shipped on `main`.
 
 ## Semantic cache
 | Route | Method | Purpose |

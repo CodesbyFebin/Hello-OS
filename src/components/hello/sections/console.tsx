@@ -149,7 +149,7 @@ export function ConsoleSection() {
         {[
           { label: "Typecheck the repo", tool: "forge.typecheck", desc: "Real TS2322 diagnostics" },
           { label: "Recall scheduler memory", tool: "cortex.recall", desc: "Budgeted retrieval, 1500 tokens" },
-          { label: "Create a checkpoint", tool: "cloud.checkpoint", desc: "CoW snapshot + receipt" },
+          { label: "Record checkpoint request", tool: "cloud.checkpoint", desc: "Audit record + receipt; no state capture" },
         ].map((p) => (
           <Button key={p.label} variant="outline" className="h-auto flex-col items-start py-2.5 text-left" onClick={() => { onToolChange(p.tool); }}>
             <span className="text-xs font-semibold">{p.label}</span>

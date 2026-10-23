@@ -27,7 +27,7 @@ import { clientKey, idempotent, rateLimit } from "@/lib/guard";
  *  without HELLO_OPERATOR_TOKEN. Every other tool is read-only over public data. */
 export const OPERATOR_TOOLS = new Set([
   "forge.patchSymbol", "cortex.recordDeadEnd", "cortex.proposeContract", "cortex.lockInterface",
-  "memory.write", "memory.recall", "cloud.checkpoint", "cloud.rollback", "connector.sql.query",
+  "memory.write", "memory.recall", "cloud.checkpoint", "connector.sql.query",
 ]);
 
 const MAX_BODY_BYTES = 1_000_000;
@@ -363,7 +363,7 @@ export const tools: Tool[] = [
   // ── hello.cloud ──
   {
     name: "cloud.checkpoint",
-    description: "SIMULATION: records a named checkpoint row before a risky mutation. No database or filesystem snapshot is taken; the snapshot refs are labels only. Copy-on-write and Firecracker are not built.",
+    description: "Record a checkpoint request for audit purposes. No database, filesystem, repository, model, or VM state is captured, and the record cannot be rolled back.",
     inputSchema: {
       type: "object",
       properties: { name: { type: "string" }, repoId: { type: "string", default: "logistics" } },
@@ -375,25 +375,13 @@ export const tools: Tool[] = [
           repoId: args.repoId ?? "logistics",
           name: args.name,
           agentDid: args.agentDid ?? "did:key:unknown",
-          dbSnapshotRef: `cow:pg:${sha256(args.name + Date.now()).slice(0, 12)}`,
-          fsSnapshotRef: `cow:fs:${sha256(args.name + Date.now() + "fs").slice(0, 12)}`,
-          status: "active",
+          dbSnapshotRef: "",
+          fsSnapshotRef: "",
+          status: "recorded",
           receiptHash: sha256(`ckpt:${args.name}:${Date.now()}`),
         },
       });
-      return { checkpointId: cp.id, name: cp.name, dbSnapshot: cp.dbSnapshotRef, fsSnapshot: cp.fsSnapshotRef, status: "active", receiptHash: cp.receiptHash, simulated: true, note: "No data was snapshotted; refs are labels." };
-    },
-  },
-  {
-    name: "cloud.rollback",
-    description: "SIMULATION: marks a checkpoint row as rolled_back. It does not restore any database or filesystem state.",
-    inputSchema: { type: "object", properties: { checkpointId: { type: "string" } }, required: ["checkpointId"] },
-    handler: async (args) => {
-      const cp = await db.checkpoint.update({
-        where: { id: args.checkpointId },
-        data: { status: "rolled_back" },
-      });
-      return { checkpointId: cp.id, status: "rolled_back", restoredTo: cp.name, simulated: true, note: "Status change only; no state was restored." };
+      return { checkpointId: cp.id, name: cp.name, status: "recorded", captured: false, rollbackAvailable: false, receiptHash: cp.receiptHash };
     },
   },
   // ── connectors (read-only adapters; see docs/bridges.md) ──
@@ -417,7 +405,7 @@ export function handshakeManifest(baseUrl: string = process.env.HELLO_PUBLIC_URL
       forge: { endpoint: "/tools/call", tools: ["forge.listSymbols", "forge.readSymbol", "forge.typecheck", "forge.patchSymbol"] },
       aml: { endpoint: "/tools/call", tools: ["aml.compile"] },
       cortex: { endpoint: "/tools/call", tools: ["cortex.recall", "cortex.recordDeadEnd", "cortex.proposeContract", "cortex.lockInterface", "cortex.listContracts"] },
-      cloud: { endpoint: "/tools/call", tools: ["cloud.checkpoint", "cloud.rollback"] },
+      cloud: { endpoint: "/tools/call", tools: ["cloud.checkpoint"] },
       connectors: { endpoint: "/tools/call", tools: tools.filter((t) => t.name.startsWith("connector.")).map((t) => t.name), readOnly: true },
     },
     toolCount: tools.length,

@@ -2,7 +2,7 @@
 
 The operator is the human who runs a HELLO OS instance. Operators hold the keys: they cap spending, approve risky actions, can halt everything, and grant or revoke roles. Agents never get to override that.
 
-> Most of this guide is **available once PRs #5, #6, #12, #13 and #14 merge** (see [merge-order.md](merge-order.md)). The Ops console is at `/ops` and is linked from the Mission Control sidebar.
+The Ops console is at `/ops` and is linked from the Mission Control sidebar. Operator actions fail closed in production unless `HELLO_OPERATOR_TOKEN` is configured.
 
 ## 1. Set an operator token
 ```bash
@@ -20,7 +20,7 @@ What happens without a token depends on where the instance runs (`src/lib/operat
 
 Operator-only routes: `POST /api/operator` (kill switch, threshold), `POST /api/approvals/:id`, `PATCH`/`POST /api/agents/:id/wallet` (daily cap, circuit breaker, top-up), `POST /api/knowledge` and `/api/knowledge/roles`, `POST /api/sandbox`, the scheduler routes, creating an agent with a tier other than `Seedling`, and the MCP tools listed below. The dashboard's top-up and circuit buttons don't send a token yet, so in production they show the 401/503 error. Use curl with the token, or the Ops console where it has a token field.
 
-## 2. Approvals and risk tiers (PR #5)
+## 2. Approvals and risk tiers
 | Tier | Actions | What happens |
 | --- | --- | --- |
 | low | `data.read` | runs |
@@ -42,24 +42,24 @@ curl -s 'localhost:3000/api/gate?action=wallet.spend&amount=40'
 ```
 An approved action runs through the same wallet code path and can only run once. UI: `/ops/approvals`.
 
-## 3. Kill switch (PR #5)
+## 3. Kill switch
 ```bash
 curl -s -XPOST localhost:3000/api/operator -H "x-operator-token: $HELLO_OPERATOR_TOKEN" \
   -H 'content-type: application/json' -d '{"killSwitch":true}'
 ```
 While it is on, every gated action returns HTTP 423. It is checked again when a previously approved action executes. Release it with `{"killSwitch":false}`.
 
-## 4. Audit log (PR #5)
+## 4. Audit log
 `GET /api/audit` returns the latest 100 entries: every allow, queue, block, decision and operator change. It is an append-only table in SQLite, **not** a tamper-proof log.
 
-## 5. Scheduler ticks via cron (PR #6)
+## 5. Scheduler ticks via cron
 There is no hidden background daemon. Jobs only run when something calls the tick endpoint:
 ```cron
 * * * * * curl -s -X POST -H "x-operator-token: $HELLO_OPERATOR_TOKEN" http://localhost:3000/api/scheduler/tick >/dev/null
 ```
 Add jobs at `/ops/scheduler` or with `POST /api/scheduler/jobs {"kind":"wallet.audit","intervalSec":3600}`. The kinds are `heartbeat`, `wallet.audit` and `missions.stale`. A GitHub Actions `schedule:` workflow can call the same endpoint if the instance is reachable.
 
-## 6. Roles for the knowledge index (PR #12)
+## 6. Roles for the knowledge index
 ```bash
 curl -s -XPOST localhost:3000/api/knowledge/roles -H "x-operator-token: $HELLO_OPERATOR_TOKEN" \
   -H 'content-type: application/json' -d '{"agentId":"AGENT_ID","role":"engineer"}'   # add "revoke":true to remove
@@ -67,7 +67,7 @@ curl -s -XPOST localhost:3000/api/knowledge/roles -H "x-operator-token: $HELLO_O
 The roles are `viewer`, `engineer`, `dataops`, `security` and `admin`.
 
 ## 7. MCP tool access
-Read-only tools over public data are open. Tools that write state or read private data need the operator token (same rules as above): `forge.patchSymbol`, `cortex.recordDeadEnd`, `cortex.proposeContract`, `cortex.lockInterface`, `memory.write`, `memory.recall`, `cloud.checkpoint`, `cloud.rollback`, `connector.sql.query`. The handshake lists them as `operatorTools`.
+Read-only tools over public data are open. Tools that write state or read private data need the operator token (same rules as above): `forge.patchSymbol`, `cortex.recordDeadEnd`, `cortex.proposeContract`, `cortex.lockInterface`, `memory.write`, `memory.recall`, `cloud.checkpoint`, `connector.sql.query`. The handshake lists them as `operatorTools`.
 
 - `agentDid` in a call is self-asserted and only labels the log. It does not authenticate the caller.
 - `receiptHash` is a SHA-256 digest that identifies a logged `McpToolCall` row. It is not a signature and doesn't prove the row was never edited.
@@ -75,7 +75,7 @@ Read-only tools over public data are open. Tools that write state or read privat
 - There is no replay protection or idempotency key: resending a call runs it again. That is one reason write tools are operator-only.
 
 ## 8. Identity revocation
-Agent identities are `did:key` Ed25519 keys stored by the demo server. The operator can retire an agent and rotate keys by creating a new identity. KMS/HSM custody and formal revocation lists are **planned**. After PR #4 merges, the API never returns private keys.
+Agent identities are `did:key` Ed25519 keys stored by the demo server. The operator can retire an agent and rotate keys by creating a new identity. KMS/HSM custody and formal revocation lists are **planned**. The API omits private keys from responses.
 
-## 8. Before exposing an instance
+## 9. Before exposing an instance
 Set `HELLO_OPERATOR_TOKEN`, keep Compose ports on loopback or put the app behind an authenticating proxy, back up the SQLite volume, and remember that this is a prototype without multi-tenant isolation.

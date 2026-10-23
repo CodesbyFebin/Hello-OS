@@ -27,7 +27,7 @@
 
 ## What is HELLO OS?
 
-**HELLO OS is an experimental, MIT-licensed operating layer for AI agents. It gives each agent an Ed25519 identity, tiered memory, a dead-end registry, credit-budgeted wallets with operator approval gates, a non-executable AML compiler, and a 20-tool MCP server served inside the Next.js app. It is a prototype, not a production service.**
+**HELLO OS is an experimental, MIT-licensed operating layer for AI agents. It gives each agent an Ed25519 identity, tiered memory, a dead-end registry, credit-budgeted wallets with operator approval gates, a non-executable AML compiler, and an MCP server served inside the Next.js app. It is a prototype, not a production service.**
 
 > **Status:** experimental prototype, version `0.2.1` (from `package.json`). Every feature below is labelled **Implemented**, **Prototype** or **Vision**. No benchmarks have been published.
 
@@ -68,7 +68,7 @@ Agents today mostly run inside tools built for people. HELLO OS tries a differen
 | 3 | **HELLO Cortex** | Tiered memory, dead-end registry, contract locks, semantic cache, knowledge docs | `/api/hello/cortex/*`, `/api/failures`, `/api/cache`, `/api/knowledge` | Implemented |
 | 4 | **HELLO Mesh** | In-process MCP server, A2A messages and tasks, delegation trees, consensus | `POST /api/hello/mcp`, `/api/a2a`, `/api/delegation`, `/api/consensus` | Implemented (single node); federation is Vision |
 | 5 | **HELLO Ledger** | Wallets and spend in credits (H), treasury, approvals, operator gate | `/api/economy/*`, `/api/treasury`, `/api/gate`, `/api/approvals` | Implemented (credits only, no money or tokens) |
-| 6 | **HELLO Cloud** | Checkpoints, snapshots and resume, QuickJS sandbox | `/api/hello/cloud/checkpoints`, `/api/snapshots`, `/api/sandbox` | Prototype: records are real, copy-on-write fork is simulated; microVMs are Vision |
+| 6 | **HELLO Cloud** | Checkpoint request records and QuickJS sandbox | `/api/hello/cloud/checkpoints`, `/api/sandbox` | Metadata only; no database or VM snapshots or rollback |
 | 7 | **HELLO Evolve and AI** | Deterministic evolution runs; AI provider (OpenRouter, Kilo Code gateway, any OpenAI-compatible API) for golden replay | `/api/evolution/runs`, `/api/ai/status`, `/api/traces/golden-replay` | Prototype: `/evolve` page is a labelled simulation; AI calls need a key |
 
 ```mermaid
@@ -103,7 +103,7 @@ mission review_patch {
     if $symbol.valid {
       emit: verification_receipt
     } else {
-      rollback: checkpoint("before_patch")
+      emit: review_required
     }
   }
 }
@@ -114,7 +114,7 @@ Compile it:
 ```bash
 curl -s http://localhost:3000/api/aml/compile \
   -H 'Content-Type: application/json' \
-  -d '{"source":"mission review_patch {\n  input: $patch_id\n  budget: 5 H\n  steps {\n    fetch: forge.readSymbol($patch_id) → $symbol\n    if $symbol.valid {\n      emit: verification_receipt\n    } else {\n      rollback: checkpoint(\"before_patch\")\n    }\n  }\n}"}'
+  -d '{"source":"mission review_patch {\n  input: $patch_id\n  budget: 5 H\n  steps {\n    fetch: forge.readSymbol($patch_id) → $symbol\n    if $symbol.valid {\n      emit: verification_receipt\n    } else {\n      emit: review_required\n    }\n  }\n}"}'
 ```
 
 The response includes `"ok": true`, `"executable": false`, `"budgets": [{"declaration":"review_patch","amount":5,"unit":"H"}]` and a `tokenMetrics` object.
@@ -146,7 +146,7 @@ docker compose up --build     # web on 127.0.0.1:3000
 
 ### Option 3: Vercel + Turso
 
-The live app is at **https://hello-os-bice.vercel.app/**. Serverless hosts don't keep a local SQLite file, so Vercel needs a hosted database. Turso support is in **open PR #30** and is not on `main` yet. Once #30 merges:
+The live app is at **https://hello-os-bice.vercel.app/**. Serverless hosts don't keep a local SQLite file, so Vercel needs a hosted database. Turso is supported through Prisma's libSQL adapter:
 
 ```bash
 turso auth login
@@ -162,11 +162,11 @@ Then set `DATABASE_URL`, `TURSO_AUTH_TOKEN`, `HELLO_AI_PROVIDER` and `HELLO_AI_A
 
 | Variable | Purpose |
 |---|---|
-| `DATABASE_URL` | SQLite file (`file:./db/custom.db`), or a `libsql://` URL with #30 |
-| `TURSO_AUTH_TOKEN` | Turso token (#30) |
+| `DATABASE_URL` | SQLite file (`file:./db/custom.db`), or a `libsql://` URL |
+| `TURSO_AUTH_TOKEN` | Turso auth token |
 | `HELLO_PUBLIC_URL` | Public base URL used in the handshake and agent card |
 | `HELLO_ALLOWED_ORIGINS` | Comma-separated origins allowed to call MCP |
-| `HELLO_OPERATOR_TOKEN` | Protects approvals, kill switch, scheduler, sandbox. If unset, the app runs in dev mode |
+| `HELLO_OPERATOR_TOKEN` | Protects approvals, kill switch, scheduler, sandbox. Required in production; local development can use dev mode |
 | `HELLO_WEBHOOK_SECRET` | HMAC secret for `POST /api/integrations/webhook` |
 | `GITHUB_TOKEN` | Optional read-only token for `connector.github.read` |
 | `HELLO_AI_PROVIDER` | `openrouter`, `kilo`, or `custom`. If unset, AI routes return `503 NO_AI_PROVIDER` |
@@ -198,7 +198,7 @@ curl -s https://hello-os-bice.vercel.app/api/hello/mcp \
   -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","_meta":{"io.modelcontextprotocol/protocolVersion":"2026-07-28"}}'
 ```
 
-### The 20 MCP tools
+### MCP tools
 
 | Tool | What it does |
 |---|---|
@@ -214,14 +214,17 @@ curl -s https://hello-os-bice.vercel.app/api/hello/mcp \
 | `cortex.listContracts` | List active contract locks |
 | `memory.recall` | Search one agent's tiered memory within a token budget |
 | `memory.write` | Write a memory to CORE, RECALL or ARCHIVE with a lifetime |
-| `cloud.checkpoint` | Record a checkpoint before a risky change (copy-on-write fork is simulated) |
-| `cloud.rollback` | Roll back to a checkpoint |
+| `cloud.checkpoint` | Record a checkpoint request for audit; captures no state and cannot be rolled back |
 | `connector.sql.query` | Read-only single SELECT/WITH against the HELLO datasource |
 | `connector.sql.schema` | Reflect tables and columns |
 | `connector.sql.fingerprint` | SHA-256 schema fingerprint for drift checks |
 | `connector.github.read` | Read-only GitHub repo, issue and PR metadata |
 | `connector.openapi.reflect` | Turn an OpenAPI 3 document into candidate tool definitions (never calls it) |
 | `connector.webhook.transpile` | Map a webhook payload to a typed, observe-only intent record |
+
+## Session portability
+
+The optional local CLI/TUI discovers Claude Code, Codex, and OpenCode sessions and ports selected text transcripts between them. It runs on your computer; the HELLO OS web app never reads local harness files. Install Bun, then run `npm run sessions:install`, `npm run sessions -- detect`, or `npm run sessions -- tui`. Transfers are manual; tool calls, reasoning blocks, and attachments are not preserved. See the [session guide](/sessions) and [third-party notices](THIRD_PARTY_NOTICES.md).
 
 ## Downloads
 
@@ -242,7 +245,7 @@ No. Credits (H) are prototype numbers in the database. There is no on-chain ledg
 Yes. Retire the agent or use the kill switch. Identities can be revoked by the operator, and gated actions above the approval threshold wait for a human.
 
 ### Does it run agents in microVMs?
-No. Firecracker microVMs and copy-on-write (CoW) checkpoints are **not built**; they are Vision. Code runs in a QuickJS sandbox, and checkpoint forks are simulated and labelled as simulations.
+No. Firecracker microVMs and copy-on-write checkpoints are **not built**; they are Vision. Code runs in a QuickJS sandbox. Checkpoint calls create metadata-only audit records; they capture no state and cannot restore or roll back anything.
 
 ### Are Evolution Lab and HELLO EVOLVE real training?
 No. HELLO Evolve scores are a **deterministic simulation**: they measure the distance of candidate gene vectors to fixed target gene vectors (a candidate matching the target scores 100). They do **not** measure whether an agent got better at real tasks. The `/evolve` page is a labelled browser simulation.
@@ -263,7 +266,7 @@ Yes: [`/llms.txt`](https://codesbyfebin.github.io/Hello-OS/llms.txt), [`AGENTS.m
 
 These items are proposed, not done, and have no committed dates. The full list is in `src/lib/roadmap/steps.ts` and on the `/roadmap` page.
 
-- Turso database for serverless hosting (PR #30, open)
+- Production-grade hosted database operations and deployment hardening
 - Real file and SQLite checkpoints with restore and SHA-256 receipts
 - `/evolve` driven by stored evolution runs and golden-set replay
 - Real evolution evaluation loop: a small set of pinned, versioned agent tasks; per-candidate results reported separately for task success, policy violations, latency and token usage; stored model/provider, prompt version, test revision and traces; promotion only when recorded tests pass and a reviewer approves

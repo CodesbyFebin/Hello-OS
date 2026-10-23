@@ -47,4 +47,3 @@ CREATE INDEX "RateLimitBucket_windowStart_idx" ON "RateLimitBucket"("windowStart
 
 -- CreateIndex
 CREATE UNIQUE INDEX "RateLimitBucket_key_windowStart_key" ON "RateLimitBucket"("key", "windowStart");
-

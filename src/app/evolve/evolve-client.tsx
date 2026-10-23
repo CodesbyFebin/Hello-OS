@@ -29,8 +29,7 @@ export function EvolveClient() {
   const [mode, setMode] = React.useState<"sim" | "runs">("sim");
   const [runs, setRuns] = React.useState<Run[] | null>(null);
   const [runsError, setRunsError] = React.useState("");
-  const [query, setQuery] = React.useState("");
-  const [output, setOutput] = React.useState<string[]>(["-- mock query console: reads this page's in-memory simulation, not a database --"]);
+  const [output, setOutput] = React.useState<string[]>(["Simulation state is in this browser tab; no database is queried."]);
 
   const facts = React.useMemo(() => {
     const out: Fact[] = [];
@@ -91,7 +90,7 @@ export function EvolveClient() {
       champions: () => rankPopulation(latest.population).slice(0, 5).map((c, i) => `  ${i + 1}. ${c.id} · fitness ${c.fitness.toFixed(2)}`),
     };
     const result = lines[key] ? lines[key]() : [`unknown query: ${q.slice(0, 60)}`, "try: recent, mutations, dead_ends, champions"];
-    setOutput((o) => [...o, `mock> ${q.slice(0, 60)}`, ...(result.length ? result : ["(no rows yet: run a few generations)"])].slice(-60));
+    setOutput((o) => [...o, `simulation query: ${q}`, ...(result.length ? result : ["(no rows yet: run a few generations)"])].slice(-60));
   }
 
   const chart = snaps.slice(-60);
@@ -186,10 +185,10 @@ export function EvolveClient() {
             </section>
 
             <section className={`${card} p-4`}>
-              <div className="flex items-center justify-between"><span className={kicker}>QUERY CONSOLE</span><DemoBadge label="Mock · in-memory" /></div>
+              <div className="flex items-center justify-between"><span className={kicker}>SIMULATION INSPECTOR</span><DemoBadge label="Browser state only" /></div>
               <div className="mt-2 flex flex-wrap gap-1">{["recent", "mutations", "dead_ends", "champions"].map((k) => <button key={k} onClick={() => runQuery(k)} className="rounded border border-white/10 px-2 py-1 font-mono text-[10px] hover:text-white">{k}</button>)}</div>
               <div className="mt-2 h-36 overflow-auto rounded bg-black/40 p-2 font-mono text-[11px] text-zinc-400" aria-live="polite">{output.map((l, i) => <div key={i} className="whitespace-pre-wrap">{l}</div>)}</div>
-              <form onSubmit={(e) => { e.preventDefault(); if (query.trim()) { runQuery(query); setQuery(""); } }}><input aria-label="Mock query" value={query} onChange={(e) => setQuery(e.target.value)} maxLength={60} placeholder="type a query and press Enter" className="mt-2 w-full rounded border border-white/10 bg-transparent px-2 py-1 font-mono text-[11px] outline-none" /></form>
+              <p className="mt-2 text-[10px] text-zinc-600">Choose a fixed inspection above. Free-form input and code execution are not supported.</p>
             </section>
           </div>
 

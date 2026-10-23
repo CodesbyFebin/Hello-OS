@@ -11,8 +11,8 @@ Every variable the code reads (`rg "process.env" src mini-services scripts`). Ne
 | `HELLO_DB_ADAPTER` | unset | `libsql` forces the libSQL adapter for a `file:` URL (used by tests). |
 | `HELLO_PUBLIC_URL` | `http://localhost:3000` | Base URL for links, the agent card and the MCP handshake. |
 | `HELLO_ALLOWED_ORIGINS` | localhost:3000/3030 | Comma-separated Origin allow-list for `POST /api/hello/mcp`. |
-| `HELLO_MCP_URL` | `http://localhost:3030` | Optional Bun sidecar. MCP also runs in-process at `/api/hello/mcp`. |
-| `HELLO_MCP_PORT` | `3030` | Sidecar port. |
+| `HELLO_MCP_URL` | unset | Optional standalone MCP sidecar override. MCP runs in-process at `/api/hello/mcp` by default. |
+| `HELLO_MCP_PORT` | `3030` | Optional sidecar port. |
 | `HELLO_FORGE_ROOT` | `./sample-repo` | Repo that the `forge.*` MCP tools parse and patch. |
 | `HELLO_SYNC_INTERVAL_MS` | `3000` (min 500) | Polling interval for `/api/sync`. |
 
@@ -22,7 +22,7 @@ Every variable the code reads (`rg "process.env" src mini-services scripts`). Ne
 | --- | --- | --- |
 | `HELLO_OPERATOR_TOKEN` | unset | Shared secret for operator actions, sent as `x-operator-token`. See [operator-guide.md](operator-guide.md). |
 
-Today, with the token unset, operator routes run in **dev mode** (open to anyone who can reach the port). PR #36 changes this: in production (`NODE_ENV=production` or `VERCEL` set) they fail closed with 503, and `HELLO_OPERATOR_DEV_MODE=1` is the local override. Set a token before exposing the app beyond localhost.
+When unset, operator routes fail closed in production. Local development may use dev mode; set a token before exposing the app beyond localhost.
 
 ## AI provider (optional, off by default)
 
@@ -30,7 +30,7 @@ Unset = AI features return `503 NO_AI_PROVIDER` with the variables to set. `GET 
 
 | Variable | Notes |
 | --- | --- |
-| `HELLO_AI_PROVIDER` | `openrouter`, `kilo` or `custom` (`ollama` is added in PR #35). |
+| `HELLO_AI_PROVIDER` | `openrouter`, `kilo`, `custom` or `ollama`. |
 | `HELLO_AI_API_KEY` | Provider key. Required except for `ollama`. |
 | `HELLO_AI_MODEL` | Default `google/gemma-4-31b-it:free`. |
 | `HELLO_AI_BASE_URL` | Override. Required for `custom`. |
@@ -45,6 +45,10 @@ To turn AI off again, unset `HELLO_AI_PROVIDER`.
 | --- | --- |
 | `HELLO_WEBHOOK_SECRET` | HMAC-SHA256 secret for `POST /api/integrations/webhook`. The route returns 503 until it is set. |
 | `GITHUB_TOKEN` | Optional, read-only, for MCP `connector.github.read`. Without it, GitHub's unauthenticated rate limits apply. |
+
+## Session portability
+
+The optional local CLI/TUI requires Bun. From the repository root, run `npm run sessions:install`, then `npm run sessions -- detect` or `npm run sessions -- tui`. Transfers run on the user's machine and do not upload transcript contents to the web app.
 
 ## Database schema and backup
 

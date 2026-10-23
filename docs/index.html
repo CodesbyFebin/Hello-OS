@@ -151,7 +151,7 @@ table{border-collapse:collapse;width:100%;margin:20px 0}td,th{text-align:left;ve
 </section>
 <section id="run">
 <h2>How to run HELLO OS locally</h2>
-<p>The fastest documented start is Docker Compose. Install Docker Engine and Docker Compose (or Docker Desktop where appropriate), then clone the public repository and start the services. The browser dashboard is exposed locally on port 3000, while the MCP service is available on port 3030 according to the project setup guidance. Review the compose file and environment configuration before exposing any service beyond your machine.</p>
+<p>The fastest documented start is Docker Compose. Install Docker Engine and Docker Compose (or Docker Desktop where appropriate), then clone the public repository and start the services. The browser dashboard and in-process MCP handler are served by the app on port 3000. An optional standalone MCP sidecar can run on port 3030. Review the compose file and environment configuration before exposing any service beyond your machine.</p>
 <pre><code>git clone https://github.com/CodesbyFebin/Hello-OS.git
 cd Hello-OS
 docker compose up --build</code></pre>

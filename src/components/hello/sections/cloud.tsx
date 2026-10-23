@@ -12,12 +12,12 @@ import { timeAgo } from "@/lib/hello";
 
 type Checkpoint = {
   id: string; repoId: string; name: string; agentDid: string;
-  dbSnapshotRef: string; fsSnapshotRef: string; status: string; receiptHash: string | null; createdAt: string;
+  status: string; receiptHash: string | null; createdAt: string;
 };
 type Data = { checkpoints: Checkpoint[] };
 
 const STATUS_META: Record<string, { color: string; icon: any }> = {
-  active: { color: "cognition", icon: GitBranch },
+  recorded: { color: "cognition", icon: GitBranch },
   rolled_back: { color: "destructive", icon: RotateCcw },
   promoted: { color: "society", icon: CheckCircle2 },
 };
@@ -29,11 +29,11 @@ export function CloudSection() {
     <SectionShell id="cloud" className="relative">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-economy/5 blur-3xl" />
       <SectionHeader
-        eyebrow="hello.cloud · time-travel compute"
+        eyebrow="hello.cloud · checkpoint records"
         eyebrowColor="economy"
         icon={Cloud}
-        title={<>Checkpoint before mutate. <span className="text-economy">Roll back atomically.</span></>}
-        description="Before a risky migration, an agent calls cloud.checkpoint to fork a Copy-on-Write snapshot of the DB + filesystem. If shadow traffic spikes, the platform auto-reverts. SIMULATION: the checkpoint records and receipts are real database rows, but no copy-on-write snapshot is taken and rollback restores nothing yet."
+        title={<>Record checkpoint intent. <span className="text-economy">State restore is not implemented.</span></>}
+        description="The cloud.checkpoint MCP tool stores a labeled audit record and receipt. It captures no database, filesystem, repository, model, or VM state. No rollback tool is exposed."
       />
 
       {loading ? (
@@ -59,14 +59,7 @@ export function CloudSection() {
                       <span className="ml-auto text-[10px] text-muted-foreground">{timeAgo(c.createdAt)}</span>
                     </div>
                     <div className="mt-2 grid grid-cols-2 gap-2 font-mono text-[10px]">
-                      <div className="rounded bg-muted/40 px-2 py-1">
-                        <span className="text-muted-foreground">db snapshot: </span>
-                        <span className="text-foreground">{c.dbSnapshotRef.slice(0, 24)}…</span>
-                      </div>
-                      <div className="rounded bg-muted/40 px-2 py-1">
-                        <span className="text-muted-foreground">fs snapshot: </span>
-                        <span className="text-foreground">{c.fsSnapshotRef.slice(0, 24)}…</span>
-                      </div>
+                      <div className="col-span-2 rounded bg-muted/40 px-2 py-1 text-muted-foreground">metadata record only · no state captured</div>
                     </div>
                     <div className="mt-1.5 flex items-center gap-2 font-mono text-[9px] text-muted-foreground">
                       <span>by {c.agentDid.slice(0, 30)}…</span>

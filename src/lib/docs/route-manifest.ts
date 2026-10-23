@@ -77,6 +77,9 @@ export const ROUTE_MANIFEST = {
       "path": "/runtime"
     },
     {
+      "path": "/sessions"
+    },
+    {
       "path": "/universe"
     }
   ],

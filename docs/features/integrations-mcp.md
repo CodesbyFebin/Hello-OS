@@ -1,6 +1,6 @@
 # Integrations registry, MCP connector tools and bridges
 
-**Status: in PR #7.** Available once PR #7 merges. The static [integration catalog](../integrations/README.md) on Pages is already published as a planning reference.
+**Status:** shipped on `main`. The static [integration catalog](../integrations/README.md) on Pages is already published as a planning reference.
 
 - **`/integrations`:** a registry of 100 connectors. 3 are working (GitHub read, SQLite, GitHub Actions webhook), 82 planned and 15 vision (payments/crypto, which are disabled by default and would need operator approval).
 - **`docs/bridges.md`:** 50 bridge techniques, tagged implemented or planned. The merge arbiter requires human approval.

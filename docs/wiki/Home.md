@@ -1,6 +1,6 @@
 # HELLO OS: agent operating system prototype
 
-HELLO OS is an open-source, local-first prototype for exploring agent identity, persistent records, bounded mission workflows, tool integration, and inspectable work. It combines a Next.js application, Prisma with SQLite, and a separate MCP service. It is not a hosted cloud platform or a general-purpose autonomous execution runtime.
+HELLO OS is an open-source, local-first prototype for exploring agent identity, persistent records, bounded mission workflows, tool integration, and inspectable work. It combines a Next.js application, Prisma with SQLite, and an in-process MCP handler. It is not a hosted cloud platform or a general-purpose autonomous execution runtime.
 
 > **Status: experimental prototype.** This wiki describes the code that exists in the repository. It marks proposed capabilities as vision and does not present synthetic illustrations, example syntax, or unverified targets as operational facts.
 

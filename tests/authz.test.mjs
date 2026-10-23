@@ -142,7 +142,7 @@ test("MCP: write/private tools need operator; reads stay open; production fails 
   setEnv({ NODE_ENV: "production" });
   assert.equal((await call("cloud.checkpoint", { name: "x" })).status, 503);
   const { MCP_PROTOCOL_VERSION, handleMcpRequest } = await mcp();
-  const rpc = await handleMcpRequest(new Request("http://x/api/hello/mcp", { method: "POST", headers: { "content-type": "application/json", accept: "application/json", "mcp-protocol-version": MCP_PROTOCOL_VERSION, "mcp-method": "tools/call", "mcp-name": "cloud.rollback" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/call", params: { name: "cloud.rollback", arguments: { checkpointId: "x" } }, _meta: { "io.modelcontextprotocol/protocolVersion": MCP_PROTOCOL_VERSION } }) }), "/mcp");
+  const rpc = await handleMcpRequest(new Request("http://x/api/hello/mcp", { method: "POST", headers: { "content-type": "application/json", accept: "application/json", "mcp-protocol-version": MCP_PROTOCOL_VERSION, "mcp-method": "tools/call", "mcp-name": "cloud.checkpoint" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/call", params: { name: "cloud.checkpoint", arguments: { name: "x" } }, _meta: { "io.modelcontextprotocol/protocolVersion": MCP_PROTOCOL_VERSION } }) }), "/mcp");
   assert.equal(rpc.status, 503);
   assert.equal((await rpc.json()).error.data.code, "OPERATOR_TOKEN_NOT_CONFIGURED");
 });

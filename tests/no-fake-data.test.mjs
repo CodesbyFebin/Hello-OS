@@ -33,7 +33,42 @@ test("dashboard has no hard-coded resident agents", () => {
 test("handshake version is read from package.json", () => {
   const src = readFileSync("mini-services/hello-mcp/index.ts", "utf8");
   assert.ok(!/version:\s*"1\.0\.0"/.test(src));
+  assert.match(readFileSync("src/lib/mcp/server.ts", "utf8"), /version:\s*pkg\.version/);
   assert.match(JSON.parse(readFileSync("package.json", "utf8")).version, /^0\.2\./);
+});
+
+test("agent hub has no hard-coded social or repository demo records", () => {
+  assert.ok(!existsSync("src/lib/hub-demo.ts"));
+  const src = readFileSync("src/app/hub/hub-client.tsx", "utf8");
+  assert.doesNotMatch(src, /demoRepos|demoPosts|demoActivity|contributionGrid/);
+  assert.match(src, /\/api\/docs\/posts/);
+  assert.match(src, /\/api\/hello\/mcp\/feed/);
+});
+
+test("governance votes use an agent selected from the live instance", () => {
+  const src = readFileSync("src/components/hello/sections/society.tsx", "utf8");
+  assert.doesNotMatch(src, /demo-voter/);
+  assert.match(src, /agentId: voter!\.id/);
+  assert.match(src, /Select an agent/);
+});
+
+test("cloud checkpoint UI and API disclose metadata-only records", () => {
+  const api = readFileSync("src/app/api/hello/cloud/checkpoints/route.ts", "utf8");
+  const mcp = readFileSync("src/lib/mcp/server.ts", "utf8");
+  assert.match(api, /status: "recorded"/);
+  assert.match(mcp, /rollbackAvailable: false/);
+  assert.doesNotMatch(mcp, /name: "cloud\.rollback"/);
+});
+
+test("session portability ships under HELLO OS naming and runs locally", () => {
+  const manifest = JSON.parse(readFileSync("tools/session-portability/package.json", "utf8"));
+  const page = readFileSync("src/app/sessions/page.tsx", "utf8");
+  assert.equal(manifest.bin["hello-sessions"], "./src/cli.ts");
+  assert.match(page, /Claude Code, Codex, and OpenCode/);
+  assert.match(page, /does not read your home directory/);
+  assert.doesNotMatch(page, /OpenMemory|mem0ai/i);
+  assert.ok(existsSync("tools/session-portability/UPSTREAM-LICENSE"));
+  assert.ok(existsSync("THIRD_PARTY_NOTICES.md"));
 });
 
 test("duplicate lowercase agents.md / llm.txt are gone", () => {
@@ -45,10 +80,12 @@ test("no unmeasured 'CI <200ms' claim", () => {
   assert.ok(!walk("src").some((f) => /&lt;200ms|<200ms/.test(readFileSync(f, "utf8"))));
 });
 
-test("cloud.checkpoint/rollback MCP tools are labelled simulations, not real restores", async () => {
+test("cloud.checkpoint MCP tool is metadata-only and exposes no rollback operation", async () => {
   const src = readFileSync("src/lib/mcp/server.ts", "utf8");
-  assert.ok(!src.includes("Restores the DB + FS snapshot atomically"));
-  assert.equal((src.match(/description: "SIMULATION:/g) || []).length >= 2, true);
+  assert.match(src, /name: "cloud\.checkpoint"/);
+  assert.match(src, /No database, filesystem, repository, model, or VM state is captured/);
+  assert.match(src, /rollbackAvailable: false/);
+  assert.doesNotMatch(src, /name: "cloud\.rollback"/);
 });
 
 test("capability matrix exists, names a verified commit, and labels simulations", () => {

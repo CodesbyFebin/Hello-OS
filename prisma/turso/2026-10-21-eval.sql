@@ -44,4 +44,3 @@ CREATE INDEX "EvalRun_fingerprint_idx" ON "EvalRun"("fingerprint");
 
 -- CreateIndex
 CREATE INDEX "EvalPromotion_suiteId_status_decidedAt_idx" ON "EvalPromotion"("suiteId", "status", "decidedAt");
-

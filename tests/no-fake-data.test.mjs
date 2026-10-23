@@ -80,10 +80,12 @@ test("no unmeasured 'CI <200ms' claim", () => {
   assert.ok(!walk("src").some((f) => /&lt;200ms|<200ms/.test(readFileSync(f, "utf8"))));
 });
 
-test("cloud.checkpoint/rollback MCP tools are labelled simulations, not real restores", async () => {
+test("cloud.checkpoint MCP tool is metadata-only and exposes no rollback operation", async () => {
   const src = readFileSync("src/lib/mcp/server.ts", "utf8");
-  assert.ok(!src.includes("Restores the DB + FS snapshot atomically"));
-  assert.equal((src.match(/description: "SIMULATION:/g) || []).length >= 2, true);
+  assert.match(src, /name: "cloud\.checkpoint"/);
+  assert.match(src, /No database, filesystem, repository, model, or VM state is captured/);
+  assert.match(src, /rollbackAvailable: false/);
+  assert.doesNotMatch(src, /name: "cloud\.rollback"/);
 });
 
 test("capability matrix exists, names a verified commit, and labels simulations", () => {

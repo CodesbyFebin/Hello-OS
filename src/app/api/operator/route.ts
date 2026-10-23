@@ -1,16 +1,19 @@
+import { operatorDenied } from "@/lib/operator-auth";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { audit, getControl, operatorCheck } from "@/lib/gate";
 
 export async function GET(req: Request) {
   const control = await getControl();
-  return NextResponse.json({ control, devMode: operatorCheck(req).devMode });
+  const a = operatorCheck(req);
+  // Lets the dashboard show a truthful state: dev mode, authorized, token missing/wrong (401) or not configured (503).
+  return NextResponse.json({ control, devMode: a.devMode, auth: a.ok ? { authorized: true, devMode: a.devMode } : { authorized: false, status: a.status, code: a.code, message: a.error } });
 }
 
 // Operator-only: toggle the kill switch or change the approval threshold.
 export async function POST(req: Request) {
   const auth = operatorCheck(req);
-  if (!auth.ok) return NextResponse.json({ error: "operator token required" }, { status: 401 });
+  if (!auth.ok) return operatorDenied(auth);
   const body = await req.json().catch(() => ({}));
   const data: { killSwitch?: boolean; approvalThreshold?: number } = {};
   if (typeof body.killSwitch === "boolean") data.killSwitch = body.killSwitch;

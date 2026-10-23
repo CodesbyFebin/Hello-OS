@@ -1,13 +1,16 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { guardWrite } from "@/lib/guard";
 
 export const dynamic = "force-dynamic";
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const g = await guardWrite(req, { bucket: "operator", operatorOnly: true });
+  if (!g.ok) return g.response;
   const { id } = await params;
   let body: { action?: unknown };
   try {
-    body = await req.json();
+    body = g.json;
   } catch {
     return NextResponse.json({ error: "Request body must be valid JSON." }, { status: 400 });
   }

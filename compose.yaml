@@ -8,6 +8,8 @@ services:
     environment:
       DATABASE_URL: file:/app/db/custom.db
       HELLO_PUBLIC_URL: ${HELLO_PUBLIC_URL:-http://localhost:3000}
+      HELLO_OPERATOR_TOKEN: ${HELLO_OPERATOR_TOKEN:-}
+      HELLO_OPERATOR_DEV_MODE: ${HELLO_OPERATOR_DEV_MODE:-}
     volumes:
       - hello-data:/app/db
     restart: unless-stopped

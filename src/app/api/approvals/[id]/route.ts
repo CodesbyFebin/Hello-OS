@@ -1,9 +1,10 @@
+import { operatorDenied } from "@/lib/operator-auth";
 import { NextResponse } from "next/server";
 import { decide, operatorCheck } from "@/lib/gate";
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const auth = operatorCheck(req);
-  if (!auth.ok) return NextResponse.json({ error: "operator token required" }, { status: 401 });
+  if (!auth.ok) return operatorDenied(auth);
   const { id } = await params;
   const body = await req.json().catch(() => ({}));
   if (body.decision !== "approve" && body.decision !== "reject") return NextResponse.json({ error: "decision must be approve or reject" }, { status: 400 });

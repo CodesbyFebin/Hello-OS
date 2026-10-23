@@ -1,3 +1,6 @@
+// SIMULATION ONLY: scoreGenes() measures distance from fixed PROFILE_TARGETS vectors.
+// It is not a measure of agent quality and must never gate promotion. Real task
+// evaluation lives in src/lib/eval/ (versioned suites, graders, human-approved promotion).
 export const GENE_NAMES = ["reasoning", "coding", "memory", "collaboration"] as const;
 export type GeneName = (typeof GENE_NAMES)[number];
 export type Profile = "balanced" | GeneName;

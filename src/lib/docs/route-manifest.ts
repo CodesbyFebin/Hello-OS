@@ -77,6 +77,9 @@ export const ROUTE_MANIFEST = {
       "path": "/runtime"
     },
     {
+      "path": "/sessions"
+    },
+    {
       "path": "/universe"
     }
   ],
@@ -115,6 +118,13 @@ export const ROUTE_MANIFEST = {
       "path": "/api/agents/[id]",
       "methods": [
         "GET"
+      ]
+    },
+    {
+      "path": "/api/agents/[id]/auth-key",
+      "methods": [
+        "POST",
+        "DELETE"
       ]
     },
     {
@@ -273,6 +283,25 @@ export const ROUTE_MANIFEST = {
     },
     {
       "path": "/api/economy/wallets",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/eval/promotions",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/eval/promotions/[id]",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/eval/runs",
       "methods": [
         "GET"
       ]

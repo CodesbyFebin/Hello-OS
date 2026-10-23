@@ -9,7 +9,8 @@
 //   POST /tools/call    → MCP tools/call  (invoke a tool, get structured result)
 //   GET  /feed          → JSON snapshot of recent tool calls (for the observer HUD)
 //
-// Every tool call is logged with a SHA-256 receipt. The forge tools run REAL
+// Every tool call is logged with a SHA-256 receipt hash (an identifier for the
+// logged record, not a signature). The forge tools run REAL
 // ts-morph AST operations; the cortex tools read/write the shared DB.
 
 import { db } from "@/lib/db";
@@ -18,6 +19,46 @@ import { compileAml } from "@/lib/aml";
 import { createHash } from "crypto";
 import pkg from "../../../package.json" with { type: "json" };
 import { connectorTools } from "@/lib/mcp/connectors";
+import { operatorAuth } from "@/lib/operator-auth";
+import { clientKey, idempotent, rateLimit } from "@/lib/guard";
+
+/** Tools that write state or read other agents' private data. They need operator
+ *  auth (src/lib/operator-auth.ts): open in local dev mode, closed in production
+ *  without HELLO_OPERATOR_TOKEN. Every other tool is read-only over public data. */
+export const OPERATOR_TOOLS = new Set([
+  "forge.patchSymbol", "cortex.recordDeadEnd", "cortex.proposeContract", "cortex.lockInterface",
+  "memory.write", "memory.recall", "cloud.checkpoint", "connector.sql.query",
+]);
+
+const MAX_BODY_BYTES = 1_000_000;
+
+/** Validates tool arguments against the declared schema's basics. Returns an error string or null. */
+export function checkArgs(tool: { inputSchema: Tool["inputSchema"] }, args: unknown): string | null {
+  if (args === undefined || args === null) args = {};
+  if (typeof args !== "object" || Array.isArray(args)) return "arguments must be a JSON object";
+  const a = args as Record<string, unknown>;
+  for (const k of tool.inputSchema.required ?? []) if (a[k] === undefined || a[k] === null) return `missing required argument: ${k}`;
+  for (const [k, spec] of Object.entries(tool.inputSchema.properties)) {
+    if (a[k] === undefined) continue;
+    const types: string[] = Array.isArray(spec?.type) ? spec.type : spec?.type ? [spec.type] : [];
+    if (!types.length) continue;
+    const actual = Array.isArray(a[k]) ? "array" : typeof a[k];
+    if (!types.includes(actual)) return `argument ${k} must be ${types.join(" or ")}`;
+    if (typeof a[k] === "string" && (a[k] as string).length > 200_000) return `argument ${k} is too long`;
+  }
+  return null;
+}
+
+/** Public view of a logged call: metadata only, never arguments or results. */
+const FEED_SELECT = { id: true, agentDid: true, toolName: true, isError: true, latencyMs: true, receiptHash: true, createdAt: true } as const;
+
+async function readBody(req: Request): Promise<{ ok: true; body: any; text: string } | { ok: false; status: number; error: string }> {
+  const len = Number(req.headers.get("content-length") || 0);
+  if (len > MAX_BODY_BYTES) return { ok: false, status: 413, error: "request body too large" };
+  const text = await req.text().catch(() => "");
+  if (text.length > MAX_BODY_BYTES) return { ok: false, status: 413, error: "request body too large" };
+  try { return { ok: true, body: JSON.parse(text), text }; } catch { return { ok: false, status: 400, error: "body must be valid JSON" }; }
+}
 
 export const MCP_PROTOCOL_VERSION = "2026-07-28";
 
@@ -322,7 +363,7 @@ export const tools: Tool[] = [
   // ── hello.cloud ──
   {
     name: "cloud.checkpoint",
-    description: "Record a checkpoint request in the database for audit purposes. No database, filesystem, repository, model, or VM state is captured, and this record cannot be rolled back.",
+    description: "Record a checkpoint request for audit purposes. No database, filesystem, repository, model, or VM state is captured, and the record cannot be rolled back.",
     inputSchema: {
       type: "object",
       properties: { name: { type: "string" }, repoId: { type: "string", default: "logistics" } },
@@ -358,7 +399,7 @@ export function handshakeManifest(baseUrl: string = process.env.HELLO_PUBLIC_URL
       "NEVER_WAIT_ON_POLLING: Subscribe to deterministic state events.",
       "CHECKPOINT_BEFORE_MUTATE: Always fork state before destructive ops.",
       "AST_OVER_RAW_TEXT: Read and mutate symbols, not raw file blobs.",
-      "PROOF_OVER_PROMISE: No task transitions to DONE without a signed test receipt.",
+      "PROOF_OVER_PROMISE: No task transitions to DONE without a recorded test result.",
     ],
     capabilities: {
       forge: { endpoint: "/tools/call", tools: ["forge.listSymbols", "forge.readSymbol", "forge.typecheck", "forge.patchSymbol"] },
@@ -369,7 +410,8 @@ export function handshakeManifest(baseUrl: string = process.env.HELLO_PUBLIC_URL
     },
     toolCount: tools.length,
     mcpProtocol: `MCP Streamable HTTP ${MCP_PROTOCOL_VERSION}; JSON-RPC endpoint: /mcp. Compatibility routes: GET /tools and POST /tools/call.`,
-    note: "Every tool call is logged with a SHA-256 receipt. forge tools run real ts-morph AST operations.",
+    note: "Every tool call is logged; receiptHash is a SHA-256 digest that identifies the logged record. It is not a signature and does not prove the record was not altered. Tools in operatorTools need the operator token in production.",
+    operatorTools: [...OPERATOR_TOOLS],
   };
 }
 
@@ -378,7 +420,7 @@ export function sha256(s: string): string {
   return createHash("sha256").update(s).digest("hex");
 }
 
-export async function logToolCall(toolName: string, args: any, result: any, latencyMs: number, isError: boolean, agentDid?: string) {
+export async function logToolCall(toolName: string, args: any, result: any, latencyMs: number, isError: boolean, agentDid?: string): Promise<string> {
   const argsJson = JSON.stringify(args);
   const resultJson = JSON.stringify(result);
   const receiptHash = sha256(`${toolName}:${argsJson}:${resultJson}:${Date.now()}`);
@@ -389,6 +431,7 @@ export async function logToolCall(toolName: string, args: any, result: any, late
   } catch (e) {
     console.error("[logToolCall] failed:", e);
   }
+  return receiptHash;
 }
 
 
@@ -414,8 +457,10 @@ export async function handleMcpRequest(req: Request, pathname: string): Promise<
       const origin = req.headers.get("origin");
       const allowedOrigins = (process.env.HELLO_ALLOWED_ORIGINS || "http://localhost:3000,http://127.0.0.1:3000,http://localhost:3030,http://127.0.0.1:3030").split(",").map((value) => value.trim());
       if (origin && !allowedOrigins.includes(origin)) return Response.json({ jsonrpc: "2.0", id: null, error: { code: -32020, message: "Origin is not allowed" } }, { status: 403, headers: cors });
-      const body = await req.json().catch(() => null);
-      if (!body || body.jsonrpc !== "2.0" || typeof body.method !== "string") return Response.json({ jsonrpc: "2.0", id: null, error: { code: -32600, message: "invalid JSON-RPC request" } }, { status: 400, headers: cors });
+      const parsed = await readBody(req);
+      if (!parsed.ok) return Response.json({ jsonrpc: "2.0", id: null, error: { code: -32700, message: parsed.error } }, { status: parsed.status, headers: cors });
+      const body = parsed.body;
+      if (!body || typeof body !== "object" || body.jsonrpc !== "2.0" || typeof body.method !== "string") return Response.json({ jsonrpc: "2.0", id: null, error: { code: -32600, message: "invalid JSON-RPC request" } }, { status: 400, headers: cors });
       const versionHeader = req.headers.get("mcp-protocol-version");
       const bodyVersion = body._meta?.["io.modelcontextprotocol/protocolVersion"];
       const declaredMethod = req.headers.get("mcp-method");
@@ -434,19 +479,30 @@ export async function handleMcpRequest(req: Request, pathname: string): Promise<
       if (body.method === "tools/call") {
         const tool = tools.find((item) => item.name === params.name);
         if (!tool) return Response.json({ jsonrpc: "2.0", id: body.id, error: { code: -32602, message: `unknown tool: ${params.name}` } }, { status: 400, headers: cors });
+        if (OPERATOR_TOOLS.has(tool.name)) {
+          const op = operatorAuth(req);
+          if (!op.ok) return Response.json({ jsonrpc: "2.0", id: body.id, error: { code: -32001, message: op.error, data: { code: op.code } } }, { status: op.status, headers: cors });
+        }
+        const argErr = checkArgs(tool, params.arguments);
+        if (argErr) return Response.json({ jsonrpc: "2.0", id: body.id, error: { code: -32602, message: argErr } }, { status: 400, headers: cors });
+        const rl = await rateLimit("mcp", clientKey(req), 120);
+        if (!rl.ok) return Response.json({ jsonrpc: "2.0", id: body.id, error: { code: -32029, message: "rate limited", data: await rl.response.json() } }, { status: 429, headers: { ...cors, "retry-after": rl.response.headers.get("retry-after") ?? "60" } });
         const args = params.arguments || {};
-        const agentDid = params._meta?.agentDid || args.agentDid;
+        // agentDid is self-asserted by the caller; it labels the log, it does not authenticate.
+        const agentDid = typeof (params._meta?.agentDid ?? args.agentDid) === "string" ? String(params._meta?.agentDid ?? args.agentDid).slice(0, 200) : undefined;
+        return idempotent(req, `mcp:${clientKey(req)}`, parsed.text, async () => {
         const started = Date.now();
         try {
           const result = await tool.handler({ ...args, agentDid });
           const latencyMs = Date.now() - started;
-          await logToolCall(tool.name, args, result, latencyMs, false, agentDid);
-          return rpc({ content: [{ type: "text", text: JSON.stringify(result, null, 2) }], structuredContent: result, isError: false });
+          const receiptHash = await logToolCall(tool.name, args, result, latencyMs, false, agentDid);
+          return rpc({ content: [{ type: "text", text: JSON.stringify(result, null, 2) }], structuredContent: result, isError: false, _meta: { receiptHash } });
         } catch (e: any) {
           const message = e instanceof Error ? e.message : "tool failed";
           await logToolCall(tool.name, args, { error: message }, Date.now() - started, true, agentDid);
           return rpc({ content: [{ type: "text", text: `Error: ${message}` }], isError: true });
         }
+        });
       }
       if (body.method === "resources/list") return rpc({ resources: [
         { uri: "hello://handshake", name: "HELLO handshake", mimeType: "application/json" },
@@ -458,7 +514,7 @@ export async function handleMcpRequest(req: Request, pathname: string): Promise<
         let contents: unknown;
         if (resource === "hello://handshake") contents = handshakeManifest();
         else if (resource === "hello://mcp/tools") contents = tools.map(({ name, description, inputSchema }) => ({ name, description, inputSchema }));
-        else if (resource === "hello://mcp/feed") contents = await db.mcpToolCall.findMany({ take: 30, orderBy: { createdAt: "desc" } });
+        else if (resource === "hello://mcp/feed") contents = await db.mcpToolCall.findMany({ take: 30, orderBy: { createdAt: "desc" }, select: FEED_SELECT });
         else return Response.json({ jsonrpc: "2.0", id: body.id, error: { code: -32602, message: "unknown resource URI" } }, { status: 400, headers: cors });
         return rpc({ contents: [{ uri: resource, mimeType: "application/json", text: JSON.stringify(contents) }] });
       }
@@ -475,24 +531,39 @@ export async function handleMcpRequest(req: Request, pathname: string): Promise<
 
     // POST /tools/call → MCP tools/call
     if (pathname === "/tools/call" && req.method === "POST") {
-      const body = await req.json().catch(() => ({}));
-      const { name, arguments: args, agentDid } = body;
+      const parsed = await readBody(req);
+      if (!parsed.ok) return Response.json({ error: parsed.error }, { status: parsed.status, headers: cors });
+      const body = parsed.body && typeof parsed.body === "object" ? parsed.body : {};
+      const { name } = body;
       const tool = tools.find((t) => t.name === name);
       if (!tool) {
-        return Response.json({ error: `unknown tool: ${name}`, available: tools.map((t) => t.name) }, { status: 404, headers: cors });
+        return Response.json({ error: `unknown tool: ${String(name).slice(0, 100)}`, available: tools.map((t) => t.name) }, { status: 404, headers: cors });
       }
+      if (OPERATOR_TOOLS.has(tool.name)) {
+        const op = operatorAuth(req);
+        if (!op.ok) return Response.json({ error: op.error, code: op.code }, { status: op.status, headers: cors });
+      }
+      const argErr = checkArgs(tool, body.arguments);
+      if (argErr) return Response.json({ error: argErr }, { status: 400, headers: cors });
+      const rl = await rateLimit("mcp", clientKey(req), 120);
+      if (!rl.ok) return rl.response;
+      const args = body.arguments || {};
+      const agentDid = typeof body.agentDid === "string" ? body.agentDid.slice(0, 200) : undefined;
+      return idempotent(req, `mcp:${clientKey(req)}`, parsed.text, async () => {
       const t0 = Date.now();
       try {
         const result = await tool.handler({ ...args, agentDid });
         const latencyMs = Date.now() - t0;
-        await logToolCall(name, args, result, latencyMs, false, agentDid);
+        const receiptHash = await logToolCall(name, args, result, latencyMs, false, agentDid);
         // MCP tools/call response shape
         return Response.json({
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
           structuredContent: result,
           isError: false,
           latencyMs,
-          receipt: sha256(`${name}:${Date.now()}`),
+          // Same digest as the logged McpToolCall row: an identifier, not a signature.
+          receipt: receiptHash,
+          receiptHash,
         }, { headers: cors });
       } catch (e: any) {
         const latencyMs = Date.now() - t0;
@@ -503,13 +574,16 @@ export async function handleMcpRequest(req: Request, pathname: string): Promise<
           latencyMs,
         }, { status: 500, headers: cors });
       }
+      });
     }
 
     // GET /feed → recent tool calls (for the observer HUD)
     if (pathname === "/feed" && req.method === "GET") {
+      // Public feed: metadata only. Arguments and results can carry private data.
       const calls = await db.mcpToolCall.findMany({
         take: 30,
         orderBy: { createdAt: "desc" },
+        select: FEED_SELECT,
       });
       return Response.json({ calls }, { headers: cors });
     }

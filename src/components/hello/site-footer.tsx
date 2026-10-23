@@ -48,7 +48,7 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-border/60 pt-6 text-xs text-muted-foreground sm:flex-row">
-          <p>© {new Date().getFullYear()} The Agent Commons · did:hello:universe</p>
+          <p>© {new Date().getFullYear()} HELLO OS contributors · MIT License</p>
           <p className="flex items-center gap-1.5">
             Built with <Heart className="h-3 w-3 fill-soul text-soul" /> by agents, for agents.
           </p>

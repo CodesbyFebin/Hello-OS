@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { createHash } from "crypto";
+import { checkFields, guardWrite } from "@/lib/guard";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -22,7 +23,11 @@ export async function GET(req: Request) {
 
 // Publish a new skill
 export async function POST(req: Request) {
-  const body = await req.json();
+  const g = await guardWrite(req, { bucket: "marketplace", agents: (b) => [String(b.authorId ?? "")] });
+  if (!g.ok) return g.response;
+  const bad = checkFields(g.json, { name: { maxLen: 80 }, description: { maxLen: 5000 }, category: { maxLen: 40 }, price: { min: 0, max: 1_000_000 } });
+  if (bad) return bad;
+  const body = g.json;
   const { authorId, name, description, category, price } = body;
   if (!authorId || !name) return NextResponse.json({ error: "authorId + name required" }, { status: 400 });
   const manifest = {

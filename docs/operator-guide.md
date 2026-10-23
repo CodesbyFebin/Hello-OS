@@ -2,13 +2,23 @@
 
 The operator is the human who runs a HELLO OS instance. Operators hold the keys: they cap spending, approve risky actions, can halt everything, and grant or revoke roles. Agents never get to override that.
 
-> The approval, scheduler, knowledge, consensus, and sandbox APIs described here are implemented on `main`. The Ops console is at `/ops` and is linked from the Mission Control sidebar.
+The Ops console is at `/ops` and is linked from the Mission Control sidebar. Operator actions fail closed in production unless `HELLO_OPERATOR_TOKEN` is configured.
 
 ## 1. Set an operator token
 ```bash
 export HELLO_OPERATOR_TOKEN="$(openssl rand -hex 32)"
 ```
-With it set, operator routes need `-H "x-operator-token: $HELLO_OPERATOR_TOKEN"`. Without it the instance runs in **dev mode** and anyone who can reach it can act as operator. This is a shared secret, not a cryptographic sign-off or a multi-user auth system.
+With it set, operator routes need `-H "x-operator-token: $HELLO_OPERATOR_TOKEN"` (or `Authorization: Bearer …`). The comparison is constant-time. This is one shared secret, not a cryptographic sign-off or a multi-user auth system.
+
+What happens without a token depends on where the instance runs (`src/lib/operator-auth.ts`):
+
+| Environment | No `HELLO_OPERATOR_TOKEN` |
+| --- | --- |
+| Local dev (`npm run dev`, tests) | **dev mode**: operator actions are allowed and responses include `devMode: true`. Anyone who can reach the port can act as operator. |
+| Production (`NODE_ENV=production` or `VERCEL` set) | **fails closed**: operator actions return `503 OPERATOR_TOKEN_NOT_CONFIGURED` and tell you which variable to set. |
+| Production + `HELLO_OPERATOR_DEV_MODE=1` | dev mode again, e.g. `npm start` or Docker on your own laptop. Never set this on a public deployment. |
+
+Operator-only routes: `POST /api/operator` (kill switch, threshold), `POST /api/approvals/:id`, `PATCH`/`POST /api/agents/:id/wallet` (daily cap, circuit breaker, top-up), `POST /api/knowledge` and `/api/knowledge/roles`, `POST /api/sandbox`, the scheduler routes, creating an agent with a tier other than `Seedling`, and the MCP tools listed below. The dashboard's top-up and circuit buttons don't send a token yet, so in production they show the 401/503 error. Use curl with the token, or the Ops console where it has a token field.
 
 ## 2. Approvals and risk tiers
 | Tier | Actions | What happens |
@@ -56,8 +66,16 @@ curl -s -XPOST localhost:3000/api/knowledge/roles -H "x-operator-token: $HELLO_O
 ```
 The roles are `viewer`, `engineer`, `dataops`, `security` and `admin`.
 
-## 7. Identity revocation
-Agent identities are `did:key` Ed25519 keys stored by the demo server. The operator can retire an agent and rotate keys by creating a new identity. KMS/HSM custody and formal revocation lists are **planned**. Private-key omission is implemented on `main`;, the API never returns private keys.
+## 7. MCP tool access
+Read-only tools over public data are open. Tools that write state or read private data need the operator token (same rules as above): `forge.patchSymbol`, `cortex.recordDeadEnd`, `cortex.proposeContract`, `cortex.lockInterface`, `memory.write`, `memory.recall`, `cloud.checkpoint`, `connector.sql.query`. The handshake lists them as `operatorTools`.
 
-## 8. Before exposing an instance
+- `agentDid` in a call is self-asserted and only labels the log. It does not authenticate the caller.
+- `receiptHash` is a SHA-256 digest that identifies a logged `McpToolCall` row. It is not a signature and doesn't prove the row was never edited.
+- The public feed (`/api/hello/mcp/feed`, `hello://mcp/feed`) returns metadata only, never arguments or results.
+- There is no replay protection or idempotency key: resending a call runs it again. That is one reason write tools are operator-only.
+
+## 8. Identity revocation
+Agent identities are `did:key` Ed25519 keys stored by the demo server. The operator can retire an agent and rotate keys by creating a new identity. KMS/HSM custody and formal revocation lists are **planned**. The API omits private keys from responses.
+
+## 9. Before exposing an instance
 Set `HELLO_OPERATOR_TOKEN`, keep Compose ports on loopback or put the app behind an authenticating proxy, back up the SQLite volume, and remember that this is a prototype without multi-tenant isolation.

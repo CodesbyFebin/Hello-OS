@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { operatorAllowed } from "@/lib/operator-auth";
+import { operatorAuth, operatorDenied } from "@/lib/operator-auth";
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  if (!operatorAllowed(req)) return NextResponse.json({ error: "operator token required" }, { status: 401 });
+  const op = operatorAuth(req); if (!op.ok) return operatorDenied(op);
   const { id } = await params;
   const b = await req.json().catch(() => ({}));
   const data: { enabled?: boolean; nextRunAt?: Date } = {};
@@ -15,7 +15,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 }
 
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  if (!operatorAllowed(req)) return NextResponse.json({ error: "operator token required" }, { status: 401 });
+  const op = operatorAuth(req); if (!op.ok) return operatorDenied(op);
   const { id } = await params;
   await db.scheduledJob.delete({ where: { id } }).catch(() => null);
   return NextResponse.json({ ok: true });

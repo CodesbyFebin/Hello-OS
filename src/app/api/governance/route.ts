@@ -4,6 +4,7 @@
 // Compute buyers (large wallets) cannot legislate constitutional changes.
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { checkFields, guardWrite } from "@/lib/guard";
 
 export async function GET() {
   const proposals = await db.governanceProposal.findMany({
@@ -17,7 +18,11 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const body = await req.json();
+  const g = await guardWrite(req, { bucket: "governance", agents: (b) => [String(b.proposerId ?? "")] });
+  if (!g.ok) return g.response;
+  const bad = checkFields(g.json, { title: { maxLen: 200 }, description: { maxLen: 5000 } });
+  if (bad) return bad;
+  const body = g.json;
   const { title, description, proposerId, voteType } = body;
   if (!title || !proposerId) return NextResponse.json({ error: "title+proposerId required" }, { status: 400 });
   const prop = await db.governanceProposal.create({
@@ -34,7 +39,9 @@ export async function POST(req: Request) {
 
 // Cast a vote — applies the correct weighting based on proposal voteType
 export async function PATCH(req: Request) {
-  const body = await req.json();
+  const g = await guardWrite(req, { bucket: "governance", agents: (b) => [String(b.agentId ?? "")] });
+  if (!g.ok) return g.response;
+  const body = g.json;
   const { proposalId, agentId, support } = body;
 
   const existing = await db.governanceVote.findUnique({

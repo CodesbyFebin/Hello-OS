@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { createHash } from "crypto";
 import { meteredChat, aiErrorResponse } from "@/lib/ai/metered";
 import { aiProviderConfigured, NoAIProviderError } from "@/lib/ai/provider";
+import { guardWrite } from "@/lib/guard";
 
 export async function GET() {
   const apps = await db.apprenticeship.findMany({
@@ -16,7 +17,9 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const body = await req.json();
+  const g = await guardWrite(req, { bucket: "operator", operatorOnly: true });
+  if (!g.ok) return g.response;
+  const body = g.json;
   const { mentorId, apprenticeId } = body;
   if (!mentorId || !apprenticeId) return NextResponse.json({ error: "mentor+apprentice required" }, { status: 400 });
   const app = await db.apprenticeship.create({
@@ -27,7 +30,9 @@ export async function POST(req: Request) {
 
 // Graduate an apprenticeship — extract procedure
 export async function PATCH(req: Request) {
-  const body = await req.json();
+  const g = await guardWrite(req, { bucket: "operator", operatorOnly: true });
+  if (!g.ok) return g.response;
+  const body = g.json;
   const { id, action } = body; // action: extract | graduate
   if (action === "extract") {
     const app = await db.apprenticeship.findUnique({ where: { id } });

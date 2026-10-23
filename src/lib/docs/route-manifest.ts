@@ -118,6 +118,13 @@ export const ROUTE_MANIFEST = {
       ]
     },
     {
+      "path": "/api/agents/[id]/auth-key",
+      "methods": [
+        "POST",
+        "DELETE"
+      ]
+    },
+    {
       "path": "/api/agents/[id]/export",
       "methods": [
         "GET"
@@ -273,6 +280,25 @@ export const ROUTE_MANIFEST = {
     },
     {
       "path": "/api/economy/wallets",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/eval/promotions",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/eval/promotions/[id]",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/eval/runs",
       "methods": [
         "GET"
       ]

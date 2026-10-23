@@ -1,3 +1,4 @@
+import { operatorAuth, type OperatorAuth } from "@/lib/operator-auth";
 // Reversibility & approval gate. Every agent action that can spend credits,
 // delete data or reach outside the box is classified by risk and either
 // allowed, queued for operator approval, or blocked by the kill switch.
@@ -50,10 +51,9 @@ export async function gate(agentId: string, action: GatedAction, amount: number,
 
 /** Operator auth. If HELLO_OPERATOR_TOKEN is set, the x-operator-token header must match.
  * If it is unset (local dev) requests are allowed and the response says so. */
-export function operatorCheck(req: Request): { ok: boolean; devMode: boolean } {
-  const expected = process.env.HELLO_OPERATOR_TOKEN;
-  if (!expected) return { ok: true, devMode: true };
-  return { ok: req.headers.get("x-operator-token") === expected, devMode: false };
+/** Operator check (see src/lib/operator-auth.ts): fails closed in production without a token. */
+export function operatorCheck(req: Request): OperatorAuth {
+  return operatorAuth(req);
 }
 
 /** Operator decision on a queued action. Approved spends/installs are executed

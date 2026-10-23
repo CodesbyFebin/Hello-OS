@@ -75,7 +75,7 @@ export function EcosystemClient() {
       <div className="relative mx-auto max-w-[1440px] px-4 pb-16 pt-10 sm:px-7 sm:pt-14">
         <div className="mb-3 flex items-center gap-2 font-mono text-[10px] tracking-[.22em] text-[#43e6a5]"><span className="h-px w-7 bg-[#43e6a5]/60"/>AGENT COMMONS <span className="text-white/30">/ OBSERVABILITY</span></div>
         <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
-          <div><h1 className="max-w-3xl font-mono text-3xl font-bold tracking-[-.06em] sm:text-5xl">A connected view of <span className="bg-gradient-to-r from-[#43e6a5] via-[#a78bfa] to-[#5dd6ec] bg-clip-text text-transparent">HELLO OS</span></h1><p className="mt-4 max-w-2xl text-sm leading-6 text-white/55">Explore the identity, memory, work, and tool systems that power the Agent Commons. Counts and activity below come from the connected HELLO OS API.</p></div>
+          <div><h1 className="max-w-3xl font-mono text-3xl font-bold tracking-[-.06em] sm:text-5xl">A connected view of <span className="bg-gradient-to-r from-[#43e6a5] via-[#a78bfa] to-[#5dd6ec] bg-clip-text text-transparent">HELLO OS</span></h1><p className="mt-4 max-w-2xl text-sm leading-6 text-white/55">Explore the identity, memory, work, and tool systems that make up this HELLO OS instance. Counts and activity below come from the connected HELLO OS API.</p></div>
           <div className="flex flex-wrap gap-2 self-start md:self-auto"><Link href="/aml-studio" className="inline-flex items-center gap-2 rounded-md border border-[#43e6a5]/30 bg-[#43e6a5]/[.06] px-3 py-2 font-mono text-[10px] text-[#43e6a5] transition hover:bg-[#43e6a5]/[.12]">Open AML Studio <ArrowUpRight size={13}/></Link><Link href="/universe" className="inline-flex items-center gap-2 rounded-md border border-white/10 px-3 py-2 font-mono text-[10px] text-white/55 transition hover:border-white/25 hover:text-white">System overview <ArrowUpRight size={13}/></Link></div>
         </div>
 
@@ -111,7 +111,7 @@ export function EcosystemClient() {
           ].map((item) => { const Icon = item.icon; return <div key={item.title} className="flex items-center gap-3 rounded-lg border border-white/[.06] bg-white/[.02] px-3 py-2.5"><Icon size={15} className={item.color}/><span className="flex-1 text-[11px]">{item.title}</span><span className="font-mono text-[9px] text-white/40">{item.state}</span></div>; })}</div><p className="mt-4 text-[10px] leading-5 text-white/38">The ecosystem map does not invent provider counts, traffic rates, model prices, or economic activity. Wallet totals are HELLO credits from local application storage.</p></section>
         </div>
 
-        <footer className="mt-8 flex flex-col justify-between gap-2 border-t border-white/[.08] pt-4 font-mono text-[9px] text-white/35 sm:flex-row"><span>HELLO OS · Agent Commons · Local-first prototype</span><span>{updated ? `Last refreshed ${updated.toLocaleTimeString()}` : "No successful refresh yet"} <span className="mx-2 text-white/15">·</span><Link href="/" className="hover:text-[#43e6a5]">Observation Deck</Link></span></footer>
+        <footer className="mt-8 flex flex-col justify-between gap-2 border-t border-white/[.08] pt-4 font-mono text-[9px] text-white/35 sm:flex-row"><span>HELLO OS · Local-first prototype</span><span>{updated ? `Last refreshed ${updated.toLocaleTimeString()}` : "No successful refresh yet"} <span className="mx-2 text-white/15">·</span><Link href="/" className="hover:text-[#43e6a5]">Observation Deck</Link></span></footer>
       </div>
     </main>
   );

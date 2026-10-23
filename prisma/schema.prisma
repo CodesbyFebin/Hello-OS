@@ -33,6 +33,11 @@ model Agent {
   publicKeyHex      String? // 32-byte hex (denormalized for fast verify)
   privateKeyHex     String? // 32-byte seed hex — held by custodian (this demo). Production: HSM/KMS.
   keyId             String? // did:key:z...#z...
+  // --- Request-auth key (separate from the DID key). Only the PUBLIC half is
+  // stored; the private half is shown once at issue time. Operator-revocable.
+  authPublicKeyHex  String?
+  authKeyIssuedAt   DateTime?
+  authKeyRevokedAt  DateTime?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -773,4 +778,86 @@ model DocsPost {
 
   @@index([clientKey, createdAt])
   @@index([createdAt])
+}
+
+// ============================================================
+// REQUEST SAFETY — replay nonces, idempotency, rate limits (src/lib/guard.ts)
+// ============================================================
+
+model RequestNonce {
+  id        String   @id @default(cuid())
+  principal String
+  nonce     String
+  createdAt DateTime @default(now())
+
+  @@unique([principal, nonce])
+  @@index([createdAt])
+}
+
+model IdempotencyRecord {
+  id           String   @id @default(cuid())
+  scope        String
+  key          String
+  requestHash  String
+  status       Int      // 0 = in progress, otherwise the stored HTTP status
+  responseJson String   @default("")
+  createdAt    DateTime @default(now())
+
+  @@unique([scope, key])
+  @@index([createdAt])
+}
+
+model RateLimitBucket {
+  id          String   @id @default(cuid())
+  key         String
+  windowStart DateTime
+  count       Int      @default(0)
+
+  @@unique([key, windowStart])
+  @@index([windowStart])
+}
+
+// ============================================================
+// EVALUATION — real task results (src/lib/eval). Not the gene-vector simulation.
+// ============================================================
+
+model EvalRun {
+  id               String   @id @default(cuid())
+  suiteId          String
+  suiteVersion     String
+  suiteHash        String
+  fingerprint      String
+  candidateId      String
+  revision         String
+  promptVersion    String
+  provider         String
+  model            String
+  configJson       String
+  resultsJson      String
+  summaryJson      String
+  requiredPassed   Int
+  requiredTotal    Int
+  safetyViolations Int
+  startedAt        DateTime
+  finishedAt       DateTime
+  createdAt        DateTime @default(now())
+
+  @@index([suiteId, createdAt])
+  @@index([fingerprint])
+}
+
+model EvalPromotion {
+  id                    String    @id @default(cuid())
+  suiteId               String
+  candidateRunId        String
+  baselineRunId         String?
+  status                String    // blocked | pending | approved | rejected | rolled_back
+  requestedBy           String
+  approvedBy            String?
+  reasonsJson           String
+  previousChampionRunId String?
+  createdAt             DateTime  @default(now())
+  decidedAt             DateTime?
+
+  @@index([suiteId, status, decidedAt])
 }

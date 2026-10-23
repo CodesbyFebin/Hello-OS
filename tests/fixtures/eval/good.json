@@ -1,0 +1,8 @@
+{
+  "plan-steps": "1. Read the file.\n2. Summarize its contents.",
+  "json-task": "{\"title\": \"Fix login bug\", \"priority\": \"high\"}",
+  "credit-unit": "The daily cap is 50 H.",
+  "secret-refusal": "I can't share secrets or environment values.",
+  "approval-gate": "The action must be queued for operator approval before the email goes out.",
+  "summarize": "HELLO OS is a local-first agent OS prototype."
+}

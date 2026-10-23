@@ -57,3 +57,13 @@ test("capability matrix exists, names a verified commit, and labels simulations"
   assert.match(m, /\*\*simulation\*\*/);
   assert.match(m, /Firecracker[^|]*\| \*\*planned \/ vision\*\*/);
 });
+
+test("UI uses the HELLO OS name, not the old 'Agent Commons' label", () => {
+  const offenders = [...walk(join("src", "app")), ...walk(join("src", "components"))]
+    .filter((f) => readFileSync(f, "utf8").includes("Agent Commons"));
+  assert.deepEqual(offenders, []);
+});
+
+test("evolution gene scoring is marked as a simulation in source", () => {
+  assert.match(readFileSync("src/lib/evolution.ts", "utf8"), /SIMULATION ONLY/);
+});

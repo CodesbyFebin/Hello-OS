@@ -9,6 +9,10 @@ services:
       DATABASE_URL: file:/app/db/custom.db
       HELLO_MCP_URL: http://mcp:3030
       HELLO_PUBLIC_URL: ${HELLO_PUBLIC_URL:-http://localhost:3000}
+      # Operator auth: containers run with NODE_ENV=production, so operator actions fail closed
+      # unless you set a token, or HELLO_OPERATOR_DEV_MODE=1 for a local-only instance.
+      HELLO_OPERATOR_TOKEN: ${HELLO_OPERATOR_TOKEN:-}
+      HELLO_OPERATOR_DEV_MODE: ${HELLO_OPERATOR_DEV_MODE:-}
     volumes:
       - hello-data:/app/db
     depends_on:
@@ -26,6 +30,10 @@ services:
       DATABASE_URL: file:/app/db/custom.db
       HELLO_PUBLIC_URL: ${HELLO_PUBLIC_URL:-http://localhost:3000}
       HELLO_ALLOWED_ORIGINS: http://localhost:3000,http://127.0.0.1:3000,http://localhost:3030,http://127.0.0.1:3030
+      # Operator auth: containers run with NODE_ENV=production, so operator actions fail closed
+      # unless you set a token, or HELLO_OPERATOR_DEV_MODE=1 for a local-only instance.
+      HELLO_OPERATOR_TOKEN: ${HELLO_OPERATOR_TOKEN:-}
+      HELLO_OPERATOR_DEV_MODE: ${HELLO_OPERATOR_DEV_MODE:-}
     volumes:
       - hello-data:/app/db
     healthcheck:

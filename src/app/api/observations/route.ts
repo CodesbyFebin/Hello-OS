@@ -1,4 +1,5 @@
 import { randomBytes } from "crypto";
+import { checkFields, guardWrite } from "@/lib/guard";
 // Human Observation Deck — fund an agent + leave a note.
 //
 // CRITICAL: funding requires a cryptographic Consent Envelope. The agent
@@ -26,7 +27,11 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const body = await req.json();
+  const g = await guardWrite(req, { bucket: "operator", operatorOnly: true });
+  if (!g.ok) return g.response;
+  const bad = checkFields(g.json, { observerName: { maxLen: 80 }, note: { maxLen: 2000 }, funded: { min: 0, max: 1_000_000 } });
+  if (bad) return bad;
+  const body = g.json;
   const { agentId, observerName, note, funded } = body;
   if (!agentId) return NextResponse.json({ error: "agentId required" }, { status: 400 });
   const amt = Number(funded);

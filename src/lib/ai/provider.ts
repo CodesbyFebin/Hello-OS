@@ -5,6 +5,8 @@ export const PROVIDERS = {
   openrouter: { baseURL: "https://openrouter.ai/api/v1" },
   // Kilo Code AI Gateway, OpenAI-compatible: https://kilo.ai/docs/gateway
   kilo: { baseURL: "https://ai-gateway.kilo.ai/api/v1" },
+  // Local Ollama (OpenAI-compatible /v1). Optional; no key needed. Disabled unless HELLO_AI_PROVIDER=ollama.
+  ollama: { baseURL: "http://127.0.0.1:11434/v1" },
   custom: { baseURL: "" },
 } as const;
 export type ProviderName = keyof typeof PROVIDERS;
@@ -15,7 +17,7 @@ export const DEFAULT_MODEL = "google/gemma-4-31b-it:free";
 export class NoAIProviderError extends Error {
   code = "NO_AI_PROVIDER" as const;
   constructor(detail?: string) {
-    super(`no AI provider configured${detail ? `: ${detail}` : ""}. Set HELLO_AI_PROVIDER (openrouter|kilo|custom) and HELLO_AI_API_KEY.`);
+    super(`no AI provider configured${detail ? `: ${detail}` : ""}. Set HELLO_AI_PROVIDER (openrouter|kilo|ollama|custom) and HELLO_AI_API_KEY.`);
     this.name = "NoAIProviderError";
   }
 }
@@ -44,7 +46,10 @@ export function resolveAIConfig(env: Env = process.env): { ok: true; config: AIC
   const baseURL = (env.HELLO_AI_BASE_URL?.trim() || PROVIDERS[provider].baseURL).replace(/\/+$/, "");
   if (!baseURL) return { ok: false, reason: "HELLO_AI_BASE_URL is required for provider custom" };
   const apiKey = env.HELLO_AI_API_KEY?.trim() ?? "";
-  if (!apiKey) return { ok: false, reason: "HELLO_AI_API_KEY is not set" };
+  // Ollama ignores auth, so a key is optional there; every other provider needs one.
+  if (!apiKey && provider !== "ollama") return { ok: false, reason: "HELLO_AI_API_KEY is not set" };
+  // Local servers only have the models you pulled, so the hosted default is not a safe guess.
+  if (provider === "ollama" && !env.HELLO_AI_MODEL?.trim()) return { ok: false, reason: "HELLO_AI_MODEL is required for provider ollama (a model you have pulled)" };
   const timeoutMs = Number(env.HELLO_AI_TIMEOUT_MS) > 0 ? Number(env.HELLO_AI_TIMEOUT_MS) : 30_000;
   const maxRetries = Number.isInteger(Number(env.HELLO_AI_MAX_RETRIES)) && Number(env.HELLO_AI_MAX_RETRIES) >= 0 ? Number(env.HELLO_AI_MAX_RETRIES) : 2;
   return { ok: true, config: { provider, baseURL, apiKey, model: env.HELLO_AI_MODEL?.trim() || DEFAULT_MODEL, timeoutMs, maxRetries } };
@@ -96,7 +101,7 @@ export async function chat(messages: ChatMessage[], opts: { config?: AIConfig; m
         signal: ctl.signal,
         headers: {
           "content-type": "application/json",
-          authorization: `Bearer ${config.apiKey}`,
+          ...(config.apiKey ? { authorization: `Bearer ${config.apiKey}` } : {}),
           "x-title": "HELLO OS",
         },
         body: JSON.stringify({ model: config.model, messages, stream: false, max_tokens: opts.maxTokens ?? 1024, temperature: opts.temperature ?? 0 }),

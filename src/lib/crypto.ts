@@ -138,7 +138,7 @@ export async function verifySignature(
 
 /**
  * Construct a canonical intent message for signing.
- * Canonicalization prevents tampering — the verifier reconstructs this exact string.
+ * Canonicalization lets a verifier rebuild this exact string, so a signature check detects any change to these fields.
  */
 export function canonicalIntent(payload: Record<string, string | number>): string {
   const keys = Object.keys(payload).sort();

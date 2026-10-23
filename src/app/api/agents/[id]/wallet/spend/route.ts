@@ -6,7 +6,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   const { id } = await params;
   const body = await req.json().catch(() => ({}));
   const amount = Number(body.amount);
-  if (!Number.isFinite(amount) || amount <= 0) return NextResponse.json({ error: "amount must be a positive finite number" }, { status: 400 });
+  if (!Number.isFinite(amount) || amount <= 0 || amount > 1_000_000) return NextResponse.json({ error: "amount must be >0 and <= 1000000 H" }, { status: 400 });
   const reason = String(body.reason || "agent_spend").slice(0, 180);
   const traceId = typeof body.traceId === "string" ? body.traceId.slice(0, 100) : undefined;
 

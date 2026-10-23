@@ -33,3 +33,7 @@ Agent-scoped writes need an Ed25519 request signature from the acting agent, or 
 - `GET /api/audit` hides `detail`, `GET /api/traces` replaces titles with `[redacted]`, and `GET /api/approvals` hides payload and note unless the caller is the operator (or local dev mode). Each response includes `redacted: true|false`.
 - The dashboard and `/ops` pages have an operator token form. The token stays in `sessionStorage` for that tab only; it is not in the client bundle. It is sent as `x-operator-token`. The form shows the server's real state from `GET /api/operator`: dev mode, accepted, 401 (missing or wrong) or 503 (not configured in production).
 - Limits: `sessionStorage` can be read by any script running on the page, so an XSS bug would expose the token. The AML routes and `/api/docs/posts` are not changed by this; the AML routes don't touch the DB, and `/api/docs/posts` has its own limiter.
+
+## Database availability errors
+
+When the SQLite file named by `DATABASE_URL` is missing or empty, `/api` routes return 503 `DB_UNAVAILABLE` with the resolved path and the fix (`npx prisma db push`). That path is a server filesystem path. A schema mismatch still gives a generic 500, and the Prisma message is written only to the server log.

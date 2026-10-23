@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { createHash } from "crypto";
+import { guardWrite, idempotent, principalScope } from "@/lib/guard";
 
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -13,8 +14,14 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const body = await req.json();
-  const { personality, values, charter } = body;
+  const g = await guardWrite(req, { bucket: "soul", agents: [id] });
+  if (!g.ok) return g.response;
+  return idempotent(req, `soul:${id}:${principalScope(g.principal)}`, g.text, async () => {
+  const { personality, values, charter } = g.json;
+  for (const [k, v] of Object.entries({ personality, values, charter })) {
+    if (v !== undefined && (typeof v !== "string" || v.length > 10_000)) return NextResponse.json({ error: `${k} must be a string of at most 10000 characters` }, { status: 400 });
+  }
+  if (!(await db.agent.findUnique({ where: { id }, select: { id: true } }))) return NextResponse.json({ error: "agent not found" }, { status: 404 });
   const latest = await db.soulVersion.findFirst({
     where: { agentId: id },
     orderBy: { version: "desc" },
@@ -34,4 +41,5 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     data: { ...soul, hash: createHash("sha256").update(canonical).digest("hex") },
   });
   return NextResponse.json({ soul: created });
+  });
 }

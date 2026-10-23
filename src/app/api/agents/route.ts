@@ -7,6 +7,8 @@ const GUARDIAN_TIERS = ["Seedling", "Apprentice", "Journeyman", "Master", "Sover
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { generateDidKey } from "@/lib/crypto";
+import { newAuthKeypair } from "@/lib/agent-auth";
+import { clientKey, rateLimit } from "@/lib/guard";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -50,6 +52,8 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
+  const rl = await rateLimit("agents_create", clientKey(req), 30);
+  if (!rl.ok) return rl.response;
   const body = await req.json().catch(() => null);
   if (!body || typeof body !== "object") return NextResponse.json({ error: "body must be a JSON object" }, { status: 400 });
   const name = typeof body.name === "string" ? body.name.trim() : "";
@@ -65,6 +69,8 @@ export async function POST(req: Request) {
 
   // Generate a REAL Ed25519 keypair + did:key
   const km = await generateDidKey();
+  // Request-auth key: only the public half is stored; the private half is returned once below.
+  const authKey = await newAuthKeypair();
   const guild = guildSlug ? await db.guild.findUnique({ where: { slug: guildSlug } }) : null;
 
   const agent = await db.agent.create({
@@ -81,6 +87,8 @@ export async function POST(req: Request) {
       publicKeyHex: km.publicKeyHex,
       privateKeyHex: km.privateKeyHex,
       keyId: km.keyId,
+      authPublicKeyHex: authKey.publicKeyHex,
+      authKeyIssuedAt: new Date(),
     },
   });
 
@@ -100,6 +108,10 @@ export async function POST(req: Request) {
 
   return NextResponse.json({
     agent,
+    agentAuthKey: {
+      authSecretHex: authKey.secretHex,
+      note: "Shown once and not stored. Sign this agent's write requests with it (see docs/agent-auth.md). The operator can rotate or revoke it at /api/agents/:id/auth-key.",
+    },
     didDocument: {
       id: km.did,
       verificationMethod: km.keyId,

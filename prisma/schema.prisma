@@ -33,6 +33,11 @@ model Agent {
   publicKeyHex      String? // 32-byte hex (denormalized for fast verify)
   privateKeyHex     String? // 32-byte seed hex — held by custodian (this demo). Production: HSM/KMS.
   keyId             String? // did:key:z...#z...
+  // --- Request-auth key (separate from the DID key). Only the PUBLIC half is
+  // stored; the private half is shown once at issue time. Operator-revocable.
+  authPublicKeyHex  String?
+  authKeyIssuedAt   DateTime?
+  authKeyRevokedAt  DateTime?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -773,6 +778,43 @@ model DocsPost {
 
   @@index([clientKey, createdAt])
   @@index([createdAt])
+}
+
+// ============================================================
+// REQUEST SAFETY — replay nonces, idempotency, rate limits (src/lib/guard.ts)
+// ============================================================
+
+model RequestNonce {
+  id        String   @id @default(cuid())
+  principal String
+  nonce     String
+  createdAt DateTime @default(now())
+
+  @@unique([principal, nonce])
+  @@index([createdAt])
+}
+
+model IdempotencyRecord {
+  id           String   @id @default(cuid())
+  scope        String
+  key          String
+  requestHash  String
+  status       Int      // 0 = in progress, otherwise the stored HTTP status
+  responseJson String   @default("")
+  createdAt    DateTime @default(now())
+
+  @@unique([scope, key])
+  @@index([createdAt])
+}
+
+model RateLimitBucket {
+  id          String   @id @default(cuid())
+  key         String
+  windowStart DateTime
+  count       Int      @default(0)
+
+  @@unique([key, windowStart])
+  @@index([windowStart])
 }
 
 // ============================================================

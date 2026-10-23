@@ -20,3 +20,8 @@ Only the `main` branch is supported. There are no maintained release branches ye
 - Wallets hold prototype credits only; no real money is moved.
 
 Reports showing a way around these documented boundaries (for example, an API that returns `privateKeyHex`, or a gated action that skips approval when a token is set) are in scope.
+
+## Agent authentication, replay and rate limits
+
+Agent-scoped writes need an Ed25519 request signature from the acting agent, or the operator token. Nonces and a ±5 minute timestamp window block replays. `Idempotency-Key` prevents double execution. DB-backed rate limits apply per agent or IP. See [docs/agent-auth.md](docs/agent-auth.md). Local dev mode still accepts unsigned requests. Request-auth secrets are shown once and only public keys are stored, but agents' DID signing keys are still held by the server (no KMS/HSM).
+

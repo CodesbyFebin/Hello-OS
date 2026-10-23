@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { OperatorTokenForm } from "@/components/ops/operator-token-form";
 import { LayersCard } from "@/components/hello/layers-card";
 import { AmlPreview } from "@/components/hello/aml-preview";
 import { NetworkBackground } from "@/components/hello/network-background";
@@ -177,7 +178,7 @@ export function HelloDashboard() {
     <div className="os-shell">
       <aside className={`os-sidebar ${showMenu ? "os-sidebar-open" : ""}`}>
         <div className="os-brand"><div className="os-brand-mark"><Sparkles size={17} /></div><div><b>hello<span className="brand-period">.</span>os</b><small>AGENT OPERATING SYSTEM</small></div><button className="mobile-close" aria-label="Close menu" onClick={() => setShowMenu(false)}><X size={18} /></button></div>
-        <div className="workspace-select"><div className="workspace-glyph">⌘</div><div><b>Agent Commons</b><small>This instance</small></div></div>
+        <div className="workspace-select"><div className="workspace-glyph">⌘</div><div><b>HELLO OS</b><small>This instance</small></div></div>
         <div className="nav-caption">WORKSPACE</div>
         <nav className="os-nav">{VIEWS.map((item) => { const Icon = item.icon; return <a key={item.id} href={`#${item.id}`} className={`nav-item ${view === item.id ? "selected" : ""}`} onClick={() => setShowMenu(false)}><Icon size={17} strokeWidth={1.8} /><span>{item.label}</span>{item.id === "missions" && snap ? <em>{fmt(openMissions.length)}</em> : null}</a>; })}</nav>
         <div className="nav-caption nav-caption-spaced">SYSTEMS</div>
@@ -198,16 +199,17 @@ export function HelloDashboard() {
 
       <main className="os-main">
         <NetworkBackground />
-        <header className="os-topbar"><div className="top-left"><button className="mobile-menu" aria-label="Open menu" onClick={() => setShowMenu(true)}><Menu size={19}/></button><span className="crumb-muted">Agent Commons</span><span className="crumb-slash">/</span><span>{title}</span></div>
+        <header className="os-topbar"><div className="top-left"><button className="mobile-menu" aria-label="Open menu" onClick={() => setShowMenu(true)}><Menu size={19}/></button><span className="crumb-muted">HELLO OS</span><span className="crumb-slash">/</span><span>{title}</span></div>
           <div className="top-actions">
             {snap?.seeded && <span className="demo-pill" title={`Records created by scripts/seed.ts${snap.seededAt ? ` at ${new Date(snap.seededAt).toLocaleString()}` : ""}`}>DEMO DATA</span>}
             <div className={`connection-pill ${mode === "stream" || mode === "poll" ? "connected" : "offline"}`} title={updatedAt ? `Last update ${new Date(updatedAt).toLocaleTimeString()}` : ""}><span className="connection-led"/>{syncLabel}</div>
+            <div className="w-72"><OperatorTokenForm compact /></div>
             <button className="icon-action" aria-label="Refresh now" onClick={() => { void refresh(); void check(); }}><RefreshCw size={16}/></button>
           </div>
         </header>
 
         <div className="os-content">
-          <div className="welcome-row"><div><div className="eyebrow"><span className="eyebrow-line"/> OBSERVATION DECK {snap?.seeded && <span className="eyebrow-date">· DEMO DATA (seeded)</span>}</div><h1>{view === "overview" ? "Agent Commons" : title}</h1><p className="welcome-sub">The agent residents, missions and credits in this HELLO OS instance, synced live from its database.</p></div><div className="welcome-buttons"><a className="button-secondary" href="#missions"><Command size={15}/> Mission board</a><button className="button-primary" onClick={() => setShowSummon(true)}><Plus size={16}/> Summon agent</button></div></div>
+          <div className="welcome-row"><div><div className="eyebrow"><span className="eyebrow-line"/> OBSERVATION DECK {snap?.seeded && <span className="eyebrow-date">· DEMO DATA (seeded)</span>}</div><h1>{view === "overview" ? "HELLO OS" : title}</h1><p className="welcome-sub">The agent residents, missions and credits in this HELLO OS instance, synced live from its database.</p></div><div className="welcome-buttons"><a className="button-secondary" href="#missions"><Command size={15}/> Mission board</a><button className="button-primary" onClick={() => setShowSummon(true)}><Plus size={16}/> Summon agent</button></div></div>
 
           {view === "overview" && <>
             <div className="stat-grid">{statCards.map((s) => { const Icon = s.icon; return <article className="stat-card" key={s.label}><div className="stat-top"><span>{s.label}</span><span className={`stat-icon ${s.tint}`}><Icon size={16}/></span></div><div className="stat-value">{s.value}</div><div className="stat-foot">{s.sub}</div></article>; })}</div>

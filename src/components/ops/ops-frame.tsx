@@ -1,3 +1,4 @@
+import { OperatorTokenForm } from "./operator-token-form";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
@@ -17,6 +18,7 @@ export function OpsFrame({ title, subtitle, children }: { title: string; subtitl
           <Link href="/" className="text-zinc-400 hover:text-white">mission control</Link><span className="text-zinc-600">/</span>
           <Link href="/ops" className="text-zinc-400 hover:text-white">ops</Link><span className="text-zinc-600">/</span>
           <span className="text-white">{title}</span>
+          <div className="ml-auto w-80"><OperatorTokenForm compact /></div>
         </div>
       </header>
       <main className="mx-auto max-w-6xl px-4 py-8">

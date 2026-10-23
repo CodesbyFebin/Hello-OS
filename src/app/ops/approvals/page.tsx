@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { describeAuthError, operatorHeaders, TOKEN_EVENT } from "@/lib/operator-client";
 import { Badge, OpsFrame, opsBtn, opsCard } from "@/components/ops/ops-frame";
 
 type Control = { killSwitch: boolean; approvalThreshold: number; updatedAt: string };
@@ -10,7 +11,7 @@ type Entry = { id: string; actor: string; action: string; target: string; detail
 async function j<T>(url: string, init?: RequestInit): Promise<T> {
   const r = await fetch(url, { cache: "no-store", ...init, headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) } });
   const body = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(body.error || `HTTP ${r.status}`);
+  if (!r.ok) throw new Error(describeAuthError(r.status, body) ?? (body.error || `HTTP ${r.status}`));
   return body as T;
 }
 
@@ -26,25 +27,23 @@ export default function ApprovalsPage() {
   const [devMode, setDevMode] = React.useState(false);
   const [approvals, setApprovals] = React.useState<Approval[]>([]);
   const [audit, setAudit] = React.useState<Entry[]>([]);
-  const [token, setToken] = React.useState("");
   const [threshold, setThreshold] = React.useState("");
   const [msg, setMsg] = React.useState("");
 
-  const headers = React.useMemo(() => (token ? { "x-operator-token": token } : undefined), [token]);
   const load = React.useCallback(async () => {
     try {
-      const [c, a, l] = await Promise.all([j<{ control: Control; devMode: boolean }>("/api/operator"), j<{ approvals: Approval[] }>("/api/approvals"), j<{ entries: Entry[] }>("/api/audit")]);
+      const [c, a, l] = await Promise.all([j<{ control: Control; devMode: boolean }>("/api/operator", { headers: operatorHeaders() }), j<{ approvals: Approval[] }>("/api/approvals", { headers: operatorHeaders() }), j<{ entries: Entry[] }>("/api/audit", { headers: operatorHeaders() })]);
       setControl(c.control); setDevMode(c.devMode); setApprovals(a.approvals); setAudit(l.entries);
     } catch (e) { setMsg(e instanceof Error ? e.message : "load failed"); }
   }, []);
-  React.useEffect(() => { const t = window.setTimeout(() => { void load(); }, 0); return () => window.clearTimeout(t); }, [load]);
+  React.useEffect(() => { const t = window.setTimeout(() => { void load(); }, 0); window.addEventListener(TOKEN_EVENT, load); return () => { window.clearTimeout(t); window.removeEventListener(TOKEN_EVENT, load); }; }, [load]);
 
   async function update(body: Record<string, unknown>) {
-    try { await j("/api/operator", { method: "POST", body: JSON.stringify(body), headers }); setMsg("Saved."); await load(); }
+    try { await j("/api/operator", { method: "POST", body: JSON.stringify(body), headers: operatorHeaders() }); setMsg("Saved."); await load(); }
     catch (e) { setMsg(e instanceof Error ? e.message : "failed"); }
   }
   async function decide(id: string, decision: "approve" | "reject") {
-    try { const r = await j<{ approval: Approval }>(`/api/approvals/${id}`, { method: "POST", body: JSON.stringify({ decision }), headers }); setMsg(`Approval ${r.approval.status}${r.approval.note ? `: ${r.approval.note}` : ""}`); await load(); }
+    try { const r = await j<{ approval: Approval }>(`/api/approvals/${id}`, { method: "POST", body: JSON.stringify({ decision }), headers: operatorHeaders() }); setMsg(`Approval ${r.approval.status}${r.approval.note ? `: ${r.approval.note}` : ""}`); await load(); }
     catch (e) { setMsg(e instanceof Error ? e.message : "failed"); }
   }
 
@@ -60,7 +59,6 @@ export default function ApprovalsPage() {
           <span className="ml-auto text-xs text-zinc-500">Approval threshold: {control?.approvalThreshold ?? "…"} credits</span>
           <input aria-label="New approval threshold" value={threshold} onChange={(e) => setThreshold(e.target.value.slice(0, 10))} placeholder="threshold" className="w-24 rounded border border-white/10 bg-black/30 px-2 py-1 text-xs" />
           <button className={opsBtn} onClick={() => update({ approvalThreshold: Number(threshold) })} disabled={!threshold}>Set</button>
-          {!devMode && <input aria-label="Operator token" type="password" value={token} onChange={(e) => setToken(e.target.value)} placeholder="operator token" className="w-40 rounded border border-white/10 bg-black/30 px-2 py-1 text-xs" />}
         </div>
         {msg && <p className="mt-2 text-xs text-zinc-400">{msg}</p>}
       </section>

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { authenticate, guardWrite, idempotent, principalScope, rateLimit, clientKey } from "@/lib/guard";
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -60,8 +61,15 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const body = await req.json();
-  const { content, tier, kind, confidence, ttl, tags, provenance } = body;
+  const g = await guardWrite(req, { bucket: "memory", agents: [id] });
+  if (!g.ok) return g.response;
+  return idempotent(req, `memory:${id}:${principalScope(g.principal)}`, g.text, async () => {
+  const { content, tier, kind, confidence, ttl, tags, provenance } = g.json;
+  if (typeof content === "string" && content.length > 20_000) return NextResponse.json({ error: "content must be at most 20000 characters" }, { status: 400 });
+  if (tags !== undefined && (typeof tags !== "string" || tags.length > 500)) return NextResponse.json({ error: "tags must be a string of at most 500 characters" }, { status: 400 });
+  if (kind !== undefined && (typeof kind !== "string" || kind.length > 40)) return NextResponse.json({ error: "kind must be a string of at most 40 characters" }, { status: 400 });
+  if (provenance !== undefined && (typeof provenance !== "string" || provenance.length > 200)) return NextResponse.json({ error: "provenance must be a string of at most 200 characters" }, { status: 400 });
+  if (confidence !== undefined && (typeof confidence !== "number" || !(confidence >= 0 && confidence <= 1))) return NextResponse.json({ error: "confidence must be a number from 0 to 1" }, { status: 400 });
   const normalizedTier = String(tier || "RECALL").toUpperCase();
   const normalizedTtl = String(ttl || "permanent");
   if (typeof content !== "string" || !content.trim()) return NextResponse.json({ error: "content is required" }, { status: 400 });
@@ -83,13 +91,20 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     },
   });
   return NextResponse.json({ memory: mem });
+  });
 }
 
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const auth = await authenticate(req, "", [id]);
+  if (!auth.ok) return auth.response;
+  const rl = await rateLimit("memory", clientKey(req, auth.principal), 120);
+  if (!rl.ok) return rl.response;
   const { searchParams } = new URL(req.url);
   const memoryId = searchParams.get("memoryId");
   if (!memoryId) return NextResponse.json({ error: "memoryId required" }, { status: 400 });
-  await db.memory.delete({ where: { id: memoryId } });
+  // Only this agent's memory: a memoryId from another agent is "not found".
+  const del = await db.memory.deleteMany({ where: { id: memoryId.slice(0, 64), agentId: id } });
+  if (!del.count) return NextResponse.json({ error: "memory not found" }, { status: 404 });
   return NextResponse.json({ ok: true });
 }

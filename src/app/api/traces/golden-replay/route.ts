@@ -12,6 +12,7 @@ import { db } from "@/lib/db";
 import { runCompletion, sha256, computeDrift, aiProviderConfigured, NoAIProviderError } from "@/lib/llm";
 import { aiErrorResponse } from "@/lib/ai/metered";
 import { AIRequestError } from "@/lib/ai/provider";
+import { guardWrite } from "@/lib/guard";
 
 type ReplayResult = {
   title: string;
@@ -32,7 +33,9 @@ export async function GET() {
   return NextResponse.json({ items });
 }
 
-export async function POST() {
+export async function POST(req: Request) {
+  const g = await guardWrite(req, { bucket: "operator", operatorOnly: true });
+  if (!g.ok) return g.response;
   const items = await db.goldenSetItem.findMany({ orderBy: { createdAt: "asc" } });
   if (items.length === 0) {
     return NextResponse.json({ error: "no golden-set items registered" }, { status: 400 });

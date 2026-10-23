@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { checkFields, guardWrite } from "@/lib/guard";
 
 // Curriculum commons — skill trees + progress
 export async function GET(req: Request) {
@@ -28,7 +29,11 @@ export async function GET(req: Request) {
 
 // Advance an agent on a curriculum node (after a certification attempt)
 export async function POST(req: Request) {
-  const body = await req.json();
+  const g = await guardWrite(req, { bucket: "operator", operatorOnly: true });
+  if (!g.ok) return g.response;
+  const bad = checkFields(g.json, { skillTreeId: { maxLen: 80 }, nodeLabel: { maxLen: 120 }, level: { min: 0, max: 100 }, certified: { type: "boolean" } });
+  if (bad) return bad;
+  const body = g.json;
   const { agentId, skillTreeId, nodeLabel, level, certified } = body;
   const existing = await db.curriculumProgress.findUnique({
     where: { agentId_skillTreeId: { agentId, skillTreeId } },

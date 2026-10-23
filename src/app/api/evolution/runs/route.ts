@@ -2,6 +2,7 @@ import { randomInt } from "node:crypto";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { createInitialPopulation, isProfile, summarizePopulation } from "@/lib/evolution";
+import { guardWrite } from "@/lib/guard";
 
 export const dynamic = "force-dynamic";
 
@@ -15,9 +16,11 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
+  const g = await guardWrite(req, { bucket: "operator", operatorOnly: true });
+  if (!g.ok) return g.response;
   let body: Record<string, unknown>;
   try {
-    body = await req.json();
+    body = g.json;
   } catch {
     return NextResponse.json({ error: "Request body must be valid JSON." }, { status: 400 });
   }

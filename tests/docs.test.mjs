@@ -67,11 +67,11 @@ test("route manifest matches src/app and discovery lists real routes", () => {
   assert.ok(ROUTES.api.some((r) => r.path === "/llms.txt"));
   assert.ok(!/USDC|HLO|74%|446,000/.test(txt.split("## Docs")[1]));
   const card = docsCardExtension("https://example.test");
-  assert.equal(card.docs.length, 10); assert.ok(card.pages.includes("/docs/[slug]"));
+  assert.equal(card.docs.length, 11); assert.ok(card.pages.includes("/docs/[slug]"));
 });
 
 test("docs content uses honest labels and no unverified figures", () => {
-  assert.equal(DOC_PAGES.length, 10);
+  assert.equal(DOC_PAGES.length, 11);
   const all = JSON.stringify(DOC_PAGES);
   for (const bad of ["74%", "74.5", "50ms", "48ms", "8ms", "<35ms", "96%", "8x", "446,000", "18ms", "100/100", "847", "612", "architect-v4", "sentinel-sec", "USDC", "HLO", "$", "GPT-5", "Claude 4"]) assert.ok(!all.includes(bad), `found ${bad}`);
   for (const p of DOC_PAGES) for (const f of p.features) if (f.status === "implemented") assert.ok(f.href, `${f.name} needs a link`);

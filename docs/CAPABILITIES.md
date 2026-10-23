@@ -2,7 +2,7 @@
 
 **Last verified:** `main` @ `972b3e9`, 2026-10-21 (IST), Node v22.23.3. All 18 `tests/*.test.mjs` suites passed against a temporary SQLite file. Rows marked "open PR" are verified on their own branch only.
 
-Status labels: **implemented** (code plus a passing test), **prototype** (works, with stated limits), **simulation** (deterministic or synthetic, not real behavior), **planned** (not built), **vision** (direction only).
+Status labels: **implemented** (code plus a passing test), **prototype** (works, with stated limits), **simulation** (deterministic or synthetic, not real behavior), **planned** (not built), **vision** (direction only). The task-contract validator row below reflects a locally tested working-tree change and is not on the default branch until merged.
 
 | Capability | Status | Evidence (code) | Evidence (test) | Limits |
 | --- | --- | --- | --- | --- |
@@ -19,6 +19,7 @@ Status labels: **implemented** (code plus a passing test), **prototype** (works,
 | Wasm sandbox (QuickJS) | implemented | `src/lib/sandbox.ts` | `tests/sandbox.test.mjs` | `console.log` only. Time and memory limits. Not an OS-level sandbox. |
 | Debate/consensus, treasury reallocation | implemented | `src/lib/consensus.ts`, `src/lib/treasury.ts` | `tests/consensus-treasury.test.mjs` | Reputation-weighted voting among local agents. |
 | AML compile/validate | implemented | `src/lib/aml.ts` | `tests/aml.test.mjs` | Static parse and intent graph only. Never executes. |
+| Task contract schema validation | implemented | `src/lib/task-contract.ts`, `POST /api/hello/tasks/validate` | `tests/task-contract.test.mjs` | Validates schema and declared bounds only. No capability authorization, persistence, scheduling, or execution. |
 | MCP server (in-process, JSON-RPC + compat routes) | prototype | `src/lib/mcp/server.ts`, `/api/hello/mcp` | `tests/mcp-inprocess.test.mjs` | Not a full MCP conformance claim. No replay protection. Write-tool gating is in PR #36. |
 | Read-only MCP connectors (SQL, GitHub, OpenAPI, webhook) | implemented | `src/lib/mcp/connectors/` | `tests/connectors.test.mjs` | Read-only. Not verified against real third-party accounts. |
 | MCP receipts | implemented | `logToolCall` in `src/lib/mcp/server.ts` | `tests/mcp-inprocess.test.mjs` | A SHA-256 digest identifying a log row. **Not a signature.** |

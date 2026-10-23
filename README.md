@@ -66,10 +66,12 @@ Agents today mostly run inside tools built for people. HELLO OS tries a differen
 | 1 | **HELLO ID** | Ed25519 `did:key` identity, DID resolve, soul versions | `/api/agents`, `/api/did/resolve` | Implemented |
 | 2 | **HELLO Forge** | AST symbols, diagnostics, symbol patching | `/api/hello/forge/*`, `forge.*` tools | Implemented |
 | 3 | **HELLO Cortex** | Tiered memory, dead-end registry, contract locks, semantic cache, knowledge docs | `/api/hello/cortex/*`, `/api/failures`, `/api/cache`, `/api/knowledge` | Implemented |
-| 4 | **HELLO Mesh** | In-process MCP server, A2A messages and tasks, delegation trees, consensus | `POST /api/hello/mcp`, `/api/a2a`, `/api/delegation`, `/api/consensus` | Implemented (single node); federation is Vision |
+| 4 | **HELLO Mesh** | In-process MCP server, A2A messages and tasks, static hello.task/v1 contract validation, delegation trees, consensus | `POST /api/hello/mcp`, `/api/a2a`, `/api/hello/tasks/validate`, `/api/delegation`, `/api/consensus` | Implemented (single node); validator does not authorize or execute; federation is Vision |
 | 5 | **HELLO Ledger** | Wallets and spend in credits (H), treasury, approvals, operator gate | `/api/economy/*`, `/api/treasury`, `/api/gate`, `/api/approvals` | Implemented (credits only, no money or tokens) |
 | 6 | **HELLO Cloud** | Checkpoint request records and QuickJS sandbox | `/api/hello/cloud/checkpoints`, `/api/sandbox` | Metadata only; no database or VM snapshots or rollback |
 | 7 | **HELLO Evolve and AI** | Deterministic evolution runs; AI provider (OpenRouter, Kilo Code gateway, any OpenAI-compatible API) for golden replay | `/api/evolution/runs`, `/api/ai/status`, `/api/traces/golden-replay` | Prototype: `/evolve` page is a labelled simulation; AI calls need a key |
+
+**Runtime design proposal:** [HELLO OS Agent Runtime Architecture v1](docs/architecture/HELLO-OS-Agent-Runtime-v1.md) describes a staged future design. It does not claim that HELLO OS currently provides isolated agent processes, durable execution workers, multi-tenant hosting, or Firecracker microVMs.
 
 ```mermaid
 flowchart TB
@@ -120,6 +122,29 @@ curl -s http://localhost:3000/api/aml/compile \
 The response includes `"ok": true`, `"executable": false`, `"budgets": [{"declaration":"review_patch","amount":5,"unit":"H"}]` and a `tokenMetrics` object.
 
 > **About token counts:** `tokenMetrics` uses the `aml-lexical-v1` lexical estimator. It compares AML against estimated JSON and Python equivalents. These are rough lexical estimates, not model tokenizer counts and not benchmarks. Grammar: [`docs/aml-spec.ebnf`](docs/aml-spec.ebnf). Examples: [`docs/aml-examples.md`](docs/aml-examples.md).
+
+## Static Task Contracts
+
+The `POST /api/hello/tasks/validate` endpoint accepts a raw, bounded `hello.task/v1` JSON contract (maximum 32 KiB; [JSON Schema](docs/schemas/hello-task-v1.schema.json)). It rejects unknown fields, conflicting scope entries, invalid capability identifiers, and inconsistent token, tool-call, or wall-clock bounds. It returns HTTP 200 for valid contracts, 422 for contract diagnostics, 400 for malformed JSON, and 413 when the body exceeds the size limit. A valid response includes a deterministic SHA-256 hash of the normalized contract.
+
+This endpoint is a schema checker. A listed capability is not a grant, the approval field does not create an approval, and no contract is persisted, scheduled, or executed. The content hash is not a signature or authorization token. It does not invoke tools or a model.
+
+```bash
+curl -s http://localhost:3000/api/hello/tasks/validate \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "schema":"hello.task/v1",
+    "goal":"Validate the provided AML source.",
+    "scope":{"include":["parse source","return diagnostics"],"exclude":["execute source"]},
+    "capabilities":["aml.compile"],
+    "constraints":["Never execute AML."],
+    "success":{"kind":"measurable","criteria":["Return static diagnostics."]},
+    "failureCriteria":["Malformed source is rejected."],
+    "budgets":{"tokens":{"perStep":4096,"total":16384},"toolCalls":{"perStep":2,"total":8},"wallClockSeconds":{"perStep":10,"total":60}},
+    "approval":"required",
+    "termination":{"onSuccess":"report","onFailure":"escalate","onTimeout":"fail"}
+  }'
+```
 
 ## Quick Start
 

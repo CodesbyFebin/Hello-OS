@@ -10,6 +10,7 @@ HELLO OS is an open-source, local-first prototype for exploring agent identity, 
 | --- | --- |
 | Run HELLO OS locally | [Quickstart](Quickstart) |
 | Understand the code and boundaries | [Architecture](Architecture) |
+| Review the proposed agent runtime design | [Agent Runtime Architecture](Agent-Runtime-Architecture) |
 | Parse or validate AML source | [AML guide](AML) |
 | Connect with HTTP, MCP, or A2A surfaces | [Protocols and API](Protocols-and-API) |
 | Evaluate a performance claim | [Benchmarks and evidence](Benchmarks-and-Evidence) |

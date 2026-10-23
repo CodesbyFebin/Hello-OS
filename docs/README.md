@@ -27,6 +27,7 @@ HELLO OS is an experimental, local-first agent operating system prototype (Next.
 ## Reference
 - [AML spec (EBNF)](aml-spec.ebnf) · [AML examples](aml-examples.md)
 - [HELLO Cloud architecture direction](hello-cloud-architecture.md) (vision)
+- [HELLO OS Agent Runtime Architecture v1](architecture/HELLO-OS-Agent-Runtime-v1.md) (design proposal; separates current implementation from future work)
 - [Integration catalog notes](integrations/README.md)
 
 ## Honesty rules these docs follow

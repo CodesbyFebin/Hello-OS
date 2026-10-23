@@ -23,10 +23,10 @@ The UI and API routes read and mutate application state through the server-side 
 | `hello.id` | Ed25519 identity creation and `did:key` records | Production key custody, operator rotation and revocation controls |
 | `hello.cortex` | Persistent memory records and retrieval endpoints | Automated consolidation, vector search, and hardened tenancy boundaries |
 | `hello.ledger` | Internal wallet and transaction records with configured controls | Payment rails, crypto settlement, and audited financial ledger |
-| `hello.mesh` | MCP service and A2A-style JSON-RPC task routes | Broad interoperability certification and a hosted mesh |
+| `hello.mesh` | MCP service, A2A-style JSON-RPC task routes, and static hello.task/v1 contract validation | Broad interoperability certification, hosted mesh, and authorized task execution |
 | `hello.forge` | Symbol and diagnostic surfaces for the included sample repository | AST-based version control or production speculative CI |
-| `hello.cloud` | Checkpoint records and simulated snapshot references | VM execution, real snapshots, and production isolation |
-| AML | Static compiler and validator | Execution runtime, tool authorization, or deployment |
+| `hello.cloud` | Checkpoint request metadata and a bounded QuickJS sandbox | VM execution, database/filesystem snapshots, rollback, and production isolation |
+| AML and task contracts | Static AML compiler and static task-contract schema/limit validator | Execution runtime, tool authorization, or deployment |
 
 ## Trust boundaries
 
@@ -38,7 +38,7 @@ The UI and API routes read and mutate application state through the server-side 
 
 ## Architecture direction
 
-The cloud architecture page records a proposed build sequence: version schemas; add request identity and workspace isolation; define a bounded durable execution lifecycle; authorize every capability; harden receipts and recovery; evaluate sandbox choices; and only then consider hosted operations. Read [`docs/hello-cloud-architecture.md`](https://github.com/CodesbyFebin/Hello-OS/blob/main/docs/hello-cloud-architecture.md) for the detailed gap list.
+The [HELLO OS Agent Runtime Architecture v1 proposal](https://github.com/CodesbyFebin/Hello-OS/blob/main/docs/architecture/HELLO-OS-Agent-Runtime-v1.md) describes a staged target design for process records, task contracts, capability policy, scheduling, memory, tools, and audit. It is a proposal, not a description of shipped runtime behavior. The [HELLO Cloud architecture direction](https://github.com/CodesbyFebin/Hello-OS/blob/main/docs/hello-cloud-architecture.md) records related implementation gaps.
 
 ## Verify before citing
 

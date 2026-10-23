@@ -446,6 +446,12 @@ export const ROUTE_MANIFEST = {
       ]
     },
     {
+      "path": "/api/hello/tasks/validate",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
       "path": "/api/integrations/status",
       "methods": [
         "GET"

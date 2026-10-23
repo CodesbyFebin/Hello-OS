@@ -774,3 +774,48 @@ model DocsPost {
   @@index([clientKey, createdAt])
   @@index([createdAt])
 }
+
+// ============================================================
+// EVALUATION — real task results (src/lib/eval). Not the gene-vector simulation.
+// ============================================================
+
+model EvalRun {
+  id               String   @id @default(cuid())
+  suiteId          String
+  suiteVersion     String
+  suiteHash        String
+  fingerprint      String
+  candidateId      String
+  revision         String
+  promptVersion    String
+  provider         String
+  model            String
+  configJson       String
+  resultsJson      String
+  summaryJson      String
+  requiredPassed   Int
+  requiredTotal    Int
+  safetyViolations Int
+  startedAt        DateTime
+  finishedAt       DateTime
+  createdAt        DateTime @default(now())
+
+  @@index([suiteId, createdAt])
+  @@index([fingerprint])
+}
+
+model EvalPromotion {
+  id                    String    @id @default(cuid())
+  suiteId               String
+  candidateRunId        String
+  baselineRunId         String?
+  status                String    // blocked | pending | approved | rejected | rolled_back
+  requestedBy           String
+  approvedBy            String?
+  reasonsJson           String
+  previousChampionRunId String?
+  createdAt             DateTime  @default(now())
+  decidedAt             DateTime?
+
+  @@index([suiteId, status, decidedAt])
+}

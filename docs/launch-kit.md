@@ -27,7 +27,7 @@ The repo currently has no topics, so the 20-topic limit is not exceeded. Private
 ## 3. Release notes draft
 
 ### Recommendation: tag `v0.2.1`, not `v1.0.0`
-In semver, 1.0.0 signals a stable public API. HELLO OS is an experimental prototype: API shapes still change between PRs, keys are stored by the demo server, operator auth is a shared token with an open dev mode, and there is no migration story for the SQLite schema. `v0.2.1` sets honest expectations and leaves 1.0 for when those boundaries are hardened. `package.json` already says `0.2.1`, so the tag matches it (the agent card and MCP server still report `0.1.0`, which is worth aligning in a follow-up).
+In semver, 1.0.0 signals a stable public API. HELLO OS is an experimental prototype: API shapes still change between PRs, keys are stored by the demo server, operator auth is a shared token with an open dev mode, and there is no migration story for the SQLite schema. `v0.2.1` sets honest expectations and leaves 1.0 for when those boundaries are hardened. `package.json` already says `0.2.1`, so the tag matches it (the MCP server reports `package.json` version; the agent card is aligned to `0.2.1` in PR #32).
 
 ### Draft: HELLO OS v0.2.1 (prototype)
 HELLO OS is an experimental, local-first agentic OS. This first tagged release collects the work merged so far. Labels: **implemented** = real route or API (prototype quality); **prototype** = partial or simulated, with stated limits; **vision** = design only.

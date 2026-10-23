@@ -285,6 +285,25 @@ export const ROUTE_MANIFEST = {
       ]
     },
     {
+      "path": "/api/eval/promotions",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/eval/promotions/[id]",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/eval/runs",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
       "path": "/api/evolution/apprenticeships",
       "methods": [
         "GET",

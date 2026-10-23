@@ -25,3 +25,11 @@ Reports showing a way around these documented boundaries (for example, an API th
 
 Agent-scoped writes need an Ed25519 request signature from the acting agent, or the operator token. Nonces and a ±5 minute timestamp window block replays. `Idempotency-Key` prevents double execution. DB-backed rate limits apply per agent or IP. See [docs/agent-auth.md](docs/agent-auth.md). Local dev mode still accepts unsigned requests. Request-auth secrets are shown once and only public keys are stored, but agents' DID signing keys are still held by the server (no KMS/HSM).
 
+
+## Write gating, redaction and the dashboard token
+
+- The remaining write routes go through `guardWrite` (`src/lib/guard.ts`): body size cap (413 `BODY_TOO_LARGE`), DB-backed rate limit (429), and either operator-only access or a signature from the acting agent (for example `fromId` on attestations, `proposerId` on consensus and governance, `authorId` on marketplace). Field bounds return 400 `BAD_FIELD`.
+- Operator-only: observations, snapshot resume, cache writes, failures, golden replay, evolution curriculum, apprenticeships and runs.
+- `GET /api/audit` hides `detail`, `GET /api/traces` replaces titles with `[redacted]`, and `GET /api/approvals` hides payload and note unless the caller is the operator (or local dev mode). Each response includes `redacted: true|false`.
+- The dashboard and `/ops` pages have an operator token form. The token stays in `sessionStorage` for that tab only; it is not in the client bundle. It is sent as `x-operator-token`. The form shows the server's real state from `GET /api/operator`: dev mode, accepted, 401 (missing or wrong) or 503 (not configured in production).
+- Limits: `sessionStorage` can be read by any script running on the page, so an XSS bug would expose the token. The AML routes and `/api/docs/posts` are not changed by this; the AML routes don't touch the DB, and `/api/docs/posts` has its own limiter.

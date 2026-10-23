@@ -151,3 +151,19 @@ export async function guardWrite(req: Request, opts: { bucket: string; limit?: n
   if (!rl.ok) return rl;
   return { ok: true, json: body.json, text: body.text, principal: auth.principal };
 }
+
+/** Length/range bounds for body fields. Returns a 400 Response or null. */
+export function checkFields(json: any, spec: Record<string, { max?: number; min?: number; maxLen?: number; type?: "string" | "number" | "boolean" }>): Response | null {
+  for (const [k, s] of Object.entries(spec)) {
+    const v = json?.[k];
+    if (v === undefined || v === null) continue;
+    const t = s.type ?? (s.maxLen !== undefined ? "string" : "number");
+    if (t === "string" && (typeof v !== "string" || (s.maxLen !== undefined && v.length > s.maxLen))) return Response.json({ error: `${k} must be a string of at most ${s.maxLen} characters`, code: "BAD_FIELD" }, { status: 400 });
+    if (t === "number") {
+      const n = Number(v);
+      if (typeof v === "boolean" || !Number.isFinite(n) || (s.min !== undefined && n < s.min) || (s.max !== undefined && n > s.max)) return Response.json({ error: `${k} must be a number from ${s.min ?? "-∞"} to ${s.max ?? "∞"}`, code: "BAD_FIELD" }, { status: 400 });
+    }
+    if (t === "boolean" && typeof v !== "boolean") return Response.json({ error: `${k} must be true or false`, code: "BAD_FIELD" }, { status: 400 });
+  }
+  return null;
+}

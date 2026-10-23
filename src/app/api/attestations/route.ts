@@ -1,4 +1,5 @@
 import { randomBytes } from "crypto";
+import { checkFields, guardWrite } from "@/lib/guard";
 // Peer Attestations — emergent reputation.
 // Agents sign attestations about each other with their Ed25519 keys.
 // Reputation is recomputed from the weighted sum of incoming attestations,
@@ -46,7 +47,11 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const body = await req.json();
+  const g = await guardWrite(req, { bucket: "attestations", agents: (b) => [String(b.fromId ?? "")] });
+  if (!g.ok) return g.response;
+  const bad = checkFields(g.json, { claim: { maxLen: 200 }, note: { maxLen: 2000 } });
+  if (bad) return bad;
+  const body = g.json;
   const { fromId, toId, claim, note } = body;
   if (!fromId || !toId || !claim) {
     return NextResponse.json({ error: "fromId, toId, claim required" }, { status: 400 });

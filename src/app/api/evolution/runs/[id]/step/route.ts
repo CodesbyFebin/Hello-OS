@@ -1,10 +1,13 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { evolvePopulation, summarizePopulation, type Candidate, type Profile } from "@/lib/evolution";
+import { guardWrite } from "@/lib/guard";
 
 export const dynamic = "force-dynamic";
 
-export async function POST(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const g = await guardWrite(req, { bucket: "operator", operatorOnly: true });
+  if (!g.ok) return g.response;
   const { id } = await params;
   try {
     const result = await db.$transaction(async (tx) => {

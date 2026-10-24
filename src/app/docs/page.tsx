@@ -6,11 +6,11 @@ import { DocsSidebar, JsonLd, SITE_URL } from "@/components/docs/docs-ui";
 
 export const dynamic = "force-static";
 
-const description = "Ten question-and-answer pages explaining HELLO OS, with every feature marked implemented, prototype or vision based on what exists in the repo.";
+const description = "Eleven question-and-answer pages explain HELLO OS and its proposed agent runtime architecture, with every feature marked implemented, prototype or vision based on what exists in the repo.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "HELLO OS docs: 10-page explainer",
+  title: "HELLO OS docs: 11-page explainer and runtime proposal",
   description,
   alternates: { canonical: "/docs" },
   openGraph: { title: "HELLO OS docs", description, type: "website", url: "/docs", siteName: "HELLO OS" },

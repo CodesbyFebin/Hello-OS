@@ -3,6 +3,7 @@
 - [Overview](Home)
 - [Quickstart](Quickstart)
 - [Architecture](Architecture)
+- [Agent runtime architecture](Agent-Runtime-Architecture)
 - [AML](AML)
 - [Protocols and API](Protocols-and-API)
 - [Benchmarks and evidence](Benchmarks-and-Evidence)

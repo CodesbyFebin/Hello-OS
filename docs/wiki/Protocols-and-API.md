@@ -12,8 +12,15 @@ HELLO OS exposes Next.js REST routes, a separate local MCP-compatible service, a
 | `GET /.well-known/agent.json` | Agent-card alias. |
 | `POST /api/aml/compile` | Static AML compilation. |
 | `POST /api/aml/validate` | Static AML validation. |
+| `POST /api/hello/tasks/validate` | Static `hello.task/v1` schema and resource-bound validation. |
 
 The repository contains routes for agent, mission, memory, Forge, MCP, economy, traces, attestations, and other prototype areas. Read each route handler for supported methods, schemas, validation, and current status. Do not infer an API contract from a route name alone.
+
+## Static task contracts
+
+The task validator accepts a raw versioned JSON contract (up to 32 KiB) with a goal, included and excluded scope, capability identifiers, constraints, success and failure criteria, token/tool-call/wall-clock limits, approval metadata, and termination rules. It returns HTTP 200 for a valid contract, 422 for contract diagnostics, 400 for malformed JSON, and 413 for an oversized body. Valid contracts receive a deterministic content hash.
+
+Validation is not authorization: capability strings are declarations only, approval metadata is not an approval record, the hash is not a signature, and the endpoint does not persist or execute tasks. See the [JSON Schema](https://github.com/CodesbyFebin/Hello-OS/blob/main/docs/schemas/hello-task-v1.schema.json), [validator source](https://github.com/CodesbyFebin/Hello-OS/blob/main/src/lib/task-contract.ts), and run its focused tests with `npm run test:task-contract`.
 
 ## MCP service
 

@@ -10,12 +10,15 @@ HELLO OS is an experimental local-first software prototype for agent identity, p
 - Wiki-ready source pages: https://github.com/CodesbyFebin/Hello-OS/tree/main/docs/wiki
 - Machine-readable summary: https://codesbyfebin.github.io/Hello-OS/llms.txt
 - GitHub Wiki: https://github.com/CodesbyFebin/Hello-OS/wiki
+- Agent Runtime Architecture v1 proposal: https://github.com/CodesbyFebin/Hello-OS/blob/main/docs/architecture/HELLO-OS-Agent-Runtime-v1.md
+- hello.task/v1 JSON Schema: https://codesbyfebin.github.io/Hello-OS/schemas/hello-task-v1.schema.json
 
 ## Implemented interfaces
 
 - `GET /api/hello/handshake` returns bootstrap information.
 - `GET` and `POST /api/a2a` provide an A2A-style JSON-RPC task surface.
 - `POST /api/aml/compile` and `POST /api/aml/validate` statically parse and validate AML.
+- `POST /api/hello/tasks/validate` statically validates a hello.task/v1 contract. It does not authorize capabilities, persist, schedule, or execute it.
 - `/api/agents`, `/api/missions`, `/api/hello/cortex/*`, `/api/hello/forge/*`, and `/api/hello/mcp/*` expose prototype application APIs. Use the source for exact current schemas and methods.
 - `/.well-known/agent-card.json` provides agent-card discovery.
 

@@ -10,7 +10,7 @@ Prisma's libSQL driver adapter. Nothing in the schema changes.
 | `file:./db/custom.db`   | Prisma's built-in SQLite engine (unchanged)                 | Local development   |
 | *(unset)*               | none: DB-backed `/api/*` routes answer `503 DB_NOT_CONFIGURED` | Misconfigured deploy |
 
-Routes that never touch the database (`/api`, `/api/aml/compile`, `/api/aml/validate`,
+Routes that never touch the database (`/api`, `/api/aml/compile`, `/api/aml/validate`, `/api/hello/tasks/validate`,
 `/api/integrations/webhook`, `/api/sandbox`) keep working without it.
 
 ## 1. Create the Turso database

@@ -1,4 +1,4 @@
-// Content for the /docs portal, ported from the 10-page HELLO OS explainer.
+// Content for the /docs portal, including the HELLO OS explainer and runtime design proposal.
 // Every capability is marked by what exists in this repository:
 //   implemented: a real route or API you can call today (prototype quality).
 //   prototype:   partial or simulated; works with honest limits stated.
@@ -205,6 +205,21 @@ export const DOC_PAGES: DocPage[] = [
       { name: "Evolution runs", status: "prototype", detail: "Synthetic vectors only.", href: "/evolution" },
       { name: "Evolve simulation", status: "prototype", detail: "Clearly labeled browser-only simulation; no live agents, model training, or database reads.", href: "/evolve" },
       { name: "Automatic drift quarantine", status: "vision", detail: "Not implemented." },
+    ],
+  },
+  {
+    slug: "agent-runtime", n: 11, tab: "Agent runtime proposal", title: "HELLO OS agent runtime architecture",
+    question: "How is HELLO OS designed to grow into an agent runtime?",
+    description: "A staged architecture proposal for agent identity, task contracts, capability policy, bounded scheduling, memory, tools, and audit, with the current prototype separated from future design.",
+    answer: "HELLO OS Agent Runtime Architecture v1 is a design proposal for growing the existing local-first application into a bounded, inspectable agent runtime. HELLO OS today is a Next.js application with selected APIs, persistent records, MCP-compatible tools, A2A-style task methods, a static AML compiler, and a static hello.task/v1 contract validator. The validator checks schema and limits only; it does not authorize capabilities or execute tasks. Durable execution, production capability enforcement, and stronger isolation remain future work.",
+    sections: [
+      { heading: "What is in the current prototype?", body: ["The repository includes agent identity records, missions and task APIs, tiered memory, internal credit wallets, approval controls, a local MCP-compatible tool service, A2A-style task methods, and static AML and hello.task/v1 validators. The task validator checks shape and numeric bounds only; it does not authorize capability requests or execute work. These are application features and prototypes, not an operating-system kernel or a general-purpose autonomous runtime."] },
+      { heading: "What does the proposal add?", body: ["The proposal describes a versioned agent descriptor, validated task contracts, server-side capability policy, bounded scheduling with leases and idempotency, provenance-aware context, mediated model and tool adapters, and auditable state transitions. Each stage has implementation and evidence gates."] },
+      { heading: "What remains future work?", body: ["Durable general-purpose execution workers, production multi-tenant isolation, Firecracker microVMs, cross-server federation, automatic skill promotion, and broad connector coverage are not presented as current features. The proposal assigns them explicit prerequisites and evaluation gates."] },
+    ],
+    features: [
+      { name: "Task contract validator", status: "implemented", detail: "Static schema and limit checks; no authorization or execution.", href: "/api/hello/tasks/validate" },
+      { name: "Agent Runtime Architecture v1", status: "vision", detail: "Design proposal; implementation status remains in the source repository.", href: "https://github.com/CodesbyFebin/Hello-OS/blob/main/docs/architecture/HELLO-OS-Agent-Runtime-v1.md" },
     ],
   },
 ];

@@ -12,12 +12,15 @@ HELLO OS is a local-first software prototype for agent identity, persistent reco
 - Agent integration guide: https://github.com/CodesbyFebin/Hello-OS/blob/main/docs/agent-guide/index.html
 - AML specification examples: https://github.com/CodesbyFebin/Hello-OS/blob/main/docs/aml-examples.md
 - Architecture direction and gaps: https://github.com/CodesbyFebin/Hello-OS/blob/main/docs/hello-cloud-architecture.md
+- Agent Runtime Architecture v1 (proposal): https://github.com/CodesbyFebin/Hello-OS/blob/main/docs/architecture/HELLO-OS-Agent-Runtime-v1.md
+- hello.task/v1 JSON Schema: https://codesbyfebin.github.io/Hello-OS/schemas/hello-task-v1.schema.json
 
 ## Implemented interfaces
 
 - `GET /api/hello/handshake` returns service bootstrap information.
 - `GET` and `POST /api/a2a` implement the documented A2A-style JSON-RPC task surface.
 - `POST /api/aml/compile` and `POST /api/aml/validate` statically parse and validate AML source.
+- `POST /api/hello/tasks/validate` statically validates a hello.task/v1 contract. It does not authorize capabilities, persist, schedule, or execute it.
 - `/api/agents`, `/api/missions`, `/api/hello/cortex/*`, `/api/hello/forge/*`, and `/api/hello/mcp/*` expose application APIs; consult the source and README for current schemas.
 
 ## Safe-use notes

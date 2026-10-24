@@ -26,4 +26,4 @@ The roadmap separates work that exists in the repository from work that is propo
 
 Open a scoped issue or discussion with the user task, evidence, alternatives, acceptance criteria, maintenance cost, and security/privacy impact. Link related code or tests. Prioritize based on user value and project capacity, not keyword counts or ranking promises.
 
-For current capability status, see the repository [README](https://github.com/CodesbyFebin/Hello-OS#readme) and [architecture direction](https://github.com/CodesbyFebin/Hello-OS/blob/main/docs/hello-cloud-architecture.md).
+For the broader proposed agent runtime design, see [HELLO OS Agent Runtime Architecture v1](https://github.com/CodesbyFebin/Hello-OS/blob/main/docs/architecture/HELLO-OS-Agent-Runtime-v1.md). It is a design proposal, not a delivery commitment. For current capability status, see the repository [README](https://github.com/CodesbyFebin/Hello-OS#readme) and [architecture direction](https://github.com/CodesbyFebin/Hello-OS/blob/main/docs/hello-cloud-architecture.md).

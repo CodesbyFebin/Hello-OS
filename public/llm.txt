@@ -16,6 +16,8 @@
 - Installation guide: https://codesbyfebin.github.io/Hello-OS/getting-started/
 - Downloads: https://codesbyfebin.github.io/Hello-OS/downloads/
 - Architecture direction: https://github.com/CodesbyFebin/Hello-OS/blob/main/docs/hello-cloud-architecture.md
+- Agent Runtime Architecture v1 proposal: https://github.com/CodesbyFebin/Hello-OS/blob/main/docs/architecture/HELLO-OS-Agent-Runtime-v1.md
+- hello.task/v1 JSON Schema: https://codesbyfebin.github.io/Hello-OS/schemas/hello-task-v1.schema.json
 - Security and feature limits: https://github.com/CodesbyFebin/Hello-OS/blob/main/README.md
 - Contributor instructions: https://github.com/CodesbyFebin/Hello-OS/blob/main/AGENTS.md
 
@@ -25,6 +27,7 @@
 - Agent discovery is available at /.well-known/agent-card.json.
 - A2A-style JSON-RPC supports message/send and task lifecycle methods.
 - AML v1 statically parses and validates declarations at POST /api/aml/compile and POST /api/aml/validate. It builds a deterministic intent graph and hashes source; it never executes AML or invokes tools.
+- POST /api/hello/tasks/validate statically checks hello.task/v1 shape and bounds. It does not authorize capabilities, persist, schedule, or execute a task.
 - Evolution Lab stores seeded optimization runs over synthetic vectors. Its proxy scores are not model training or agent benchmarks.
 - HELLO EVOLVE is a browser simulation using synthetic demo data.
 - The repository is licensed under MIT; see LICENSE.
